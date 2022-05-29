@@ -13,23 +13,24 @@ from selenium.webdriver.common.by import By
 from lxml import etree
 from urllib.request import urlopen
 from datetime import timedelta
-
+import CrawlUrls
 # iterate days
 
 start_date = datetime.date(2022, 1, 1)
 end_date = start_date + timedelta(days=1)
 stop = datetime.date(2022, 1, 3)
 # stop = datetime.date.today() #####
-print(datetime.date.today())
 single_date = start_date
 
 while single_date != stop:
     single_date += timedelta(days=1)
     end_date = single_date + timedelta(days=1)
 
-print()
 def date_to_string(date):
     return str(date.day) + '/' + str(date.month) + '/' + str(date.year)
+
+#HEADLESS #########
+# driver = webdriver.PhantomJS('C:/Users/Noam/Desktop/Courts Project/phantomjs-1.4.1/phantomjs.exe')
 driver = webdriver.Chrome(executable_path='C:/Users/Noam/Desktop/Courts Project/chromedriver.exe')
 driver.get("https://supreme.court.gov.il/Pages/HomePage.aspx")
 time.sleep(2)
@@ -43,15 +44,18 @@ print("start date: ", single_date, "end date: ", end_date)
 #start date
 driver.find_element_by_xpath('/html/body/form/div[3]/div[3]/div/div/form/div/div/div[2]/div[5]/div[2]/div/div/input').send_keys(date_to_string(single_date))
 #end date
+time.sleep(2)
 driver.find_element_by_xpath('/html/body/form/div[3]/div[3]/div/div/form/div/div/div[2]/div[5]/div[3]/div/div/input').send_keys(date_to_string(end_date))
 # search
 driver.find_element_by_xpath('/html/body/form/div[3]/div[3]/div/div/form/div/div/div[2]/div[7]/div[2]/button').click()
 time.sleep(3)
 
+print(CrawlUrls.get_urls(driver))
 #
 
 
-# soup = BeautifulSoup(driver.page_source, 'html.parser')
+soup = BeautifulSoup(driver.page_source, 'html.parser')
+print(soup.findAll('a'))
 # print(soup)
 
 driver.quit()
