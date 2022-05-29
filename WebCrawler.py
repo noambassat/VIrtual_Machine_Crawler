@@ -1,3 +1,4 @@
+import datetime
 import time
 
 import pandas as pd
@@ -11,10 +12,18 @@ import json
 from selenium.webdriver.common.by import By
 from lxml import etree
 from urllib.request import urlopen
+from datetime import timedelta
 
+# iterate days
 
-start_date = '21/05/2022'
-end_date = '22/05/2022'
+start_date = datetime.date(2022, 5, 21)
+end_date = start_date + timedelta(days=1)
+stop = datetime.date(2022, 5, 23)
+single_date = start_date
+while single_date != stop:
+    end_date = single_date + timedelta(days=1)
+    print("start: ", single_date, "end : ", end_date)
+    single_date += timedelta(days=1)
 
 driver = webdriver.Chrome(executable_path='C:/Users/Noam/Desktop/Courts Project/chromedriver.exe')
 driver.get("https://www.supreme.court.gov.il/Pages/HomePage.aspx")
