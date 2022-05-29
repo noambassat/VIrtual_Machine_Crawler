@@ -20,14 +20,12 @@ start_date = datetime.date(2022, 1, 1)
 end_date = start_date + timedelta(days=1)
 stop = datetime.date(2022, 1, 3)
 # stop = datetime.date.today() #####
-print(datetime.date.today())
 single_date = start_date
 
 while single_date != stop:
     single_date += timedelta(days=1)
     end_date = single_date + timedelta(days=1)
 
-print()
 def date_to_string(date):
     return str(date.day) + '/' + str(date.month) + '/' + str(date.year)
 driver = webdriver.Chrome(executable_path='C:/Users/Noam/Desktop/Courts Project/chromedriver.exe')
