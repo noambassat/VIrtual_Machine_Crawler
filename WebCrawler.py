@@ -19,11 +19,14 @@ from datetime import timedelta
 start_date = datetime.date(2022, 1, 1)
 end_date = start_date + timedelta(days=1)
 stop = datetime.date(2022, 1, 3)
+# stop = datetime.date.today() #####
+print(datetime.date.today())
 single_date = start_date
+
 while single_date != stop:
-    end_date = single_date + timedelta(days=1)
-    print("start: ", single_date, "end : ", end_date)
     single_date += timedelta(days=1)
+    end_date = single_date + timedelta(days=1)
+
 print()
 def date_to_string(date):
     return str(date.day) + '/' + str(date.month) + '/' + str(date.year)
@@ -35,6 +38,8 @@ time.sleep(1)
 
 select = Select(driver.find_element(by = By.XPATH, value = '//select[@title="טווח זמנים"]'))
 select.select_by_index(7)
+
+print("start date: ", single_date, "end date: ", end_date)
 #start date
 driver.find_element_by_xpath('/html/body/form/div[3]/div[3]/div/div/form/div/div/div[2]/div[5]/div[2]/div/div/input').send_keys(date_to_string(single_date))
 #end date
@@ -49,4 +54,4 @@ time.sleep(3)
 # soup = BeautifulSoup(driver.page_source, 'html.parser')
 # print(soup)
 
-# driver.quit()
+driver.quit()
