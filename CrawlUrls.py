@@ -31,7 +31,6 @@ def get_urls(driver, start_date, end_date):
     response = requests.get(src)
     if response.status_code==200:
         source_src = BeautifulSoup(response.text,'html.parser')
-    print(source_src.find("div",{"class":"results-listing"}))
-
+        tree = html.fromstring(response.content)
 
 get_urls(driver, '30/05/2022','31/05/2022')
