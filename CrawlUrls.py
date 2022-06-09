@@ -71,10 +71,18 @@ def get_urls(driver, start_date, end_date):
 
 
     elements = driver.find_elements_by_class_name('ng-scope')
+    scroll = driver.find_element_by_class_name("results-listing")
+    actions = ActionChains(driver)
+    actions.move_to_element(scroll).perform()
+
     for element in elements:
         soup = BeautifulSoup(driver.page_source, 'html.parser')
         soup = soup.findAll('a',{'title':'הצג תיק'})
+
+
         print(len(soup))
+
+
         # for i, s in enumerate(soup): print(i, ":   ", s)
 
 
