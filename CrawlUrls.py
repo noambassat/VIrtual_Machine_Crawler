@@ -4,6 +4,7 @@ from selenium import webdriver
 from selenium.webdriver.support.ui import Select
 from selenium.webdriver.common.action_chains import ActionChains # FOR DOUBLE CLICK
 import time
+import numpy as np
 from lxml import html
 import requests
 # import urllib2
@@ -53,11 +54,11 @@ def get_urls(driver, start_date, end_date):
     # SCROLL_PAUSE_TIME = 0.5
     #
     # # Get scroll height
-    # tlast_height = driverf.execute_script("return document.body.scrollHeight")
+    # tlast_height = driverf.execute_script("return document.body.ul.scrollHeight")
     #     #
     #     # while True:
     #     #     # Scroll down to bottom
-    #     #     driverf.execute_script("window.scrollTo(0, document.body.scrollHeight);")
+    #     #     driverf.execute_script("window.scrollTo(0, document.body.ul.scrollHeight);")
     #     #
     #     #     # Wai to load page
     #     time.sleep(SCROLL_PAUSE_TIME)
@@ -70,17 +71,55 @@ def get_urls(driver, start_date, end_date):
     #
 
 
+
+    time.sleep(10)
+
+
+    # SCROLL DOWN
+    # SCROLL_PAUSE_TIME = 1.3
+    # np.abs(element.scrollHeight - element.clientHeight - element.scrollTop) < 1
+    #
+    # last_height = driver.execute_script("return document.querySelector('.ng-isolate-scope').scrollHeight")
+    # while True:
+    #     driver.execute_script("window.scrollTo(0,document.querySelector('.ng-isolate-scope').scrollHeight);")
+    #     time.sleep(SCROLL_PAUSE_TIME)
+    #     new_height = driver.execute_script("return document.querySelector('.ng-isolate-scope').scrollHeight")
+    #     if (new_height == last_height): break
+    #     last_height = new_height
+    from selenium.webdriver.common.by import By
+    from selenium.webdriver.support.ui import WebDriverWait
+    from selenium.webdriver.support import expected_conditions as EC
+
+    Number = 204
+    def scroll_down(Number_Of_Cases):
+        driver.maximize_window()  # For maximizing window
+        driver.implicitly_wait(10)  # gives an implicit wait for 20 seconds
+        Counter = 99
+        while(Number_Of_Cases>Counter):
+            XPATH = '//*[@id="row_' + str(Counter) + '"]'
+
+            inner_SCROLL = driver.find_element_by_xpath(XPATH)
+            location = inner_SCROLL.location_once_scrolled_into_view
+            Counter +=100
+            print(location)
+            # driver.execute_script("arguments[0].scrollIntoView", inner_SCROLL)
+
+    scroll_down(Number)
     elements = driver.find_elements_by_class_name('ng-scope')
-    scroll = driver.find_element_by_class_name("results-listing")
-    actions = ActionChains(driver)
-    actions.move_to_element(scroll).perform()
-
-    for element in elements:
-        soup = BeautifulSoup(driver.page_source, 'html.parser')
-        soup = soup.findAll('a',{'title':'הצג תיק'})
 
 
-        print(len(soup))
+    soup = BeautifulSoup(driver.page_source, 'html.parser')
+    soup = soup.findAll('a', {'title': 'הצג תיק'})
+
+    print(len(soup))
+    print((soup.text))
+    #
+    # for element in elements:
+    #     soup = BeautifulSoup(driver.page_source, 'html.parser')
+    #     soup = soup.findAll('a',{'title':'הצג תיק'})
+    #
+    #
+    #     # print(len(soup))
 
 
         # for i, s in enumerate(soup): print(i, ":   ", s)
