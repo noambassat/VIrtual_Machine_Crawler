@@ -36,7 +36,6 @@ def Get_Cases_Names():
     print(len(soup) , " Cases were found!")
     return [s.text for s in soup]
 
-URLS = pd.DataFrame(columns=['URL'])
 driver = webdriver.Chrome(executable_path='C:/Users/Noam/Desktop/Courts Project/chromedriver.exe')
 
 start = '30/05/2022'
