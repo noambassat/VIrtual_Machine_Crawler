@@ -1,10 +1,6 @@
 import pandas as pd
-from bs4 import BeautifulSoup
 from selenium import webdriver
 import time
-import main
-
-import CrawlUrls
 from CrawlUrls import get_src, Get_Cases_Names, Get_Number_Of_Cases, scroll_down, Get_URLS
 
 
@@ -27,18 +23,7 @@ df.to_csv('Cases_Name.csv')
 print(df.head())
 
 
-
-print(Get_URLS(['רע"א 3484/22','ע"א 3339/22'],start,end))
-
-
-
-def print_hi(name):
-    # Use a breakpoint in the code line below to debug your script.
-    print(f'Hi, {name}')  # Press Ctrl+F8 to toggle the breakpoint.
+URLS = Get_URLS(Cases,start,end)
+for i,url in enumerate(URLS): print(Cases[i],': ', url)
 
 
-# Press the green button in the gutter to run the script.
-if __name__ == '__main__':
-    print_hi('PyCharm')
-
-# See PyCharm help at https://www.jetbrains.com/help/pycharm/
