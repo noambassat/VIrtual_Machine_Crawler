@@ -1,42 +1,16 @@
 import pandas as pd
 from bs4 import BeautifulSoup
 from selenium import webdriver
-from selenium.webdriver.support.ui import Select
-from selenium.webdriver.common.action_chains import ActionChains # FOR DOUBLE CLICK
 import time
-import numpy as np
-from lxml import html
-import requests
-# import urllib2
-from selenium.webdriver.common.keys import Keys
-###
-import re
 
-# TO DO LIST
-
-# location_once_scrolled_into_view
-
-# GET SRC
-
-
-URLS = pd.DataFrame(columns=['URL'])
-driver = webdriver.Chrome(executable_path='C:/Users/Noam/Desktop/Courts Project/chromedriver.exe')
 
 
 def get_src(start_date, end_date): return 'https://supremedecisions.court.gov.il/Verdicts/Results/1/null/null/null/2/null/' + start_date.replace('/','-') + '/' + end_date.replace('/','-') + '/null'
 
-src = get_src('30/05/2022', '31/05/2022')
-
-driver.get(src)
-
-
-time.sleep(1)
-
-
 def Get_Number_Of_Cases():
-    return 204
-
-Number = Get_Number_Of_Cases()
+    soup = BeautifulSoup(driver.page_source, 'html.parser')
+    txt = soup.find('p', {'class': 'ng-binding'}).text
+    return [int(s) for s in txt.split() if s.isdigit()][0]
 
 
 
@@ -51,16 +25,34 @@ def scroll_down(Number_Of_Cases):
         Counter +=100
 
 
+def Get_Cases_Names():
+
+    elements = driver.find_elements_by_class_name('ng-scope')
+
+
+    soup = BeautifulSoup(driver.page_source, 'html.parser')
+    soup = soup.findAll('a', {'title': 'הצג תיק'})
+
+    print(len(soup) , " Cases were found!")
+    return [s.text for s in soup]
+
+URLS = pd.DataFrame(columns=['URL'])
+driver = webdriver.Chrome(executable_path='C:/Users/Noam/Desktop/Courts Project/chromedriver.exe')
+
+start = '30/05/2022'
+end =  '31/05/2022'
+src = get_src(start,end)
+
+driver.get(src)
+
+
+time.sleep(1)
+
+
+Number = Get_Number_Of_Cases()
 scroll_down(Number)
-elements = driver.find_elements_by_class_name('ng-scope')
+Cases = Get_Cases_Names()
 
-
-soup = BeautifulSoup(driver.page_source, 'html.parser')
-soup = soup.findAll('a', {'title': 'הצג תיק'})
-
-print(len(soup) , " Cases were found!")
-Cases = []
-for s in soup: Cases.append(s.text)
-print(Cases)
-
-
+df =pd.DataFrame(Cases,columns=[start])
+df.to_csv('Cases_Name.csv')
+print(df.head())
