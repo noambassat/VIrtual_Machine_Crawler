@@ -44,11 +44,10 @@ def Get_URLS(Cases, start,end):
             if(word.find('/') == -1): continue
             case = word[:word.find('/')]
             year = '20' + word[word.find('/')+1:]
-            url = "https://supreme.court.gov.il/Pages/SearchJudgments.aspx?&OpenYearDate=" \
-                  +year+"&CaseNumber=" \
-                        +case+"&DateType=null&SearchPeriod=null&COpenDate=" \
-                              +start + "&CEndDate=" \
-                                       +end+"&freeText=null&Importance=null"
+            2022/3635
+            url = "https://supremedecisions.court.gov.il/Verdicts/Results/1/null/" \
+                  +year+ "/"\
+                        +case+"/null/null/null/null/null"
             URLS.append(url)
     return URLS
 
