@@ -19,11 +19,16 @@ scroll_down(driver, Number)
 Cases = Get_Cases_Names(driver)
 
 df =pd.DataFrame(Cases,columns=[start])
+
 df.to_csv('Cases_Name.csv')
-print(df.head())
+
+
+print('  ... DataFrame: ... \n', df.head())
 
 
 URLS = Get_URLS(Cases,start,end)
-for i,url in enumerate(URLS): print(Cases[i],': ', url)
+for i,url in enumerate(URLS):
+    print(Cases[i],': ', url)
+    if(i==5): break
 
 
