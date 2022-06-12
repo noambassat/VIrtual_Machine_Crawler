@@ -73,7 +73,7 @@ def get_urls(driver, start_date, end_date):
     soup = soup.findAll('a', {'title': 'הצג תיק'})
 
     print(len(soup) , " Cases were found!")
-    print((type(soup[0].title)))
+    print((soup[1]))
     #
     # for element in elements:
     #     soup = BeautifulSoup(driver.page_source, 'html.parser')
