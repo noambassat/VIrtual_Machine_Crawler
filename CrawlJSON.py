@@ -19,18 +19,32 @@ response = requests.get(CASE)
 
 SOUP = BeautifulSoup(driver.page_source, 'html.parser')
 src = SOUP.findAll('iframe')[1]
-src =src['ng-src']
-driver.get(src)
+try:
+    src =src['ng-src']
+    driver.get(src)  # Top window info
+except KeyError: pass
 soup = BeautifulSoup(driver.page_source, 'html.parser')
-
 labels = soup.findAll("span",{"class":"caseDetails-label"})
 details = soup.findAll("span",{"class":"caseDetails-info"})
 
+# xpath = '/html/body/div[1]/div[1]/div/div/div[2]/a'
+
+
+for t in soup.findAll('td'):
+    # labels.append(t['data-label'])
+    # details.append(t.text)
+    try:
+        labels.append(t['data-label'])
+        details.append(t.text)
+    except KeyError: pass
+
 data = {}
 for i in range(len(labels)):
-    labels[i] = labels[i].text
-    details[i] = details[i].text
+    try:
+        labels[i] = labels[i].text
+        details[i] = details[i].text
+    except AttributeError: pass
     data[labels[i]] = details[i]
 
-for d in data:
+for i,d in enumerate(data):
     print(d, ": ",data[d])
