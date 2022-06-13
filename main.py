@@ -3,7 +3,8 @@ from selenium import webdriver
 import time
 from CrawlUrls import get_src, Get_Cases_Names, Get_Number_Of_Cases, scroll_down, Get_URLS
 
-
+# PATH = open('C:/Users/Noam/Desktop/Courts Project/Paths.txt','r')
+# print(str(PATH)[str(PATH).find('JSON:')+1:])
 driver = webdriver.Chrome(executable_path='C:/Users/Noam/Desktop/Courts Project/chromedriver.exe')
 
 start = '30/05/2022'

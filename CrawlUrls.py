@@ -1,8 +1,4 @@
-import pandas as pd
 from bs4 import BeautifulSoup
-from selenium import webdriver
-import time
-
 
 
 def get_src(start_date, end_date): return 'https://supremedecisions.court.gov.il/Verdicts/Results/1/null/null/null/2/null/' + start_date.replace('/','-') + '/' + end_date.replace('/','-') + '/null'
@@ -34,7 +30,7 @@ def Get_Cases_Names(driver,):
     soup = soup.findAll('a', {'title': 'הצג תיק'})
 
     print(len(soup) , " Cases were found!")
-    return [s.text for s in soup]
+    return [s.text for s in soup]   
 
 
 def Get_URLS(Cases, start,end):

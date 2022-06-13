@@ -1,8 +1,11 @@
 import json
+from io import StringIO
 
-def writeToJsonFile(fileName, data):
-    filePathName =  'C:/Users/Noam/PycharmProjects/pythonProject5/Json_Files/' + fileName + '.json'
+def writeToJsonFile(filePath, fileName, data):
+    print("#########################")
+    filePathName = filePath  + fileName + '.json'
     with open(filePathName, 'w') as fp:
         json.dump(data, fp)
+
 
 
