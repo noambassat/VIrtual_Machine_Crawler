@@ -14,7 +14,7 @@ def cleanTXT(txt):
 
     return txt
 
-def CrawlTopWindow(CASE):
+def CrawlTopWindow(CASE, n_decisions):
     driver = webdriver.Chrome(executable_path='C:/Users/Noam/Desktop/Courts Project/chromedriver.exe')
     driver.get(CASE)
     response = requests.get(CASE)
@@ -49,6 +49,7 @@ def CrawlTopWindow(CASE):
         labels[i] = cleanTXT(labels[i])
         details[i] = cleanTXT(details[i])
         data[labels[i]] = details[i]
+    data['מספר החלטות'] = n_decisions
 
     for d in data:
         print(d, ": ",data[d])
@@ -112,7 +113,7 @@ dec_df, n_of_Decisions = Crawl_Decisions(CASE)
 
 print_dataframe(dec_df,320,10)
 print(n_of_Decisions)
-
+CrawlTopWindow(CASE, n_of_Decisions)
 
 ########3 לבדוק למה יש כפילויות !!!! (כפול 2 בדיוק!!)
 ######### למיין לפי תאריכים

@@ -2,7 +2,7 @@ import pandas as pd
 from selenium import webdriver
 import time
 from CrawlUrls import get_src, Get_Cases_Names, Get_Number_Of_Cases, scroll_down, Get_URLS
-from CrawlJSON import CrawlTopWindow
+from CrawlJSON import CrawlTopWindow, Crawl_Decisions
 from Save_As_Json import writeToJsonFile
 # PATH = open('C:/Users/Noam/Desktop/Courts Project/Paths.txt','r')
 # print(str(PATH)[str(PATH).find('JSON:')+1:])
@@ -35,7 +35,7 @@ from Save_As_Json import writeToJsonFile
 
 
 CASE = "https://supremedecisions.court.gov.il/Verdicts/Results/1/null/2014/8568/null/null/null/null/null"
-
-data = CrawlTopWindow(CASE)
+dec_df, n_of_Decisions = Crawl_Decisions(CASE)
+data = CrawlTopWindow(CASE,n_of_Decisions)
 filePath = 'C:/Users/Noam/PycharmProjects/pythonProject5/Json_Files/'
 writeToJsonFile(filePath, 'TEST1', data)
