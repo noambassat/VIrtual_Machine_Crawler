@@ -34,7 +34,7 @@ from Save_As_Json import writeToJsonFile
 #     if(i==5): break
 
 
-CASE = "https://supremedecisions.court.gov.il/Verdicts/Results/1/null/2022/3635/null/null/null/null/null"
+CASE = "https://supremedecisions.court.gov.il/Verdicts/Results/1/null/2014/8568/null/null/null/null/null"
 
 data = CrawlTopWindow(CASE)
 filePath = 'C:/Users/Noam/PycharmProjects/pythonProject5/Json_Files/'

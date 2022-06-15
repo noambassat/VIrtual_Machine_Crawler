@@ -1,9 +1,11 @@
+import time
+
+import pandas as pd
+
 from Save_As_Json import writeToJsonFile
 from selenium import webdriver
 from bs4 import BeautifulSoup
 import requests
-
-CASE = "https://supremedecisions.court.gov.il/Verdicts/Results/1/null/2022/3635/null/null/null/null/null"
 
 def cleanTXT(txt):
     txt = txt.replace('  ','')
@@ -12,10 +14,9 @@ def cleanTXT(txt):
 
     return txt
 
-def CrawlTopWindow(case):
+def CrawlTopWindow(CASE):
     driver = webdriver.Chrome(executable_path='C:/Users/Noam/Desktop/Courts Project/chromedriver.exe')
     driver.get(CASE)
-
     response = requests.get(CASE)
     SOUP = BeautifulSoup(driver.page_source, 'html.parser')
     src = SOUP.findAll('iframe')[1]
@@ -54,3 +55,44 @@ def CrawlTopWindow(case):
 
     return data
 
+
+def Crawl_Decisions():####################
+    ###################
+    CASE = "https://supremedecisions.court.gov.il/Verdicts/Results/1/null/2014/8568/null/null/null/null/null"
+    CASE_NUM = CASE[67:67+4]
+    #############3
+    driver = webdriver.Chrome(executable_path='C:/Users/Noam/Desktop/Courts Project/chromedriver.exe')
+    driver.get(CASE)
+    time.sleep(1)
+    response = requests.get(CASE)
+    SOUP = BeautifulSoup(driver.page_source, 'html.parser')
+    SOUP = SOUP.find("div",{"class":"processing-docs"}).findAll('tr')
+    case_dec = {}
+    df = pd.DataFrame()
+
+    for i,s in enumerate(SOUP):
+        try:
+            temp = {}
+            hrefs = s.findAll("a",{'title':'פתיחה כ-HTML'})
+
+            for case in (s.findAll("td",{"ng-binding"})):
+
+                label = cleanTXT(case['data-label'])
+                if(label.find('#')!=-1): continue
+                if(label.find('מ.')!=-1 or label.find("מס'")!=-1): label = 'מספר עמודים'
+                temp['Case Number'] = CASE_NUM
+                info = cleanTXT( case.text)
+                temp[label] = info
+            if (len(temp) == 0): continue
+            for link in hrefs:
+                temp['HTML_Link'] ='https://supremedecisions.court.gov.il/'+link['href']
+
+            case_dec[i] = temp
+
+        except AttributeError : pass
+
+    for row in (case_dec.values()):
+        df = df.append(row, ignore_index=True)
+
+    print(df)
+Crawl_Decisions()
