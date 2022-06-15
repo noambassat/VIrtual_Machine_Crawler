@@ -4,8 +4,7 @@ from io import StringIO
 def writeToJsonFile(filePath, fileName, data):
     print("#########################")
     filePathName = filePath  + fileName + '.json'
-    with open(filePathName, 'w') as fp:
-        json.dump(data, fp)
 
-
+    with open(filePathName, 'w', encoding='utf8') as json_file:
+       json.dump(data, json_file, ensure_ascii=False)
 

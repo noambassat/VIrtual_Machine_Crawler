@@ -54,7 +54,3 @@ def CrawlTopWindow(case):
 
     return data
 
-
-data = CrawlTopWindow(CASE)
-filePath = 'C:/Users/Noam/PycharmProjects/pythonProject5/Json_Files/'
-writeToJsonFile(filePath, 'TEST1', data)
