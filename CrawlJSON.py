@@ -1,7 +1,7 @@
 import time
-
+import numpy as np
 import pandas as pd
-
+from Printer import print_dataframe
 from Save_As_Json import writeToJsonFile
 from selenium import webdriver
 from bs4 import BeautifulSoup
@@ -56,9 +56,8 @@ def CrawlTopWindow(CASE):
     return data
 
 
-def Crawl_Decisions():####################
+def Crawl_Decisions(CASE):####################
     ###################
-    CASE = "https://supremedecisions.court.gov.il/Verdicts/Results/1/null/2014/8568/null/null/null/null/null"
     CASE_NUM = CASE[67:67+4]
     #############3
     driver = webdriver.Chrome(executable_path='C:/Users/Noam/Desktop/Courts Project/chromedriver.exe')
@@ -66,6 +65,7 @@ def Crawl_Decisions():####################
     time.sleep(1)
     response = requests.get(CASE)
     SOUP = BeautifulSoup(driver.page_source, 'html.parser')
+    time.sleep(1)
     SOUP = SOUP.find("div",{"class":"processing-docs"}).findAll('tr')
     case_dec = {}
     df = pd.DataFrame()
@@ -82,6 +82,7 @@ def Crawl_Decisions():####################
                 if(label.find('מ.')!=-1 or label.find("מס'")!=-1): label = 'מספר עמודים'
                 temp['Case Number'] = CASE_NUM
                 info = cleanTXT( case.text)
+                if(info.find('פסק')!=-1 and info.find('דין')!=-1): indo = "פסק דין"
                 temp[label] = info
             if (len(temp) == 0): continue
             for link in hrefs:
@@ -89,10 +90,31 @@ def Crawl_Decisions():####################
 
             case_dec[i] = temp
 
-        except AttributeError : pass
+        except AttributeError : continue
 
     for row in (case_dec.values()):
         df = df.append(row, ignore_index=True)
+    df.drop_duplicates(inplace=True)
+    ############################## The link that we need to download
+    LINK_TO_DOWNLOAD = df['HTML_Link'].where(df['סוג מסמך'] == 'פסק דין').dropna()
+    if (len(LINK_TO_DOWNLOAD) == 0): LINK_TO_DOWNLOAD = df['HTML_Link'][0] # LAST DECISION
+    print(LINK_TO_DOWNLOAD)
+    return df, len(df)
 
-    print(df)
-Crawl_Decisions()
+
+
+CASE = "https://supremedecisions.court.gov.il/Verdicts/Results/1/null/2014/8568/null/null/null/null/null"
+
+
+
+dec_df, n_of_Decisions = Crawl_Decisions(CASE)
+
+
+print_dataframe(dec_df,320,10)
+print(n_of_Decisions)
+
+
+########3 לבדוק למה יש כפילויות !!!! (כפול 2 בדיוק!!)
+######### למיין לפי תאריכים
+###### לשמור לקובץ כללי שאליו שומרים את כל ההחלטות
+########### להוריד HTml של פסקי דין
