@@ -69,10 +69,10 @@ def CrawlTopWindow(CASE, n_decisions,LINK):
     return data
 
 
-def Crawl_Decisions(CASE):####################
-    ###################
+def Crawl_Decisions(CASE):
+
     CASE_NUM = CASE[67:67+4]
-    #############3
+
     driver = webdriver.Chrome(executable_path='C:/Users/Noam/Desktop/Courts Project/chromedriver.exe')
     driver.get(CASE)
     time.sleep(1)
@@ -128,7 +128,3 @@ print_dataframe(dec_df,320,10)
 
 CrawlTopWindow(CASE, n_of_Decisions, LINK)
 
-########3 לבדוק למה יש כפילויות !!!! (כפול 2 בדיוק!!)
-######### למיין לפי תאריכים
-###### לשמור לקובץ כללי שאליו שומרים את כל ההחלטות
-########### להוריד HTml של פסקי דין
