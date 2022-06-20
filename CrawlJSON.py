@@ -7,6 +7,13 @@ from selenium import webdriver
 from bs4 import BeautifulSoup
 import requests
 
+
+def Get_LINK(df):
+    for i in df.index:
+        if(df['סוג מסמך'][i] == 'פסק-דין'): return df['HTML_Link'][i]
+    return df['HTML_Link'][0]
+
+
 def cleanTXT(txt):
     txt = txt.replace('  ','')
     txt = txt.replace('\n','')
@@ -14,7 +21,7 @@ def cleanTXT(txt):
 
     return txt
 
-def CrawlTopWindow(CASE, n_decisions):
+def CrawlTopWindow(CASE, n_decisions,LINK):
     driver = webdriver.Chrome(executable_path='C:/Users/Noam/Desktop/Courts Project/chromedriver.exe')
     driver.get(CASE)
     response = requests.get(CASE)
@@ -50,9 +57,11 @@ def CrawlTopWindow(CASE, n_decisions):
         details[i] = cleanTXT(details[i])
         data[labels[i]] = details[i]
     data['מספר החלטות'] = n_decisions
+    data['סיכום'] = LINK
 
-    for d in data:
-        print(d, ": ",data[d])
+
+    # for d in data:
+    #     print(d, ": ",data[d])
 
     return data
 
@@ -88,7 +97,6 @@ def Crawl_Decisions(CASE):####################
             if (len(temp) == 0): continue
             for link in hrefs:
                 temp['HTML_Link'] ='https://supremedecisions.court.gov.il/'+link['href']
-
             case_dec[i] = temp
 
         except AttributeError : continue
@@ -96,11 +104,11 @@ def Crawl_Decisions(CASE):####################
     for row in (case_dec.values()):
         df = df.append(row, ignore_index=True)
     df.drop_duplicates(inplace=True)
-    ############################## The link that we need to download
-    LINK_TO_DOWNLOAD = df['HTML_Link'].where(df['סוג מסמך'] == 'פסק דין').dropna()
-    if (len(LINK_TO_DOWNLOAD) == 0): LINK_TO_DOWNLOAD = df['HTML_Link'][0] # LAST DECISION
-    print(LINK_TO_DOWNLOAD)
-    return df, len(df)
+
+    LINK = Get_LINK(df)
+    print("!!!!!!!!!!!!!!!!!!!  ", LINK)
+
+    return df, len(df), LINK
 
 
 
@@ -108,12 +116,12 @@ CASE = "https://supremedecisions.court.gov.il/Verdicts/Results/1/null/2014/8568/
 
 
 
-dec_df, n_of_Decisions = Crawl_Decisions(CASE)
+dec_df, n_of_Decisions,LINK  = Crawl_Decisions(CASE)
 
 
 print_dataframe(dec_df,320,10)
-print(n_of_Decisions)
-CrawlTopWindow(CASE, n_of_Decisions)
+
+CrawlTopWindow(CASE, n_of_Decisions, LINK)
 
 ########3 לבדוק למה יש כפילויות !!!! (כפול 2 בדיוק!!)
 ######### למיין לפי תאריכים
