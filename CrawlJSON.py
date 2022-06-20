@@ -7,6 +7,9 @@ from selenium import webdriver
 from bs4 import BeautifulSoup
 import requests
 
+main_df = pd.read_csv(r'Decisions_Table/Decisions_Table.csv',index_col=0)
+# main_df.drop('Unnamed: 0',axis= 1, inplace=True)
+
 
 def Get_LINK(df):
     for i in df.index:
@@ -104,7 +107,9 @@ def Crawl_Decisions(CASE):####################
     for row in (case_dec.values()):
         df = df.append(row, ignore_index=True)
     df.drop_duplicates(inplace=True)
-
+    if(df['Case Number'][0] not in main_df['Case Number']):
+        main_df.append(df)
+        main_df.to_csv('Decisions_Table/Decisions_Table.csv')
     LINK = Get_LINK(df)
     print("!!!!!!!!!!!!!!!!!!!  ", LINK)
 

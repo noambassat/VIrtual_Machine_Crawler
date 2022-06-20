@@ -7,3 +7,5 @@ def writeToJsonFile(filePath, fileName, data):
     with open(filePathName, 'w', encoding='utf8') as json_file:
        json.dump(data, json_file, ensure_ascii=False)
 
+
+
