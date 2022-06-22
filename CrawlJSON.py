@@ -24,11 +24,18 @@ def crawl_HTML(data, link):
     soup = BeautifulSoup(driver.page_source, 'html.parser')
     labels = []
     content = []
-    for s in soup.findAll("span",{"lang":"HE"}):
-        print(s.text)
-        print("__________________")
-
-
+    dict = {}
+    text = soup.findAll("span", {"lang": "HE"})
+    for s in range(len(text)):
+        string = text[s].text
+        print(cleanTXT(string))
+        print("__________________________________________")
+        # if(string.find(":")!=-1):
+        #     s+=1
+        #     next =text[s]
+        #     while(next.find(":")!=-1):
+        #         dict[s] = next
+        #
     driver.close()
     return data
 
