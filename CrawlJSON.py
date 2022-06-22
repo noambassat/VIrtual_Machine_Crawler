@@ -11,6 +11,7 @@ from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.common.by import By
 from selenium.common.exceptions import TimeoutException
+from collections import defaultdict
 
 main_df = pd.read_csv(r'Decisions_Table/Decisions_Table.csv',index_col=0)
 # main_df.drop('Unnamed: 0',axis= 1, inplace=True)
@@ -36,15 +37,17 @@ def CrawlTopWindow(CASE, n_decisions,LINK):
           + YEAR +"-00" +CASE_NUM +"-0"
     # print(src == "https://elyon2.court.gov.il/Scripts9/mgrqispi93.dll?Appname=eScourt&Prgname=GetFileDetails_for_new_site&Arguments=-N2014-008568-0")
     driver = webdriver.Chrome(executable_path='C:/Users/Noam/Desktop/Courts Project/chromedriver.exe')
-
+    driver.get(CASE)
+    soup = BeautifulSoup(driver.page_source, 'html.parser')
+    src = soup.findAll('iframe')[2]
     try:
-        # src =src['ng-src']
-        driver.get(src)  # Top window info
+        src =src['ng-src']
+          # Top window info
     except KeyError:
         print("KeyError")
         pass
 
-
+    driver.get(src)
     soup = BeautifulSoup(driver.page_source, 'html.parser')
     LABELS = []
     for a in soup.findAll("div",{"class":"item"}):
@@ -62,61 +65,31 @@ def CrawlTopWindow(CASE, n_decisions,LINK):
 
 
     tabs = soup.findAll("div",{"class":"tab-pane fade"})
+    bigger_data = {}
+
     for i, tab in enumerate(tabs):
-        # print(LABELS[i+1])
         labels = []
-        info = []
-        j = 1
-        for tr in tab.findAll("tr"):
+        data = {}
+        for body in tab.findAll("tbody"):
+            rows = [i for i in range(len(body.findAll('tr')))]
+            for j, tr in enumerate(body.findAll('tr')):
+                labels = []
+                infos = []
+                row = {}
+                for z, td in enumerate(tr.findAll("td")):
 
-            for td in tr.findAll("td"):
-
-                try:
-                    # label = cleanTXT(td['data-label'])
-                    # if( label in labels):
-                    #     label += " " +str(j)
-                    #     j+=1
-                    labels.append(cleanTXT(td['data-label']))
-                    info.append(cleanTXT(td.text))
-                except KeyError: pass
-
-        data = {labels[i]: info[i] for i in range(len(labels))}
-        all_data[LABELS[i+1]] = data
-    # for key, value in zip(all_data.keys(), all_data.values()):
-    #     print(key)
-    #     print(value)
-    # # xpath = '/html/body/div[1]/div[1]/div/div/div[2]/a'
-    # All_Data = {}
-    # for i, s in enumerate(soup.findAll("div",{"class":"tab-pane fade"})):
-    #     DATA = {}
-    #     for j, t in enumerate(s.findAll('td')):
-    #         try:
-    #             labels.append(t['data-label'].replace('\t',''))
-    #             details.append(t.text.replace('\t',''))
-    #
-    #             # DATA[labels[j]] = details[j]
-    #             print(labels)
-    #         except KeyError:
-    #             pass
-    #     # All_Data[LABELS[i]] = DATA
-    # all_tabs = {}
-    # data = {}
-    # for i in range(len(labels)):
-    #     try:
-    #         labels[i] = labels[i].text
-    #         details[i] = details[i].text
-    #
-    #     except AttributeError: pass
-    #     labels[i] = cleanTXT(labels[i])
-    #     details[i] = cleanTXT(details[i])
-    #     data[labels[i]] = details[i]
-    #
-    # data['מספר החלטות'] = n_decisions
-    # data['סיכום'] = LINK
-    #
-    #
-    # # for d in data:
-    # #     print(d, ": ",data[d])
+                    try:
+                        label = (cleanTXT(td['data-label']))
+                        info = (cleanTXT(td.text))
+                        if(label=="#"):continue
+                        labels.append(label)
+                        infos.append(info)
+                    except KeyError:
+                        pass
+                row = {labels[n]:infos[n] for n in range(len(labels))}
+                data[j] = row
+            all_data[LABELS[i + 1]] = data
+            all_data['מספר החלטות'] = n_decisions
 
     return all_data
 
@@ -179,10 +152,11 @@ CASE = "https://supremedecisions.court.gov.il/Verdicts/Results/1/null/2014/8568/
 
 data = CrawlTopWindow(CASE, 8, "https://supremedecisions.court.gov.il/Home/Download?path=HebrewVerdicts/14/680/085/t07&fileName=14085680_t07.txt&type=2")
 filePath = 'C:/Users/Noam/PycharmProjects/pythonProject5/Json_Files/'
-writeToJsonFile(filePath, 'TEST', data)
+writeToJsonFile(filePath, 'TEST!!!', data)
 
 
 # JSON ההררכיה
+# כפילויות במילון!!!!!!
 # לייצר וליבא קובץ עם כל הPATH
 # לעשות קרול להחלטה של כל קייס ולהכניס לקובץ הJSON
 # לייצר שמות יחודיים לכל קובץ JSON
