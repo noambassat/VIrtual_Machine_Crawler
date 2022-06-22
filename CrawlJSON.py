@@ -17,10 +17,31 @@ main_df = pd.read_csv(r'Decisions_Table/Decisions_Table.csv',index_col=0)
 # main_df.drop('Unnamed: 0',axis= 1, inplace=True)
 
 
-def Get_LINK(df):
+
+def crawl_HTML(data, link):
+    driver = webdriver.Chrome(executable_path='C:/Users/Noam/Desktop/Courts Project/chromedriver.exe')
+    driver.get(link)
+    soup = BeautifulSoup(driver.page_source, 'html.parser')
+    labels = []
+    content = []
+    for s in soup.findAll("span",{"lang":"HE"}):
+        print(s.text)
+        print("__________________")
+
+
+    driver.close()
+    return data
+
+
+def Get_LINK(df,CASE):
+    conclusion = "החלטה \n"
+    LINK = df['HTML_Link'][0]
     for i in df.index:
-        if(df['סוג מסמך'][i] == 'פסק-דין'): return df['HTML_Link'][i]
-    return df['HTML_Link'][0]
+        if(df['סוג מסמך'][i] == 'פסק-דין'):
+            conclusion = 'פסק-דן'
+            LINK = df['HTML_Link'][i]
+            break
+    return LINK, conclusion
 
 
 def cleanTXT(txt):
@@ -30,7 +51,7 @@ def cleanTXT(txt):
 
     return txt
 
-def CrawlTopWindow(CASE, n_decisions,LINK):
+def CrawlTopWindow(CASE, n_decisions,LINK,conclusion):
     CASE_NUM = CASE[67:67+4]
     YEAR = CASE[62:66]
     src = "https://elyon2.court.gov.il/Scripts9/mgrqispi93.dll?Appname=eScourt&Prgname=GetFileDetails_for_new_site&Arguments=-N" \
@@ -89,8 +110,10 @@ def CrawlTopWindow(CASE, n_decisions,LINK):
                 row = {labels[n]:infos[n] for n in range(len(labels))}
                 data[j] = row
             all_data[LABELS[i + 1]] = data
-            all_data['מספר החלטות'] = n_decisions
-
+    all_data['מספר החלטות'] = n_decisions
+    all_data['סוג מסמך'] = conclusion
+    all_data = crawl_HTML(all_data,LINK)
+    driver.close()
     return all_data
 
 
@@ -113,7 +136,6 @@ def Crawl_Decisions(CASE):
             hrefs = s.findAll("a",{'title':'פתיחה כ-HTML'})
 
             for case in (s.findAll("td",{"ng-binding"})):
-                print(case.text)
                 label = cleanTXT(case['data-label'])
                 if(label.find('#')!=-1): continue
                 if(label.find('מ.')!=-1 or label.find("מס'")!=-1): label = 'מספר עמודים'
@@ -134,10 +156,9 @@ def Crawl_Decisions(CASE):
     if(df['Case Number'][0] not in main_df['Case Number']):
         main_df.append(df)
         main_df.to_csv('Decisions_Table/Decisions_Table.csv')
-    LINK = Get_LINK(df)
-    print("!!!!!!!!!!!!!!!!!!!  ", LINK)
-
-    return df, len(df), LINK
+    LINK, conclusion = Get_LINK(df,CASE)
+    driver.close()
+    return df, len(df), LINK,conclusion
 
 
 
@@ -145,14 +166,18 @@ CASE = "https://supremedecisions.court.gov.il/Verdicts/Results/1/null/2014/8568/
 
 
 
-# dec_df, n_of_Decisions,LINK  = Crawl_Decisions(CASE)
-#
+# dec_df, n_of_Decisions,LINK,conclusion  = Crawl_Decisions(CASE)
+
 #
 # print_dataframe(dec_df,320,10)
+#
+# data = CrawlTopWindow(CASE, n_of_Decisions, LINK ,conclusion)
+# filePath = 'C:/Users/Noam/PycharmProjects/pythonProject5/Json_Files/'
+# writeToJsonFile(filePath, 'TEST!!!', data)
+#
 
-data = CrawlTopWindow(CASE, 8, "https://supremedecisions.court.gov.il/Home/Download?path=HebrewVerdicts/14/680/085/t07&fileName=14085680_t07.txt&type=2")
-filePath = 'C:/Users/Noam/PycharmProjects/pythonProject5/Json_Files/'
-writeToJsonFile(filePath, 'TEST!!!', data)
+crawl_HTML([],"https://supremedecisions.court.gov.il/Home/Download?path=HebrewVerdicts/14/680/085/t07&fileName=14085680_t07.txt&type=2")
+
 
 
 # JSON ההררכיה
