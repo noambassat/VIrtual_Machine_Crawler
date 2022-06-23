@@ -31,22 +31,27 @@ def crawl_HTML(data, link):
         if(space!=-1):
             if(string.find("המשיב")!=-1): continue
             labels.append(string[:space])
-            content = ""
+            content = []
             for i in range(s+1,len(text)):
                 string = cleanTXT(text[i].text)
                 if(string.find(":")!=-1):
                     s=i+1
                     break
-                content += string + "\n"
+                content.append(string)
             contents.append(content)
     dict = {}
     for i in range(len(labels)):
         dict[labels[i]] = contents[i]
-    print(dict)
+    # print(dict)
         # if (string.find("<") != -1): continue
 
         # print(string)
 
+    soup =  BeautifulSoup(xml.content, 'lxml')
+    conclusion = ""
+    for row in soup.findAll("p",{"class":"Ruller41"}):
+        conclusion += row.text
+    dict["סיכום מסמך HTML"] = conclusion
     return dict
 
 
@@ -132,7 +137,7 @@ def CrawlTopWindow(CASE, n_decisions,LINK,conclusion):
     dict = {"פרטי תיק":all_data,"פרטי מסמך HTML":crawl_HTML(all_data,LINK)}
 
     driver.close()
-    return all_data
+    return dict
 
 
 def Crawl_Decisions(CASE):
