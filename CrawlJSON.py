@@ -19,25 +19,35 @@ main_df = pd.read_csv(r'Decisions_Table/Decisions_Table.csv',index_col=0)
 
 
 def crawl_HTML(data, link):
-    driver = webdriver.Chrome(executable_path='C:/Users/Noam/Desktop/Courts Project/chromedriver.exe')
-    driver.get(link)
-    soup = BeautifulSoup(driver.page_source, 'html.parser')
+    xml = requests.get((link))
+    soup = BeautifulSoup(xml.content, 'lxml')
     labels = []
-    content = []
-    dict = {}
-    text = soup.findAll("span", {"lang": "HE"})
+    contents = []
+    text = soup.findAll("p",{"class":"BodyRuller"})
+
     for s in range(len(text)):
-        string = text[s].text
-        print(cleanTXT(string))
-        print("__________________________________________")
-        # if(string.find(":")!=-1):
-        #     s+=1
-        #     next =text[s]
-        #     while(next.find(":")!=-1):
-        #         dict[s] = next
-        #
-    driver.close()
-    return data
+        string = cleanTXT(text[s].text)
+        space= string.find(":")
+        if(space!=-1):
+            if(string.find("המשיב")!=-1): continue
+            labels.append(string[:space])
+            content = ""
+            for i in range(s+1,len(text)):
+                string = cleanTXT(text[i].text)
+                if(string.find(":")!=-1):
+                    s=i+1
+                    break
+                content += string + "\n"
+            contents.append(content)
+    dict = {}
+    for i in range(len(labels)):
+        dict[labels[i]] = contents[i]
+    print(dict)
+        # if (string.find("<") != -1): continue
+
+        # print(string)
+
+    return dict
 
 
 def Get_LINK(df,CASE):
@@ -119,7 +129,8 @@ def CrawlTopWindow(CASE, n_decisions,LINK,conclusion):
             all_data[LABELS[i + 1]] = data
     all_data['מספר החלטות'] = n_decisions
     all_data['סוג מסמך'] = conclusion
-    all_data = crawl_HTML(all_data,LINK)
+    dict = {"פרטי תיק":all_data,"פרטי מסמך HTML":crawl_HTML(all_data,LINK)}
+
     driver.close()
     return all_data
 
@@ -173,17 +184,16 @@ CASE = "https://supremedecisions.court.gov.il/Verdicts/Results/1/null/2014/8568/
 
 
 
-# dec_df, n_of_Decisions,LINK,conclusion  = Crawl_Decisions(CASE)
+dec_df, n_of_Decisions,LINK,conclusion  = Crawl_Decisions(CASE)
 
 #
 # print_dataframe(dec_df,320,10)
 #
-# data = CrawlTopWindow(CASE, n_of_Decisions, LINK ,conclusion)
-# filePath = 'C:/Users/Noam/PycharmProjects/pythonProject5/Json_Files/'
-# writeToJsonFile(filePath, 'TEST!!!', data)
+data = CrawlTopWindow(CASE, n_of_Decisions, LINK ,conclusion)
+filePath = 'C:/Users/Noam/PycharmProjects/pythonProject5/Json_Files/'
+writeToJsonFile(filePath, 'TEST!!!', data)
 #
-
-crawl_HTML([],"https://supremedecisions.court.gov.il/Home/Download?path=HebrewVerdicts/14/680/085/t07&fileName=14085680_t07.txt&type=2")
+# crawl_HTML([],"https://supremedecisions.court.gov.il/Home/Download?path=HebrewVerdicts/14/680/085/t07&fileName=14085680_t07.txt&type=2")
 
 
 
