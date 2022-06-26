@@ -35,15 +35,17 @@ from Save_As_Json import writeToJsonFile
 
 
 
+
+
 CASE = "https://supremedecisions.court.gov.il/Verdicts/Results/1/null/2014/8568/null/null/null/null/null"
 
 
 
-dec_df, n_of_Decisions,LINK  = Crawl_Decisions(CASE)
-#
+dec_df, n_of_Decisions,LINK,conclusion  = Crawl_Decisions(CASE)
+
 #
 # print_dataframe(dec_df,320,10)
-
-data = CrawlTopWindow(CASE, n_of_Decisions, LINK)
+#
+data = CrawlTopWindow(CASE, n_of_Decisions, LINK ,conclusion)
 filePath = 'C:/Users/Noam/PycharmProjects/pythonProject5/Json_Files/'
-writeToJsonFile(filePath, 'TEST1', data)
+writeToJsonFile(filePath, 'TEST', data)
