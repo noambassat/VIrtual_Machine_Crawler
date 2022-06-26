@@ -18,7 +18,7 @@ main_df = pd.read_csv(r'Decisions_Table/Decisions_Table.csv',index_col=0)
 
 
 
-def crawl_HTML(data, link):
+def crawl_HTML(data, link, type):
     xml = requests.get((link))
     soup = BeautifulSoup(xml.content, 'lxml')
     labels = []
@@ -40,13 +40,15 @@ def crawl_HTML(data, link):
                 content.append(string)
             contents.append(content)
     dict = {}
+    dict['סוג מסמך'] = type
+    dict['מסמך מלא'] = soup.text
+    dict['קישור למסמך'] = link
     for i in range(len(labels)):
         dict[labels[i]] = contents[i]
     # print(dict)
         # if (string.find("<") != -1): continue
 
         # print(string)
-
     soup =  BeautifulSoup(xml.content, 'lxml')
     conclusion = ""
     for row in soup.findAll("p",{"class":"Ruller41"}):
@@ -100,6 +102,7 @@ def CrawlTopWindow(CASE, n_decisions,LINK,conclusion):
     details = soup.findAll("span",{"class":"caseDetails-info"})
     all_data = {}
     data = {}
+
     for i in range(len(labels)):
         data[cleanTXT(labels[i].text)] = cleanTXT(details[i].text)
 
@@ -133,8 +136,9 @@ def CrawlTopWindow(CASE, n_decisions,LINK,conclusion):
                 data[j] = row
             all_data[LABELS[i + 1]] = data
     all_data['מספר החלטות'] = n_decisions
-    all_data['סוג מסמך'] = conclusion
-    dict = {"פרטי תיק":all_data,"פרטי מסמך HTML":crawl_HTML(all_data,LINK)}
+    all_data['קישור לתיק'] = src
+    dict_1 = {"מסמך 1":crawl_HTML(all_data,LINK,conclusion)}
+    dict = {"פרטי תיק":all_data,"מסמכים":dict_1}
 
     driver.close()
     return dict
@@ -184,25 +188,13 @@ def Crawl_Decisions(CASE):
     return df, len(df), LINK,conclusion
 
 
-
-CASE = "https://supremedecisions.court.gov.il/Verdicts/Results/1/null/2014/8568/null/null/null/null/null"
-
-
-
-dec_df, n_of_Decisions,LINK,conclusion  = Crawl_Decisions(CASE)
-
-#
-# print_dataframe(dec_df,320,10)
-#
-data = CrawlTopWindow(CASE, n_of_Decisions, LINK ,conclusion)
-filePath = 'C:/Users/Noam/PycharmProjects/pythonProject5/Json_Files/'
-writeToJsonFile(filePath, 'TEST!!!', data)
 #
 # crawl_HTML([],"https://supremedecisions.court.gov.il/Home/Download?path=HebrewVerdicts/14/680/085/t07&fileName=14085680_t07.txt&type=2")
 
 
 
 # JSON ההררכיה
+# מסמך תיעוד!!!!!!!!!!!!!!!!!!!
 # כפילויות במילון!!!!!!
 # לייצר וליבא קובץ עם כל הPATH
 # לעשות קרול להחלטה של כל קייס ולהכניס לקובץ הJSON
