@@ -12,6 +12,8 @@ from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.common.by import By
 from selenium.common.exceptions import TimeoutException
 from collections import defaultdict
+from array import array
+
 
 main_df = pd.read_csv(r'Decisions_Table/Decisions_Table.csv',index_col=0)
 # main_df.drop('Unnamed: 0',axis= 1, inplace=True)
@@ -41,7 +43,7 @@ def crawl_HTML(data, link, type):
             contents.append(content)
     dict = {}
     dict['סוג מסמך'] = type
-    dict['מסמך מלא'] = soup.text
+    dict['מסמך מלא'] = soup.text.replace('\n\n','')
     dict['קישור למסמך'] = link
     for i in range(len(labels)):
         dict[labels[i]] = contents[i]
@@ -57,7 +59,7 @@ def crawl_HTML(data, link, type):
     return dict
 
 
-def Get_LINK(df,CASE):
+def Get_LINK(df,CASE): # רק פסק-דין או החלטה אחרונה כרגע
     conclusion = "החלטה \n"
     LINK = df['HTML_Link'][0]
     for i in df.index:
@@ -76,30 +78,47 @@ def cleanTXT(txt):
     return txt
 
 def CrawlTopWindow(CASE, n_decisions,LINK,conclusion):
+    docs_arr = []
     CASE_NUM = CASE[67:67+4]
     YEAR = CASE[62:66]
-    src = "https://elyon2.court.gov.il/Scripts9/mgrqispi93.dll?Appname=eScourt&Prgname=GetFileDetails_for_new_site&Arguments=-N" \
-          + YEAR +"-00" +CASE_NUM +"-0"
+
     # print(src == "https://elyon2.court.gov.il/Scripts9/mgrqispi93.dll?Appname=eScourt&Prgname=GetFileDetails_for_new_site&Arguments=-N2014-008568-0")
     driver = webdriver.Chrome(executable_path='C:/Users/Noam/Desktop/Courts Project/chromedriver.exe')
     driver.get(CASE)
+    time.sleep(1)
     soup = BeautifulSoup(driver.page_source, 'html.parser')
+
+
     src = soup.findAll('iframe')[2]
     try:
         src =src['ng-src']
           # Top window info
     except KeyError:
         print("KeyError")
+
+        src = "https://elyon2.court.gov.il/Scripts9/mgrqispi93.dll?Appname=eScourt&Prgname=GetFileDetails_for_new_site&Arguments=-N" \
+              + YEAR + "-00" + CASE_NUM + "-0"
+    except IndexError:
+        print(IndexError)
+        src = "https://elyon2.court.gov.il/Scripts9/mgrqispi93.dll?Appname=eScourt&Prgname=GetFileDetails_for_new_site&Arguments=-N" \
+              + YEAR + "-00" + CASE_NUM + "-0"
         pass
 
+
     driver.get(src)
+
     soup = BeautifulSoup(driver.page_source, 'html.parser')
+    if ((soup.find("head").title.text).find("חסוי")!=-1):
+        print("PRIVATE CASE!!!")
+        print(CASE)
+        return 0
     LABELS = []
     for a in soup.findAll("div",{"class":"item"}):
         LABELS.append(cleanTXT(a.text))
 
     labels = soup.findAll("span",{"class":"caseDetails-label"})
     details = soup.findAll("span",{"class":"caseDetails-info"})
+
     all_data = {}
     data = {}
 
@@ -115,13 +134,12 @@ def CrawlTopWindow(CASE, n_decisions,LINK,conclusion):
 
     for i, tab in enumerate(tabs):
         labels = []
-        data = {}
+        data = []
         for body in tab.findAll("tbody"):
             rows = [i for i in range(len(body.findAll('tr')))]
             for j, tr in enumerate(body.findAll('tr')):
                 labels = []
                 infos = []
-                row = {}
                 for z, td in enumerate(tr.findAll("td")):
 
                     try:
@@ -133,12 +151,12 @@ def CrawlTopWindow(CASE, n_decisions,LINK,conclusion):
                     except KeyError:
                         pass
                 row = {labels[n]:infos[n] for n in range(len(labels))}
-                data[j] = row
+                data.append(row)
             all_data[LABELS[i + 1]] = data
     all_data['מספר החלטות'] = n_decisions
     all_data['קישור לתיק'] = src
-    dict_1 = {"מסמך 1":crawl_HTML(all_data,LINK,conclusion)}
-    dict = {"פרטי תיק":all_data,"מסמכים":dict_1}
+    docs_arr.append(crawl_HTML(all_data,LINK,conclusion)) # רשימת מסמכי הHTML , כרגע רק 1
+    dict = {"פרטי תיק":all_data,"מסמכים":docs_arr}
 
     driver.close()
     return dict
@@ -153,13 +171,18 @@ def Crawl_Decisions(CASE):
     response = requests.get(CASE)
     SOUP = BeautifulSoup(driver.page_source, 'html.parser')
     time.sleep(1)
+
+    hidden_case = SOUP.findAll('td')
+
     SOUP = SOUP.find("div",{"class":"processing-docs"}).findAll('tr')
+
     case_dec = {}
     df = pd.DataFrame()
 
     for i,s in enumerate(SOUP):
         try:
             temp = {}
+
             hrefs = s.findAll("a",{'title':'פתיחה כ-HTML'})
 
             for case in (s.findAll("td",{"ng-binding"})):
