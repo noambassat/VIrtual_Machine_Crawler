@@ -40,7 +40,7 @@ def crawl_HTML(data, link, type):
                     s=i+1
                     break
                 content.append(string)
-            contents.append(content)
+            if(len(content)!=0): contents.append(content)
     dict = {}
     dict['סוג מסמך'] = type
     dict['מסמך מלא'] = soup.text.replace('\n\n','')
