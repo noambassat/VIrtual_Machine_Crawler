@@ -39,7 +39,7 @@ def crawl_HTML(data, link, type):
                 if(string.find(":")!=-1):
                     s=i+1
                     break
-                content.append(string)
+                if (len(string) >1): content.append(string)
             if(len(content)!=0): contents.append(content)
     dict = {}
     dict['סוג מסמך'] = type
