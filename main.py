@@ -7,6 +7,11 @@ from Save_As_Json import writeToJsonFile
 from Dates_Calculator import get_dates
 from selenium.common.exceptions import InvalidSessionIdException,NoSuchElementException
 
+
+import warnings
+warnings.simplefilter(action='ignore', category=(FutureWarning, DeprecationWarning))
+
+
 PATH = open('C:/Users/Noam/Desktop/Courts Project/Paths.txt', 'r')
 filePath = 'C:/Users/Noam/PycharmProjects/pythonProject5/Json_Files/'
 exe_path = 'C:/Users/Noam/Desktop/Courts Project/chromedriver.exe'
@@ -16,8 +21,8 @@ exe_path = 'C:/Users/Noam/Desktop/Courts Project/chromedriver.exe'
 
 
 
-start = "30-06-2020"
-end = "15-07-2020"
+start = "01-01-2022"
+end = "01-02-2022"
 all_dates = get_dates(start,end)
 print(all_dates)
 for i in range(len(all_dates)):
