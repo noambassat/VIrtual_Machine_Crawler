@@ -6,6 +6,11 @@ from CrawlJSON import CrawlTopWindow, Crawl_Decisions
 from Save_As_Json import writeToJsonFile
 from Dates_Calculator import get_dates
 from selenium.common.exceptions import InvalidSessionIdException,NoSuchElementException
+from selenium.webdriver.chrome.options import Options
+
+options = Options()
+options.add_argument('--headless')
+options.add_argument('--disable-gpu')  # Last I checked this was necessary.
 
 
 import warnings
@@ -23,6 +28,7 @@ exe_path = 'C:/Users/Noam/Desktop/Courts Project/chromedriver.exe'
 
 start = "01-01-2022"
 end = "01-02-2022"
+
 all_dates = get_dates(start,end)
 print(all_dates)
 for i in range(len(all_dates)):
@@ -33,7 +39,7 @@ for i in range(len(all_dates)):
     except IndexError: break
 
     src = get_src(start, end)
-    driver = webdriver.Chrome(executable_path=exe_path)
+    driver = webdriver.Chrome(executable_path=exe_path,chrome_options=options)
 
     try:
         driver.get(src)
@@ -55,7 +61,6 @@ for i in range(len(all_dates)):
         driver.close()
         URLS = Get_URLS(Cases, start, end)
         for i, CASE in enumerate(URLS):
-            if (i == 5): break ######### DELETE THIS ONE
             try:
                 dec_df, n_of_Decisions, LINK, conclusion, dict = Crawl_Decisions(CASE)
                 data = CrawlTopWindow(CASE, n_of_Decisions, LINK, conclusion,dict)

@@ -14,7 +14,7 @@ from selenium.common.exceptions import TimeoutException
 from collections import defaultdict
 from array import array
 from selenium.common.exceptions import WebDriverException
-
+from selenium.webdriver.chrome.options import Options
 
 main_df = pd.read_csv(r'Decisions_Table/Decisions_Table.csv',index_col=0)
 # main_df.drop('Unnamed: 0',axis= 1, inplace=True)
@@ -89,7 +89,7 @@ def CrawlTopWindow(CASE, n_decisions,LINK,conclusion, dict):
     YEAR = CASE[62:66]
 
     # print(src == "https://elyon2.court.gov.il/Scripts9/mgrqispi93.dll?Appname=eScourt&Prgname=GetFileDetails_for_new_site&Arguments=-N2014-008568-0")
-    driver = webdriver.Chrome(executable_path='C:/Users/Noam/Desktop/Courts Project/chromedriver.exe')
+    driver = webdriver.Chrome(executable_path='C:/Users/Noam/Desktop/Courts Project/chromedriver.exe',chrome_options=options)
     driver.get(CASE)
     time.sleep(1)
     soup = BeautifulSoup(driver.page_source, 'html.parser')
@@ -181,7 +181,7 @@ def CrawlTopWindow(CASE, n_decisions,LINK,conclusion, dict):
 def Crawl_Decisions(CASE):
     src = "https://elyon2.court.gov.il/Scripts9/mgrqispi93.dll?Appname=eScourt&Prgname=GetFileDetails_for_new_site&Arguments=-N2014-008568-0"
     CASE_NUM = CASE[67:67 + 4] + "/"+ CASE[64:64 + 2]
-    driver = webdriver.Chrome(executable_path='C:/Users/Noam/Desktop/Courts Project/chromedriver.exe')
+    driver = webdriver.Chrome(executable_path='C:/Users/Noam/Desktop/Courts Project/chromedriver.exe',chrome_options=Options)
     driver.get(CASE)
     time.sleep(1)
     response = requests.get(CASE)
