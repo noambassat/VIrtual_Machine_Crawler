@@ -77,8 +77,8 @@ def cleanTXT(txt):
 
     return txt
 
-def CrawlTopWindow(CASE, n_decisions,LINK,conclusion):
-    docs_arr = []
+def CrawlTopWindow(CASE, n_decisions,LINK,conclusion, dict):
+
     CASE_NUM = CASE[67:67+4]
     YEAR = CASE[62:66]
 
@@ -88,9 +88,8 @@ def CrawlTopWindow(CASE, n_decisions,LINK,conclusion):
     time.sleep(1)
     soup = BeautifulSoup(driver.page_source, 'html.parser')
 
-
-    src = soup.findAll('iframe')[2]
     try:
+        src = soup.findAll('iframe')[2]
         src =src['ng-src']
           # Top window info
     except KeyError:
@@ -155,7 +154,8 @@ def CrawlTopWindow(CASE, n_decisions,LINK,conclusion):
             all_data[LABELS[i + 1]] = data
     all_data['מספר החלטות'] = n_decisions
     all_data['קישור לתיק'] = src
-    docs_arr.append(crawl_HTML(all_data,LINK,conclusion)) # רשימת מסמכי הHTML , כרגע רק 1
+    docs_arr=[crawl_HTML(all_data,LINK,conclusion),dict] # רשימת מסמכי הHTML , כרגע רק 1
+
     dict = {"פרטי תיק":all_data,"מסמכים":docs_arr}
 
     driver.close()
@@ -164,7 +164,7 @@ def CrawlTopWindow(CASE, n_decisions,LINK,conclusion):
 
 def Crawl_Decisions(CASE):
     src = "https://elyon2.court.gov.il/Scripts9/mgrqispi93.dll?Appname=eScourt&Prgname=GetFileDetails_for_new_site&Arguments=-N2014-008568-0"
-    CASE_NUM = CASE[67:67 + 4]
+    CASE_NUM = CASE[67:67 + 4] + "/"+ CASE[64:64 + 2]
     driver = webdriver.Chrome(executable_path='C:/Users/Noam/Desktop/Courts Project/chromedriver.exe')
     driver.get(CASE)
     time.sleep(1)
@@ -176,8 +176,10 @@ def Crawl_Decisions(CASE):
 
     SOUP = SOUP.find("div",{"class":"processing-docs"}).findAll('tr')
 
+
     case_dec = {}
     df = pd.DataFrame()
+
 
     for i,s in enumerate(SOUP):
         try:
@@ -203,25 +205,15 @@ def Crawl_Decisions(CASE):
     for row in (case_dec.values()):
         df = df.append(row, ignore_index=True)
     df.drop_duplicates(inplace=True)
-    if(df['Case Number'][0] not in main_df['Case Number']):
-        main_df.append(df)
-        main_df.to_csv('Decisions_Table/Decisions_Table.csv')
+    main_df = pd.read_csv(r'Decisions_Table/Decisions_Table.csv',index_col=0)
+    main_df = main_df.append(df)
+    main_df.reindex()
+    main_df.to_csv('Decisions_Table/Decisions_Table.csv')
     LINK, conclusion = Get_LINK(df,CASE)
     driver.close()
-    return df, len(df), LINK,conclusion
+    return df, len(df), LINK,conclusion, case_dec
 
 
 #
 # crawl_HTML([],"https://supremedecisions.court.gov.il/Home/Download?path=HebrewVerdicts/14/680/085/t07&fileName=14085680_t07.txt&type=2")
 
-
-
-# JSON ההררכיה
-# מסמך תיעוד!!!!!!!!!!!!!!!!!!!
-# כפילויות במילון!!!!!!
-# לייצר וליבא קובץ עם כל הPATH
-# לעשות קרול להחלטה של כל קייס ולהכניס לקובץ הJSON
-# לייצר שמות יחודיים לכל קובץ JSON
-# לעטוף את הכל שירוץ ברצף
-# לבדוק ריצה של 3 ימים אם עובד
-# לעשות רימוט למחשב מרוחק ולעשות קרולינג להכל
