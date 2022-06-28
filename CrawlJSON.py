@@ -13,6 +13,7 @@ from selenium.webdriver.common.by import By
 from selenium.common.exceptions import TimeoutException
 from collections import defaultdict
 from array import array
+from selenium.common.exceptions import WebDriverException
 
 
 main_df = pd.read_csv(r'Decisions_Table/Decisions_Table.csv',index_col=0)
@@ -46,7 +47,12 @@ def crawl_HTML(data, link, type):
     dict['מסמך מלא'] = soup.text.replace('\n\n','')
     dict['קישור למסמך'] = link
     for i in range(len(labels)):
-        dict[labels[i]] = contents[i]
+        try:
+            dict[labels[i]] = contents[i]
+        except IndexError:
+            print(labels)
+            print(contents)
+            break
     # print(dict)
         # if (string.find("<") != -1): continue
 
@@ -103,8 +109,12 @@ def CrawlTopWindow(CASE, n_decisions,LINK,conclusion, dict):
               + YEAR + "-00" + CASE_NUM + "-0"
         pass
 
-
-    driver.get(src)
+    try:
+        driver.get(src)
+    except WebDriverException:
+        src = "https://elyon2.court.gov.il/Scripts9/mgrqispi93.dll?Appname=eScourt&Prgname=GetFileDetails_for_new_site&Arguments=-N" \
+              + YEAR + "-00" + CASE_NUM + "-0"
+        driver.get(src)
 
     soup = BeautifulSoup(driver.page_source, 'html.parser')
     if ((soup.find("head").title.text).find("חסוי")!=-1):
