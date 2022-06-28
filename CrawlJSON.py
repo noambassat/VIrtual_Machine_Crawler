@@ -110,56 +110,60 @@ def CrawlTopWindow(CASE, n_decisions,LINK,conclusion, dict):
     if ((soup.find("head").title.text).find("חסוי")!=-1):
         print("PRIVATE CASE!!!")
         print(CASE)
-        return 0
-    LABELS = []
-    for a in soup.findAll("div",{"class":"item"}):
-        LABELS.append(cleanTXT(a.text))
+        x = 0
+    if(x!=0):
+        LABELS = []
+        for a in soup.findAll("div",{"class":"item"}):
+            LABELS.append(cleanTXT(a.text))
 
-    labels = soup.findAll("span",{"class":"caseDetails-label"})
-    details = soup.findAll("span",{"class":"caseDetails-info"})
+        labels = soup.findAll("span",{"class":"caseDetails-label"})
+        details = soup.findAll("span",{"class":"caseDetails-info"})
 
-    all_data = {}
-    data = {}
+        all_data = {}
+        data = {}
 
-    for i in range(len(labels)):
-        data[cleanTXT(labels[i].text)] = cleanTXT(details[i].text)
-
-
-    all_data[LABELS[0]] = data
+        for i in range(len(labels)):
+            data[cleanTXT(labels[i].text)] = cleanTXT(details[i].text)
 
 
-    tabs = soup.findAll("div",{"class":"tab-pane fade"})
-    bigger_data = {}
+        all_data[LABELS[0]] = data
 
-    for i, tab in enumerate(tabs):
-        labels = []
-        data = []
-        for body in tab.findAll("tbody"):
-            rows = [i for i in range(len(body.findAll('tr')))]
-            for j, tr in enumerate(body.findAll('tr')):
-                labels = []
-                infos = []
-                for z, td in enumerate(tr.findAll("td")):
 
-                    try:
-                        label = (cleanTXT(td['data-label']))
-                        info = (cleanTXT(td.text))
-                        if(label=="#"):continue
-                        labels.append(label)
-                        infos.append(info)
-                    except KeyError:
-                        pass
-                row = {labels[n]:infos[n] for n in range(len(labels))}
-                data.append(row)
-            all_data[LABELS[i + 1]] = data
+        tabs = soup.findAll("div",{"class":"tab-pane fade"})
+        bigger_data = {}
+
+        for i, tab in enumerate(tabs):
+            labels = []
+            data = []
+            for body in tab.findAll("tbody"):
+                rows = [i for i in range(len(body.findAll('tr')))]
+                for j, tr in enumerate(body.findAll('tr')):
+                    labels = []
+                    infos = []
+                    for z, td in enumerate(tr.findAll("td")):
+
+                        try:
+                            label = (cleanTXT(td['data-label']))
+                            info = (cleanTXT(td.text))
+                            if(label=="#"):continue
+                            labels.append(label)
+                            infos.append(info)
+                        except KeyError:
+                            pass
+                    row = {labels[n]:infos[n] for n in range(len(labels))}
+                    data.append(row)
+                all_data[LABELS[i + 1]] = data
     all_data['מספר החלטות'] = n_decisions
     all_data['קישור לתיק'] = src
-    docs_arr=[crawl_HTML(all_data,LINK,conclusion),dict] # רשימת מסמכי הHTML , כרגע רק 1
 
-    dict = {"פרטי תיק":all_data,"מסמכים":docs_arr}
+    docs_arr=[crawl_HTML(all_data,LINK,conclusion)] # רשימת מסמכי הHTML , כרגע רק 1
+    for row in dict.values():
+        row.pop("Case Number")
+        if row not in docs_arr: docs_arr.append(row)
+    new_dict = {"פרטי תיק":all_data,"מסמכים":docs_arr}
 
     driver.close()
-    return dict
+    return new_dict
 
 
 def Crawl_Decisions(CASE):
@@ -212,8 +216,4 @@ def Crawl_Decisions(CASE):
     LINK, conclusion = Get_LINK(df,CASE)
     driver.close()
     return df, len(df), LINK,conclusion, case_dec
-
-
-#
-# crawl_HTML([],"https://supremedecisions.court.gov.il/Home/Download?path=HebrewVerdicts/14/680/085/t07&fileName=14085680_t07.txt&type=2")
 
