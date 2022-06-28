@@ -110,6 +110,7 @@ def CrawlTopWindow(CASE, n_decisions,LINK,conclusion, dict):
     if ((soup.find("head").title.text).find("חסוי")!=-1):
         print("PRIVATE CASE!!!")
         print(CASE)
+        all_data = {}
         hidden_content = 1
 
     if not hidden_content:
