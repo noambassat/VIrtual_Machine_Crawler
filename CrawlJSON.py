@@ -78,7 +78,7 @@ def cleanTXT(txt):
     return txt
 
 def CrawlTopWindow(CASE, n_decisions,LINK,conclusion, dict):
-
+    hidden_content = 0
     CASE_NUM = CASE[67:67+4]
     YEAR = CASE[62:66]
 
@@ -110,8 +110,9 @@ def CrawlTopWindow(CASE, n_decisions,LINK,conclusion, dict):
     if ((soup.find("head").title.text).find("חסוי")!=-1):
         print("PRIVATE CASE!!!")
         print(CASE)
-        x = 0
-    if(x!=0):
+        hidden_content = 1
+
+    if not hidden_content:
         LABELS = []
         for a in soup.findAll("div",{"class":"item"}):
             LABELS.append(cleanTXT(a.text))
