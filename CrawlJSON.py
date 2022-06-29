@@ -55,7 +55,6 @@ def crawl_HTML(data, link, type):
     dict = {}
     dict['סוג מסמך'] = type
     dict['מסמך מלא'] = (soup.text.replace('\n\n','')).replace(u'\xa0', u' ')
-    print(dic["מסמך מלא"])
     dict['קישור למסמך'] = link
     for i in range(len(labels)):
         try:
