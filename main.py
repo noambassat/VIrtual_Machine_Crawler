@@ -64,7 +64,9 @@ for i in range(len(all_dates)):
             try:
                 dec_df, n_of_Decisions, LINK, conclusion, dict = Crawl_Decisions(CASE)
                 data = CrawlTopWindow(CASE, n_of_Decisions, LINK, conclusion,dict)
-            except AttributeError: continue
+            except AttributeError:
+                print("AttributeError !!!")
+                continue
             # if data == 0: continue
             json_name = start + "__"+ str(i)
 

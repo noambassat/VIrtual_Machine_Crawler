@@ -186,6 +186,7 @@ def Crawl_Decisions(CASE):
     time.sleep(1)
     response = requests.get(CASE)
     SOUP = BeautifulSoup(driver.page_source, 'html.parser')
+    SOUP = BeautifulSoup(driver.page_source, 'html.parser')
     time.sleep(1)
 
     hidden_case = SOUP.findAll('td')
