@@ -32,14 +32,22 @@ def crawl_HTML(data, link, type):
     text = soup.findAll("p",{"class":"BodyRuller"})
 
     for s in range(len(text)):
+        ("@@@@@@@@@")
+        string = text[s].text
+        if (string.find("נ  ג  ד") != -1):
+            print("1: ", string)
+            print("2: ",string[:string.find("נ  ג  ד")])
         string = cleanTXT(text[s].text)
+
         space= string.find(":")
         if(space!=-1):
-            if(string.find("המשיב")!=-1): continue
+            # if(string.find("המשיב")!=-1): continue
             labels.append(string[:space])
             content = []
             for i in range(s+1,len(text)):
+
                 string = cleanTXT(text[i].text)
+
                 if(string.find(":")!=-1):
                     s=i+1
                     break
@@ -98,16 +106,16 @@ def CrawlTopWindow(CASE, n_decisions,LINK,conclusion, dict):
     soup = BeautifulSoup(driver.page_source, 'html.parser')
 
     try:
-        src = soup.findAll('iframe')[2]
-        src =src['ng-src']
-          # Top window info
+        soup = soup.find("div", {"class": "details-view"})
+        iframe = soup.find('iframe')
+        src = iframe['ng-src']
     except KeyError:
-        print("KeyError")
+        print("KeyError") ###
 
         src = "https://elyon2.court.gov.il/Scripts9/mgrqispi93.dll?Appname=eScourt&Prgname=GetFileDetails_for_new_site&Arguments=-N" \
               + YEAR + "-00" + CASE_NUM + "-0"
     except IndexError:
-        print(IndexError)
+        print("IndexError") ###
         src = "https://elyon2.court.gov.il/Scripts9/mgrqispi93.dll?Appname=eScourt&Prgname=GetFileDetails_for_new_site&Arguments=-N" \
               + YEAR + "-00" + CASE_NUM + "-0"
         pass
@@ -117,15 +125,16 @@ def CrawlTopWindow(CASE, n_decisions,LINK,conclusion, dict):
     except WebDriverException:
         src = "https://elyon2.court.gov.il/Scripts9/mgrqispi93.dll?Appname=eScourt&Prgname=GetFileDetails_for_new_site&Arguments=-N" \
               + YEAR + "-00" + CASE_NUM + "-0"
+
     try:
         driver.get(src)
     except InvalidSessionIdException:
+        print("InvalidSessionIdException:\n", src)
         return 0
 
     soup = BeautifulSoup(driver.page_source, 'html.parser')
     if ((soup.find("head").title.text).find("חסוי")!=-1):
         print("PRIVATE CASE!!!")
-        print(CASE)
         all_data = {}
         hidden_content = 1
 
