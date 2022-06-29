@@ -76,8 +76,8 @@ for i in range(len(all_dates)):
             writeToJsonFile(filePath, json_name, data)
     except NoSuchElementException:
         continue
-
-print("FINISH, THE TIME IT TOOK: ",datetime.now()-START_RUN_TIME)
+END_RUN_TIME = datetime.now()
+print("FINISH, THE TIME IT TOOK: ",END_RUN_TIME-START_RUN_TIME)
 # CASE = "https://supremedecisions.court.gov.il/Verdicts/Results/1/null/2014/8568/null/null/null/null/null"
 # #
 # private_CASE = "https://supremedecisions.court.gov.il/Verdicts/Results/1/null/2022/3654/null/null/null/null/null"
