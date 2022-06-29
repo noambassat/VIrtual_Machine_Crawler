@@ -35,8 +35,7 @@ def Get_Cases_Names(driver,Number_Of_Cases):
         soup = BeautifulSoup(driver.page_source, 'html.parser')
         soup = soup.findAll('a', {'title': 'הצג תיק'})
         stop+=1
-    print(len(soup) , " Cases were found!")
-    return [s.text for s in soup]   
+    return [s.text for s in soup]
 
 
 def Get_URLS(Cases, start,end):
