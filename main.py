@@ -1,5 +1,4 @@
 from datetime import datetime
-
 import pandas as pd
 from selenium import webdriver
 import time
@@ -25,9 +24,6 @@ filePath = 'C:/Users/Noam/PycharmProjects/pythonProject5/Json_Files/'
 exe_path = 'C:/Users/Noam/Desktop/Courts Project/chromedriver.exe'
 
 # main_data_frame = pd.read_csv('Cases_Name.csv',encoding = "ISO-8859-8")
-
-
-
 
 start = "01-01-2022"
 end = "01-02-2022"
@@ -66,6 +62,7 @@ for i in range(len(all_dates)):
         for i, CASE in enumerate(URLS):
             # try:
             dec_df, n_of_Decisions, LINK, conclusion, dict = Crawl_Decisions(CASE)
+            if(len(dec_df)==0):continue
             data = CrawlTopWindow(CASE, n_of_Decisions, LINK, conclusion,dict)
             # except AttributeError:
             #     print(AttributeError)
@@ -78,25 +75,6 @@ for i in range(len(all_dates)):
         continue
 END_RUN_TIME = datetime.now()
 print("FINISH, THE TIME IT TOOK: ",END_RUN_TIME-START_RUN_TIME)
-# CASE = "https://supremedecisions.court.gov.il/Verdicts/Results/1/null/2014/8568/null/null/null/null/null"
-# #
-# private_CASE = "https://supremedecisions.court.gov.il/Verdicts/Results/1/null/2022/3654/null/null/null/null/null"
-#
-# dec_df, n_of_Decisions,LINK,conclusion  = Crawl_Decisions(CASE)
-#
-# #
-# # print_dataframe(dec_df,320,10)
-# #
-# data = CrawlTopWindow(CASE, n_of_Decisions, LINK ,conclusion)
-# if data != 0:
-#     filePath = 'C:/Users/Noam/PycharmProjects/pythonProject5/Json_Files/'
-#     writeToJsonFile(filePath, 'TEST', data)
-
-#
-
-
-
-
 
 # להחזיר את ימי שבת v
 # מסמך תיעוד!

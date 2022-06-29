@@ -46,5 +46,4 @@ def get_dates_string_list(DATES):
         string_list_dates.append(decode_date(date))
     return string_list_dates
 
-# print(get_dates("01-07-2020","04-07-2020"))
 

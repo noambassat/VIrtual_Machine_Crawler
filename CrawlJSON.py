@@ -204,20 +204,20 @@ def Crawl_Decisions(CASE):
     time.sleep(1)
     response = requests.get(CASE)
     SOUP = BeautifulSoup(driver.page_source, 'html.parser')
-    SOUP = BeautifulSoup(driver.page_source, 'html.parser')
     time.sleep(1)
-
-    hidden_case = SOUP.findAll('td')
-
-    SOUP = SOUP.find("div",{"class":"processing-docs"}).findAll('tr')
-
-
     case_dec = {}
     df = pd.DataFrame()
+    try:
+        hidden_case = SOUP.findAll('td')
+
+        SOUP = SOUP.find("div",{"class":"processing-docs"}).findAll('tr')
 
 
-    for i,s in enumerate(SOUP):
-        try:
+
+
+
+        for i,s in enumerate(SOUP):
+
             temp = {}
 
             hrefs = s.findAll("a",{'title':'פתיחה כ-HTML'})
@@ -235,7 +235,7 @@ def Crawl_Decisions(CASE):
                 temp['HTML_Link'] ='https://supremedecisions.court.gov.il/'+link['href']
             case_dec[i] = temp
 
-        except AttributeError : continue
+    except AttributeError : pass
 
     for row in (case_dec.values()):
         df = df.append(row, ignore_index=True)
