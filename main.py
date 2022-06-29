@@ -1,3 +1,5 @@
+from datetime import datetime
+
 import pandas as pd
 from selenium import webdriver
 import time
@@ -8,6 +10,7 @@ from Dates_Calculator import get_dates
 from selenium.common.exceptions import InvalidSessionIdException,NoSuchElementException
 from selenium.webdriver.chrome.options import Options
 
+START_RUN_TIME = datetime.now()
 options = Options()
 options.add_argument('--headless')
 options.add_argument('--disable-gpu')  # Last I checked this was necessary.
@@ -74,7 +77,7 @@ for i in range(len(all_dates)):
     except NoSuchElementException:
         continue
 
-
+print("FINISH, THE TIME IT TOOK: ",datetime.now()-START_RUN_TIME)
 # CASE = "https://supremedecisions.court.gov.il/Verdicts/Results/1/null/2014/8568/null/null/null/null/null"
 # #
 # private_CASE = "https://supremedecisions.court.gov.il/Verdicts/Results/1/null/2022/3654/null/null/null/null/null"

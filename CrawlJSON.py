@@ -37,7 +37,6 @@ def crawl_HTML(data, link, type):
 
         space= string.find(":")
         if(space!=-1):
-            if(string.find("המשיב")!=-1): continue
             labels.append(string[:space])
             content = []
             for i in range(s+1,len(text)):
@@ -47,7 +46,7 @@ def crawl_HTML(data, link, type):
                 if(string.find(":")!=-1):
                     s=i+1
                     break
-                if(string.find("נגד")!=-1): break
+                if(string.find("נגד")!=-1 or string.find("המשיב")!=-1): break
                 if (len(string) >1): content.append(string)
 
             if(len(content)!=0): contents.append(content)
@@ -55,7 +54,8 @@ def crawl_HTML(data, link, type):
     # else: print(contents)
     dict = {}
     dict['סוג מסמך'] = type
-    dict['מסמך מלא'] = soup.text.replace('\n\n','')
+    dict['מסמך מלא'] = (soup.text.replace('\n\n','')).replace(u'\xa0', u' ')
+    print(dic["מסמך מלא"])
     dict['קישור למסמך'] = link
     for i in range(len(labels)):
         try:
@@ -63,6 +63,8 @@ def crawl_HTML(data, link, type):
         except IndexError:
             print(labels)
             print(contents)
+            print(dict)
+            print(link)
             break
     # print(dict)
         # if (string.find("<") != -1): continue
@@ -135,7 +137,6 @@ def CrawlTopWindow(CASE, n_decisions,LINK,conclusion, dict):
 
     soup = BeautifulSoup(driver.page_source, 'html.parser')
     if ((soup.find("head").title.text).find("חסוי")!=-1):
-        print("PRIVATE CASE!!!")
         all_data = {}
         hidden_content = 1
 
@@ -184,7 +185,7 @@ def CrawlTopWindow(CASE, n_decisions,LINK,conclusion, dict):
     else:
         all_data['תיק חסוי'] = True
     all_data['מספר החלטות'] = n_decisions
-    all_data['קישור לתיק'] = src
+    all_data['קישור לתיק'] = CASE
 
     docs_arr=[crawl_HTML(all_data,LINK,conclusion)] # רשימת מסמכי הHTML , כרגע רק 1
     for row in dict.values():
