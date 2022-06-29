@@ -117,6 +117,10 @@ def CrawlTopWindow(CASE, n_decisions,LINK,conclusion, dict):
         src = "https://elyon2.court.gov.il/Scripts9/mgrqispi93.dll?Appname=eScourt&Prgname=GetFileDetails_for_new_site&Arguments=-N" \
               + YEAR + "-00" + CASE_NUM + "-0"
         pass
+    except AttributeError:
+        print("AttributeError")
+        src = "https://elyon2.court.gov.il/Scripts9/mgrqispi93.dll?Appname=eScourt&Prgname=GetFileDetails_for_new_site&Arguments=-N" \
+              + YEAR + "-00" + CASE_NUM + "-0"
 
     try:
         driver.get(src)
