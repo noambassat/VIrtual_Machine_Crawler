@@ -13,12 +13,15 @@ from selenium.webdriver.common.by import By
 from selenium.common.exceptions import TimeoutException
 from collections import defaultdict
 from array import array
-from selenium.common.exceptions import WebDriverException
+from selenium.common.exceptions import WebDriverException, InvalidSessionIdException
 from selenium.webdriver.chrome.options import Options
 
 main_df = pd.read_csv(r'Decisions_Table/Decisions_Table.csv',index_col=0)
 # main_df.drop('Unnamed: 0',axis= 1, inplace=True)
 
+options = Options()
+options.add_argument('--headless')
+options.add_argument('--disable-gpu')  # Last I checked this was necessary.
 
 
 def crawl_HTML(data, link, type):
@@ -114,7 +117,10 @@ def CrawlTopWindow(CASE, n_decisions,LINK,conclusion, dict):
     except WebDriverException:
         src = "https://elyon2.court.gov.il/Scripts9/mgrqispi93.dll?Appname=eScourt&Prgname=GetFileDetails_for_new_site&Arguments=-N" \
               + YEAR + "-00" + CASE_NUM + "-0"
+    try:
         driver.get(src)
+    except InvalidSessionIdException:
+        return 0
 
     soup = BeautifulSoup(driver.page_source, 'html.parser')
     if ((soup.find("head").title.text).find("חסוי")!=-1):
@@ -165,6 +171,8 @@ def CrawlTopWindow(CASE, n_decisions,LINK,conclusion, dict):
                     row = {labels[n]:infos[n] for n in range(len(labels))}
                     data.append(row)
                 all_data[LABELS[i + 1]] = data
+    else:
+        all_data['תיק חסוי'] = True
     all_data['מספר החלטות'] = n_decisions
     all_data['קישור לתיק'] = src
 
@@ -181,7 +189,7 @@ def CrawlTopWindow(CASE, n_decisions,LINK,conclusion, dict):
 def Crawl_Decisions(CASE):
     src = "https://elyon2.court.gov.il/Scripts9/mgrqispi93.dll?Appname=eScourt&Prgname=GetFileDetails_for_new_site&Arguments=-N2014-008568-0"
     CASE_NUM = CASE[67:67 + 4] + "/"+ CASE[64:64 + 2]
-    driver = webdriver.Chrome(executable_path='C:/Users/Noam/Desktop/Courts Project/chromedriver.exe',chrome_options=Options)
+    driver = webdriver.Chrome(executable_path='C:/Users/Noam/Desktop/Courts Project/chromedriver.exe',chrome_options=options)
     driver.get(CASE)
     time.sleep(1)
     response = requests.get(CASE)
