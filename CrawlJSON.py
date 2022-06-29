@@ -32,16 +32,12 @@ def crawl_HTML(data, link, type):
     text = soup.findAll("p",{"class":"BodyRuller"})
 
     for s in range(len(text)):
-        ("@@@@@@@@@")
-        string = text[s].text
-        if (string.find("נ  ג  ד") != -1):
-            print("1: ", string)
-            print("2: ",string[:string.find("נ  ג  ד")])
+
         string = cleanTXT(text[s].text)
 
         space= string.find(":")
         if(space!=-1):
-            # if(string.find("המשיב")!=-1): continue
+            if(string.find("המשיב")!=-1): continue
             labels.append(string[:space])
             content = []
             for i in range(s+1,len(text)):
@@ -51,8 +47,12 @@ def crawl_HTML(data, link, type):
                 if(string.find(":")!=-1):
                     s=i+1
                     break
+                if(string.find("נגד")!=-1): break
                 if (len(string) >1): content.append(string)
+
             if(len(content)!=0): contents.append(content)
+
+    # else: print(contents)
     dict = {}
     dict['סוג מסמך'] = type
     dict['מסמך מלא'] = soup.text.replace('\n\n','')
@@ -88,6 +88,7 @@ def Get_LINK(df,CASE): # רק פסק-דין או החלטה אחרונה כרג�
 
 
 def cleanTXT(txt):
+    txt = txt.replace(u'\xa0', u' ')
     txt = txt.replace('  ','')
     txt = txt.replace('\n','')
     txt = txt.replace('\t','')
