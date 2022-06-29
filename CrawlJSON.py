@@ -60,10 +60,6 @@ def crawl_HTML(data, link, type):
         try:
             dict[labels[i]] = contents[i]
         except IndexError:
-            print(labels)
-            print(contents)
-            print(dict)
-            print(link)
             break
     # print(dict)
         # if (string.find("<") != -1): continue
