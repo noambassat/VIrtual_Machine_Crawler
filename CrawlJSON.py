@@ -75,6 +75,7 @@ def crawl_HTML(data, link, type):
 
 def Get_LINK(df,CASE): # רק פסק-דין או החלטה אחרונה כרגע
     conclusion = "החלטה \n"
+    if(len(df)==0): return '',''
     LINK = df['HTML_Link'][0]
     for i in df.index:
         if(df['סוג מסמך'][i] == 'פסק-דין'):
@@ -96,9 +97,12 @@ def CrawlTopWindow(CASE, n_decisions,LINK,conclusion, dict):
     hidden_content = 0
     CASE_NUM = CASE[67:67+4]
     YEAR = CASE[62:66]
-
+    try:
     # print(src == "https://elyon2.court.gov.il/Scripts9/mgrqispi93.dll?Appname=eScourt&Prgname=GetFileDetails_for_new_site&Arguments=-N2014-008568-0")
-    driver = webdriver.Chrome(executable_path='C:/Users/Noam/Desktop/Courts Project/chromedriver.exe',chrome_options=options)
+        driver = webdriver.Chrome(executable_path='C:/Users/Noam/Desktop/Courts Project/chromedriver.exe',chrome_options=options)
+    except WebDriverException:
+        driver = webdriver.Chrome(executable_path='C:/Users/Noam/Desktop/Courts Project/chromedriver.exe',chrome_options=options)
+
     driver.get(CASE)
     time.sleep(1)
     soup = BeautifulSoup(driver.page_source, 'html.parser')

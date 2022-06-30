@@ -12,7 +12,7 @@ from selenium.webdriver.chrome.options import Options
 START_RUN_TIME = datetime.now()
 options = Options()
 options.add_argument('--headless')
-options.add_argument('--disable-gpu')  # Last I checked this was necessary.
+options.add_argument('--disable-gpu')
 
 
 import warnings
@@ -74,7 +74,7 @@ for i in range(len(all_dates)):
     except NoSuchElementException:
         continue
 END_RUN_TIME = datetime.now()
-print("FINISH, THE TIME IT TOOK: ",END_RUN_TIME-START_RUN_TIME)
+print("FINISH, THE TIME IT TOOK, from 04.01.22-01.02.2022: ",END_RUN_TIME-START_RUN_TIME)######
 
 # להחזיר את ימי שבת v
 # מסמך תיעוד!
