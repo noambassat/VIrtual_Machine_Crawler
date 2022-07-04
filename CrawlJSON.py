@@ -1,18 +1,11 @@
 import time
-import numpy as np
+
 import pandas as pd
-from Printer import print_dataframe
-from Save_As_Json import writeToJsonFile
-from selenium import webdriver
+
 import requests
 from bs4 import BeautifulSoup
 from selenium import webdriver
-from selenium.webdriver.support.ui import WebDriverWait
-from selenium.webdriver.support import expected_conditions as EC
-from selenium.webdriver.common.by import By
-from selenium.common.exceptions import TimeoutException
-from collections import defaultdict
-from array import array
+
 from selenium.common.exceptions import WebDriverException, InvalidSessionIdException
 from selenium.webdriver.chrome.options import Options
 
@@ -98,12 +91,13 @@ def CrawlTopWindow(CASE, n_decisions,LINK,conclusion, dict):
     CASE_NUM = CASE[67:67+4]
     YEAR = CASE[62:66]
     try:
-    # print(src == "https://elyon2.court.gov.il/Scripts9/mgrqispi93.dll?Appname=eScourt&Prgname=GetFileDetails_for_new_site&Arguments=-N2014-008568-0")
         driver = webdriver.Chrome(executable_path='C:/Users/Noam/Desktop/Courts Project/chromedriver.exe',chrome_options=options)
+        driver.get(CASE)
+
     except WebDriverException:
         driver = webdriver.Chrome(executable_path='C:/Users/Noam/Desktop/Courts Project/chromedriver.exe',chrome_options=options)
+        driver.get(CASE)
 
-    driver.get(CASE)
     time.sleep(1)
     soup = BeautifulSoup(driver.page_source, 'html.parser')
 

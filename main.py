@@ -8,6 +8,8 @@ from Save_As_Json import writeToJsonFile
 from Dates_Calculator import get_dates
 from selenium.common.exceptions import InvalidSessionIdException,NoSuchElementException
 from selenium.webdriver.chrome.options import Options
+import warnings
+
 
 START_RUN_TIME = datetime.now()
 options = Options()
@@ -15,7 +17,7 @@ options.add_argument('--headless')
 options.add_argument('--disable-gpu')
 
 
-import warnings
+
 warnings.simplefilter(action='ignore', category=(FutureWarning, DeprecationWarning))
 
 
