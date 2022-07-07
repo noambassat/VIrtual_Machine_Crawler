@@ -180,6 +180,7 @@ def CrawlTopWindow(CASE, n_decisions,LINK,conclusion, dict):
                 all_data[LABELS[i + 1]] = data
     else:
         all_data['תיק חסוי'] = True
+        all_data['Case Number'] = CASE_NUM
     all_data['מספר החלטות'] = n_decisions
     all_data['קישור לתיק'] = CASE
 
