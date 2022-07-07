@@ -171,7 +171,6 @@ def CrawlTopWindow(CASE, n_decisions,LINK,conclusion, dict):
                         try:
                             label = (cleanTXT(td['data-label']))
                             info = (cleanTXT(td.text))
-                            if(label=="#"):continue
                             labels.append(label)
                             infos.append(info)
                         except KeyError:
@@ -240,7 +239,7 @@ def Crawl_Decisions(CASE):
     df.drop_duplicates(inplace=True)
     main_df = pd.read_csv(r'Decisions_Table/Decisions_Table.csv',index_col=0)
     main_df = main_df.append(df)
-    main_df.reindex()
+    main_df=main_df.reindex()
     main_df.to_csv('Decisions_Table/Decisions_Table.csv')
     LINK, conclusion = Get_LINK(df,CASE)
     driver.close()
