@@ -161,10 +161,12 @@ def CrawlTopWindow(CASE, n_decisions,LINK,conclusion, dict):
                         try:
                             label = (cleanTXT(td['data-label']))
                             info = (cleanTXT(td.text))
+                            if(len(info)<1): continue
                             labels.append(label)
                             infos.append(info)
                         except KeyError:
                             pass
+                    print(infos) ##############
                     row = {labels[n]:infos[n] for n in range(len(labels))}
                     data.append(row)
                 all_data[LABELS[i + 1]] = data
