@@ -28,7 +28,7 @@ exe_path = 'C:/Users/Noam/Desktop/Courts Project/chromedriver.exe'
 # main_data_frame = pd.read_csv('Cases_Name.csv',encoding = "ISO-8859-8")
 
 start = "01-01-2022"
-end = "01-02-2022"
+end = "02-01-2022"
 
 all_dates = get_dates(start,end)
 print(all_dates)
@@ -41,6 +41,7 @@ for i in range(len(all_dates)):
 
     src = get_src(start, end)
     driver = webdriver.Chrome(executable_path=exe_path,chrome_options=options)
+
 
     try:
         driver.get(src)

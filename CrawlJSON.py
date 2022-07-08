@@ -1,21 +1,15 @@
-import time
-
-import pandas as pd
-
-import requests
-from bs4 import BeautifulSoup
-from selenium import webdriver
-
 from selenium.common.exceptions import WebDriverException, InvalidSessionIdException
 from selenium.webdriver.chrome.options import Options
+from selenium import webdriver
+from bs4 import BeautifulSoup
+import pandas as pd
+import requests
+import time
 
 main_df = pd.read_csv(r'Decisions_Table/Decisions_Table.csv',index_col=0)
-# main_df.drop('Unnamed: 0',axis= 1, inplace=True)
-
 options = Options()
 options.add_argument('--headless')
 options.add_argument('--disable-gpu')  # Last I checked this was necessary.
-
 
 def crawl_HTML(data, link, type):
     xml = requests.get((link))
@@ -25,9 +19,7 @@ def crawl_HTML(data, link, type):
     text = soup.findAll("p",{"class":"BodyRuller"})
 
     for s in range(len(text)):
-
         string = cleanTXT(text[s].text)
-
         space= string.find(":")
         if(space!=-1):
             labels.append(string[:space])
@@ -44,7 +36,6 @@ def crawl_HTML(data, link, type):
 
             if(len(content)!=0): contents.append(content)
 
-    # else: print(contents)
     dict = {}
     dict['סוג מסמך'] = type
     dict['מסמך מלא'] = (soup.text.replace('\n\n','')).replace(u'\xa0', u' ')
@@ -54,17 +45,13 @@ def crawl_HTML(data, link, type):
             dict[labels[i]] = contents[i]
         except IndexError:
             break
-    # print(dict)
-        # if (string.find("<") != -1): continue
 
-        # print(string)
-    soup =  BeautifulSoup(xml.content, 'lxml')
+    soup = BeautifulSoup(xml.content, 'lxml')
     conclusion = ""
     for row in soup.findAll("p",{"class":"Ruller41"}):
         conclusion += row.text
     dict["סיכום מסמך HTML"] = conclusion
     return dict
-
 
 def Get_LINK(df,CASE): # רק פסק-דין או החלטה אחרונה כרגע
     conclusion = "החלטה \n"
@@ -76,7 +63,6 @@ def Get_LINK(df,CASE): # רק פסק-דין או החלטה אחרונה כרג�
             LINK = df['HTML_Link'][i]
             break
     return LINK, conclusion
-
 
 def cleanTXT(txt):
     txt = txt.replace(u'\xa0', u' ')
@@ -90,6 +76,7 @@ def CrawlTopWindow(CASE, n_decisions,LINK,conclusion, dict):
     hidden_content = 0
     CASE_NUM = CASE[67:67+4]
     YEAR = CASE[62:66]
+
     try:
         driver = webdriver.Chrome(executable_path='C:/Users/Noam/Desktop/Courts Project/chromedriver.exe',chrome_options=options)
         driver.get(CASE)
@@ -106,12 +93,11 @@ def CrawlTopWindow(CASE, n_decisions,LINK,conclusion, dict):
         iframe = soup.find('iframe')
         src = iframe['ng-src']
     except KeyError:
-        print("KeyError") ###
-
+        print("KeyError")
         src = "https://elyon2.court.gov.il/Scripts9/mgrqispi93.dll?Appname=eScourt&Prgname=GetFileDetails_for_new_site&Arguments=-N" \
               + YEAR + "-00" + CASE_NUM + "-0"
     except IndexError:
-        print("IndexError") ###
+        print("IndexError")
         src = "https://elyon2.court.gov.il/Scripts9/mgrqispi93.dll?Appname=eScourt&Prgname=GetFileDetails_for_new_site&Arguments=-N" \
               + YEAR + "-00" + CASE_NUM + "-0"
         pass
@@ -119,13 +105,11 @@ def CrawlTopWindow(CASE, n_decisions,LINK,conclusion, dict):
         print("AttributeError")
         src = "https://elyon2.court.gov.il/Scripts9/mgrqispi93.dll?Appname=eScourt&Prgname=GetFileDetails_for_new_site&Arguments=-N" \
               + YEAR + "-00" + CASE_NUM + "-0"
-
     try:
         driver.get(src)
     except WebDriverException:
         src = "https://elyon2.court.gov.il/Scripts9/mgrqispi93.dll?Appname=eScourt&Prgname=GetFileDetails_for_new_site&Arguments=-N" \
               + YEAR + "-00" + CASE_NUM + "-0"
-
     try:
         driver.get(src)
     except InvalidSessionIdException:
@@ -133,6 +117,7 @@ def CrawlTopWindow(CASE, n_decisions,LINK,conclusion, dict):
         return 0
 
     soup = BeautifulSoup(driver.page_source, 'html.parser')
+
     if ((soup.find("head").title.text).find("חסוי")!=-1):
         all_data = {}
         hidden_content = 1
@@ -151,13 +136,10 @@ def CrawlTopWindow(CASE, n_decisions,LINK,conclusion, dict):
         for i in range(len(labels)):
             data[cleanTXT(labels[i].text)] = cleanTXT(details[i].text)
 
-
         all_data[LABELS[0]] = data
-
 
         tabs = soup.findAll("div",{"class":"tab-pane fade"})
         bigger_data = {}
-
         for i, tab in enumerate(tabs):
             labels = []
             data = []
@@ -177,7 +159,18 @@ def CrawlTopWindow(CASE, n_decisions,LINK,conclusion, dict):
                             pass
                     row = {labels[n]:infos[n] for n in range(len(labels))}
                     data.append(row)
+                    print()
                 all_data[LABELS[i + 1]] = data
+        try:
+            all_data["מספר צדדים בתיק"] = len(all_data['צדדים בתיק'])
+            all_data["מספר דיונים בתיק"] - len(all_data['דיונים'])
+            all_data["מספר אירועים בתיק"] - len(all_data['אירועים'])
+            all_data["מספר אישורי מסירה בתיק"] - len(all_data['אישורי מסירה'])
+            all_data["מספר תיקי דלמטה בתיק"] - len(all_data['תיק דלמטה'])
+            all_data["מספר בקשות בתיק"] - len(all_data['בקשות'])
+        except KeyError:
+            print(KeyError)
+            pass
     else:
         all_data['תיק חסוי'] = True
         all_data['Case Number'] = CASE_NUM
@@ -189,10 +182,8 @@ def CrawlTopWindow(CASE, n_decisions,LINK,conclusion, dict):
         row.pop("Case Number")
         if row not in docs_arr: docs_arr.append(row)
     new_dict = {"פרטי תיק":all_data,"מסמכים":docs_arr}
-
     driver.close()
     return new_dict
-
 
 def Crawl_Decisions(CASE):
     src = "https://elyon2.court.gov.il/Scripts9/mgrqispi93.dll?Appname=eScourt&Prgname=GetFileDetails_for_new_site&Arguments=-N2014-008568-0"
@@ -210,16 +201,11 @@ def Crawl_Decisions(CASE):
 
         SOUP = SOUP.find("div",{"class":"processing-docs"}).findAll('tr')
 
-
-
-
-
         for i,s in enumerate(SOUP):
 
             temp = {}
 
             hrefs = s.findAll("a",{'title':'פתיחה כ-HTML'})
-
             for case in (s.findAll("td",{"ng-binding"})):
                 label = cleanTXT(case['data-label'])
                 if(label.find('#')!=-1): continue
@@ -245,4 +231,3 @@ def Crawl_Decisions(CASE):
     LINK, conclusion = Get_LINK(df,CASE)
     driver.close()
     return df, len(df), LINK,conclusion, case_dec
-
