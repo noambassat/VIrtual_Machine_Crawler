@@ -166,7 +166,8 @@ def CrawlTopWindow(CASE, n_decisions,LINK,conclusion, dict):
                             infos.append(info)
                         except KeyError:
                             pass
-                    print(infos) ##############
+                    if(len(infos)<1): continue
+                    print(infos)
                     row = {labels[n]:infos[n] for n in range(len(labels))}
                     data.append(row)
                 all_data[LABELS[i + 1]] = data
