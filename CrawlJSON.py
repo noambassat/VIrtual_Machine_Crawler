@@ -32,9 +32,9 @@ def crawl_HTML(data, link, type):
                     s=i+1
                     break
                 if(string.find("נגד")!=-1 or string.find("המשיב")!=-1): break
-                if (len(string) >1): content.append(string)
+                if (len(string) > 1): content.append(string)
 
-            if(len(content)!=0): contents.append(content)
+            if(len(content)>1): contents.append(content)
 
     dict = {}
     dict['סוג מסמך'] = type
@@ -71,6 +71,14 @@ def cleanTXT(txt):
     txt = txt.replace('\t','')
 
     return txt
+
+def add_counters(data):
+    temp_data = data.copy()
+    for key in data.keys():
+        if (key == "פרטים כלליים" or key == 'תיק חסוי'): continue # doesn't count this keys
+        curr_key = 'מספר ' + str(key) + ' בתיק'
+        temp_data[curr_key] = len(temp_data[key])
+    return temp_data
 
 def CrawlTopWindow(CASE, n_decisions,LINK,conclusion, dict):
     hidden_content = 0
@@ -159,21 +167,17 @@ def CrawlTopWindow(CASE, n_decisions,LINK,conclusion, dict):
                             pass
                     row = {labels[n]:infos[n] for n in range(len(labels))}
                     data.append(row)
-                    print()
                 all_data[LABELS[i + 1]] = data
-        try:
-            all_data["מספר צדדים בתיק"] = len(all_data['צדדים בתיק'])
-            all_data["מספר דיונים בתיק"] - len(all_data['דיונים'])
-            all_data["מספר אירועים בתיק"] - len(all_data['אירועים'])
-            all_data["מספר אישורי מסירה בתיק"] - len(all_data['אישורי מסירה'])
-            all_data["מספר תיקי דלמטה בתיק"] - len(all_data['תיק דלמטה'])
-            all_data["מספר בקשות בתיק"] - len(all_data['בקשות'])
-        except KeyError:
-            print(KeyError)
-            pass
+
+        ### ADDING COUNTERS
+
+
     else:
         all_data['תיק חסוי'] = True
-        all_data['Case Number'] = CASE_NUM
+
+    all_data['Case Number'] = CASE_NUM
+
+    all_data = add_counters(all_data)
     all_data['מספר החלטות'] = n_decisions
     all_data['קישור לתיק'] = CASE
 
