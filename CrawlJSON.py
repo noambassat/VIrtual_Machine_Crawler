@@ -13,8 +13,8 @@ options.add_argument('--headless')
 options.add_argument('--disable-gpu')  # Last I checked this was necessary.
 
 def cleanTXT(txt):
-    txt = txt.replace("נ ג ד", 'נגד')
     txt = txt.replace(u'\xa0', u' ')
+    txt = txt.replace("נ ג ד","נגד")
     txt = txt.replace('-',' ')
     txt = txt.replace('\n',' ')
     txt = txt.replace('\t',' ')
