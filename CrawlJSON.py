@@ -59,14 +59,14 @@ def Get_LINK(df,CASE): # רק פסק-דין או החלטה אחרונה כרג�
     LINK = df['HTML_Link'][0]
     for i in df.index:
         if(df['סוג מסמך'][i] == 'פסק-דין'):
-            conclusion = 'פסק-דן'
+            conclusion = 'פסק דן'
             LINK = df['HTML_Link'][i]
             break
     return LINK, conclusion
 
 def cleanTXT(txt):
     txt = txt.replace(u'\xa0', u' ')
-    txt = txt.replace('  ','')
+    txt = txt.replace('    ','')
     txt = txt.replace('\n','')
     txt = txt.replace('\t','')
 
@@ -177,7 +177,6 @@ def CrawlTopWindow(CASE, n_decisions,LINK,conclusion, dict):
         all_data['תיק חסוי'] = True
 
     all_data = add_counters(all_data)
-
     all_data['Case Number'] = CASE_NUM
     all_data['מספר החלטות'] = n_decisions
     all_data['קישור לתיק'] = CASE
