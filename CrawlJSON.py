@@ -50,7 +50,7 @@ def crawl_HTML(data, link, type):
     conclusion = ""
     for row in soup.findAll("p",{"class":"Ruller41"}):
         conclusion += row.text
-    dict["סיכום מסמך HTML"] = conclusion
+    dict["סיכום מסמך"] = conclusion
     return dict
 
 def Get_LINK(df,CASE): # רק פסק-דין או החלטה אחרונה כרגע
