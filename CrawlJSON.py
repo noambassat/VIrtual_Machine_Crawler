@@ -11,7 +11,7 @@ options = Options()
 options.add_argument('--headless')
 options.add_argument('--disable-gpu')  # Last I checked this was necessary.
 
-def crawl_HTML(data, link, type):
+def crawl_HTML(data, link, Type):
     xml = requests.get((link))
     soup = BeautifulSoup(xml.content, 'lxml')
     labels = []
@@ -31,13 +31,13 @@ def crawl_HTML(data, link, type):
                 if(string.find(":")!=-1):
                     s=i+1
                     break
-                if(string.find("נגד")!=-1): break
+                if(string.find("נגד")!=-1 or string.find("המשיב ")!=-1): continue
                 if (len(string) > 1): content.append(string)
 
             if(len(content)>1): contents.append(content)
 
     dict = {}
-    dict['סוג מסמך'] = type
+    dict['סוג מסמך'] = Type
     dict['מסמך מלא'] = (soup.text.replace('\n\n','')).replace(u'\xa0', u' ')
     dict['קישור למסמך'] = link
     for i in range(len(labels)):
@@ -48,27 +48,30 @@ def crawl_HTML(data, link, type):
 
     soup = BeautifulSoup(xml.content, 'lxml')
     conclusion = ""
-    for row in soup.findAll("p",{"class":"Ruller41"}):
-        conclusion += row.text
+
+
+    for row in soup.findAll("p",{"class":"Ruller4"}): conclusion += cleanTXT(row.text)
     dict["סיכום מסמך"] = conclusion
     return dict
 
 def Get_LINK(df,CASE): # רק פסק-דין או החלטה אחרונה כרגע
-    conclusion = "החלטה \n"
     if(len(df)==0): return '',''
+    Type = df['סוג מסמך'][0]
     LINK = df['HTML_Link'][0]
     for i in df.index:
-        if(df['סוג מסמך'][i] == 'פסק-דין'):
-            conclusion = 'פסק דן'
+        if(df['סוג מסמך'][i].find('דין')!=-1 and df['סוג מסמך'][i].find('פסק')!=-1 ):
+            Type = 'פסק דן'
             LINK = df['HTML_Link'][i]
             break
-    return LINK, conclusion
+    return LINK, Type
 
 def cleanTXT(txt):
     txt = txt.replace(u'\xa0', u' ')
-    txt = txt.replace('    ','')
-    txt = txt.replace('\n','')
-    txt = txt.replace('\t','')
+    txt = txt.replace('-',' ')
+    txt = txt.replace('\n',' ')
+    txt = txt.replace('\t',' ')
+    txt = txt.replace('  ','') ###
+    txt = txt.replace("נ ג ד",'נגד')
 
     return txt
 
@@ -80,7 +83,7 @@ def add_counters(data):
         temp_data[curr_key] = len(temp_data[key])
     return temp_data
 
-def CrawlTopWindow(CASE, n_decisions,LINK,conclusion, dict):
+def CrawlTopWindow(CASE, n_decisions,LINK,Type, dict):
     hidden_content = 0
     CASE_NUM = CASE[67:67+4]
     YEAR = CASE[62:66]
@@ -181,10 +184,13 @@ def CrawlTopWindow(CASE, n_decisions,LINK,conclusion, dict):
     all_data['מספר החלטות'] = n_decisions
     all_data['קישור לתיק'] = CASE
 
-    docs_arr=[crawl_HTML(all_data,LINK,conclusion)] # רשימת מסמכי הHTML , כרגע רק 1
+    docs_arr={"החלטה אחרונה": crawl_HTML(all_data, LINK, Type)} # רשימת מסמכי הHTML , כרגע רק 1
+    counter = 0
     for row in dict.values():
         row.pop("Case Number")
-        if row not in docs_arr: docs_arr.append(row)
+        if row not in docs_arr.values(): ####################
+            counter+=1
+            docs_arr[counter] = row
     new_dict = {"פרטי תיק":all_data,"מסמכים":docs_arr}
     driver.close()
     return new_dict
@@ -232,6 +238,6 @@ def Crawl_Decisions(CASE):
     main_df = main_df.append(df)
     main_df=main_df.reindex()
     main_df.to_csv('Decisions_Table/Decisions_Table.csv')
-    LINK, conclusion = Get_LINK(df,CASE)
+    LINK, Type = Get_LINK(df,CASE)
     driver.close()
-    return df, len(df), LINK,conclusion, case_dec
+    return df, len(df), LINK,Type, case_dec
