@@ -31,7 +31,7 @@ def crawl_HTML(data, link, type):
                 if(string.find(":")!=-1):
                     s=i+1
                     break
-                if(string.find("נגד")!=-1 or string.find("המשיב")!=-1): break
+                if(string.find("נגד")!=-1): break
                 if (len(string) > 1): content.append(string)
 
             if(len(content)>1): contents.append(content)
