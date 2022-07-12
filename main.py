@@ -63,14 +63,14 @@ for i in range(len(all_dates)):
         driver.close()
         URLS = Get_URLS(Cases, start, end)
         for i, CASE in enumerate(URLS):
-            if(i>1): break #########################################################
             # try:
             dec_df, n_of_Decisions, LINK, conclusion, dict = Crawl_Decisions(CASE)
             if(len(dec_df)==0):continue
-            data = CrawlTopWindow(CASE, n_of_Decisions, LINK, conclusion,dict)
+            data = CrawlTopWindow(CASE, n_of_Decisions, LINK, conclusion,dict,df[start][i])
             # except AttributeError:
             #     print(AttributeError)
             #     continue
+            if data == 0: continue
             if data == 0: continue
             json_name = start + "__"+ str(i)
 

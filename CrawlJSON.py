@@ -5,12 +5,50 @@ from bs4 import BeautifulSoup
 import pandas as pd
 import requests
 import time
+import re
 
 main_df = pd.read_csv(r'Decisions_Table/Decisions_Table.csv',index_col=0)
 options = Options()
 options.add_argument('--headless')
 options.add_argument('--disable-gpu')  # Last I checked this was necessary.
 
+def cleanTXT(txt):
+    txt = txt.replace("נ ג ד", 'נגד')
+    txt = txt.replace(u'\xa0', u' ')
+    txt = txt.replace('-',' ')
+    txt = txt.replace('\n',' ')
+    txt = txt.replace('\t',' ')
+    txt = txt.replace('  ',' ')
+    if(txt==' ' or txt=='  '): return ''
+
+
+
+    return txt
+
+# def CHECKER(link):
+#     xml = requests.get(link)
+#     soup = BeautifulSoup(xml.content, 'lxml')
+#     labels = []
+#     contents = []
+#     soup = soup.find('body')
+#     text = soup.text.splitlines()
+#     for sep, row in enumerate(text):
+#         row = cleanTXT(row)
+#         if(row.find(":")!=-1 and row.find("אינטרנט")==-1):
+#             print("label:" , row)
+#             next_sep = sep +1
+#             next = text[next_sep]
+#             content = ""
+#             print("contenttt: ")
+#             while(next.find(":")==-1):
+#                 if (next.find("נגד") != -1): break
+#                 content +=next
+#                 next_sep +=1
+#                 next = text[next_sep]
+#             print(content)
+#             sep = next_sep
+#
+# CHECKER("https://supremedecisions.court.gov.il/Home/Download?path=HebrewVerdicts/20/520/073/e05&fileName=20073520.E05&type=2")
 def crawl_HTML(data, link, Type):
     xml = requests.get((link))
     soup = BeautifulSoup(xml.content, 'lxml')
@@ -64,15 +102,7 @@ def Get_LINK(df,CASE): # רק פסק-דין או החלטה אחרונה כרג�
             break
     return LINK, Type
 
-def cleanTXT(txt):
-    txt = txt.replace(u'\xa0', u' ')
-    txt = txt.replace('-',' ')
-    txt = txt.replace('\n',' ')
-    txt = txt.replace('\t',' ')
-    txt = txt.replace('  ',' ') ###
-    txt = txt.replace("נ ג ד",'נגד')
 
-    return txt
 
 def add_counters(data):
     temp_data = data.copy()
@@ -82,7 +112,7 @@ def add_counters(data):
         temp_data[curr_key] = len(temp_data[key])
     return temp_data
 
-def CrawlTopWindow(CASE, n_decisions,LINK,Type, dict):
+def CrawlTopWindow(CASE, n_decisions,LINK,Type, dict,case_name_num):
     hidden_content = 0
     CASE_NUM = CASE[67:67+4]
     YEAR = CASE[62:66]
@@ -164,23 +194,25 @@ def CrawlTopWindow(CASE, n_decisions,LINK,Type, dict):
                         try:
                             label = (cleanTXT(td['data-label']))
                             info = (cleanTXT(td.text))
-                            if(len(info)<1): continue
+                            if(len(info)<1): info = "חסר מידע"
                             labels.append(label)
                             infos.append(info)
                         except KeyError:
                             pass
                     if(len(infos)<1): continue
+                    row = {labels[n]:infos[n] for n in range(len(labels))}
                     if "סוג צד" in labels:
 
                         new_val = ""
                         for n,l in enumerate(labels):
                             if(l=='סוג צד'): new_val += infos[n]
                             if(l=='#'): new_val += " "+ infos[n]
+                        row['צד'] = new_val
 
-
-                    row = {labels[n]:infos[n] for n in range(len(labels))}
-                    row['צד'] = new_val
                     data[j+1] = row
+                if(len(data)<1):
+                    all_data[LABELS[i + 1]] = 'חסר מידע'
+                    continue
                 all_data[LABELS[i + 1]] = data
 
         ### ADDING COUNTERS
@@ -189,7 +221,7 @@ def CrawlTopWindow(CASE, n_decisions,LINK,Type, dict):
         all_data['תיק חסוי'] = True
 
     all_data = add_counters(all_data)
-    all_data['Case Number'] = CASE_NUM
+    all_data['Case Number'] = case_name_num
     all_data['מספר החלטות'] = n_decisions
     all_data['קישור לתיק'] = CASE
 
