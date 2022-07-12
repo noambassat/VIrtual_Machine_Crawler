@@ -17,7 +17,6 @@ def crawl_HTML(data, link, Type):
     labels = []
     contents = []
     text = soup.findAll("p",{"class":"BodyRuller"})
-
     for s in range(len(text)):
         string = cleanTXT(text[s].text)
         space= string.find(":")
@@ -70,7 +69,7 @@ def cleanTXT(txt):
     txt = txt.replace('-',' ')
     txt = txt.replace('\n',' ')
     txt = txt.replace('\t',' ')
-    txt = txt.replace('  ','') ###
+    txt = txt.replace('  ',' ') ###
     txt = txt.replace("נ ג ד",'נגד')
 
     return txt
@@ -153,12 +152,13 @@ def CrawlTopWindow(CASE, n_decisions,LINK,Type, dict):
         bigger_data = {}
         for i, tab in enumerate(tabs):
             labels = []
-            data = []
+            data = {}
             for body in tab.findAll("tbody"):
                 rows = [i for i in range(len(body.findAll('tr')))]
                 for j, tr in enumerate(body.findAll('tr')):
                     labels = []
                     infos = []
+                    row = {}
                     for z, td in enumerate(tr.findAll("td")):
 
                         try:
@@ -170,8 +170,17 @@ def CrawlTopWindow(CASE, n_decisions,LINK,Type, dict):
                         except KeyError:
                             pass
                     if(len(infos)<1): continue
+                    if "סוג צד" in labels:
+
+                        new_val = ""
+                        for n,l in enumerate(labels):
+                            if(l=='סוג צד'): new_val += infos[n]
+                            if(l=='#'): new_val += " "+ infos[n]
+
+
                     row = {labels[n]:infos[n] for n in range(len(labels))}
-                    data.append(row)
+                    row['צד'] = new_val
+                    data[j+1] = row
                 all_data[LABELS[i + 1]] = data
 
         ### ADDING COUNTERS
