@@ -18,10 +18,10 @@ def cleanTXT(txt):
     txt = txt.replace(u'\xa0', u' ')
 
     txt = txt.replace("נ ג ד","נגד")
-    txt = txt.replace('-',' ')
+    txt = txt.replace('פסק-דין','פסק דין')
     # txt = txt.replace('\n',' ')
-
-    txt = txt.replace('\t',' ')
+    # txt =txt.replace(',','')
+    # txt = txt.replace('\t',' ')
 
     txt = txt.replace('  ',' ')
 
@@ -32,21 +32,6 @@ def cleanTXT(txt):
 
     return txt
 
-# def CHECKER(link):
-#     xml = requests.get(link)
-#     soup = BeautifulSoup(xml.content, 'lxml')
-#     labels = []
-#     contents = []
-#     soup = soup.find('body')
-#     flag = 0
-#     for p in soup.findAll("p",{"class":"BodyRuller"}):
-#
-#         print("************************")
-#         text = cleanTXT(p.text)
-#         print(text)
-#
-#
-# CHECKER("https://supremedecisions.court.gov.il/Home/Download?path=HebrewVerdicts/20/520/073/e05&fileName=20073520.E05&type=2")
 def crawl_HTML(data, link, Type):
     xml = requests.get((link))
     soup = BeautifulSoup(xml.content, 'lxml')
@@ -226,7 +211,6 @@ def CrawlTopWindow(CASE, n_decisions,LINK,Type, dict,case_name_num):
         all_data['Case Year'] = case_name_num[case_name_num.find("/")+1:]
     except KeyError:
         pass
-
 
     all_data['מספר החלטות'] = n_decisions
     all_data['קישור לתיק'] = CASE
