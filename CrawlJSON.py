@@ -18,8 +18,9 @@ def cleanTXT(txt):
     txt = txt.replace(u'\xa0', u' ')
 
     txt = txt.replace("נ ג ד","נגד")
-    txt = txt.replace('פסק-דין','פסק דין')
+    txt = txt.replace('-',' ')
     # txt = txt.replace('\n',' ')
+    txt = txt.replace('\r',' ')
     # txt =txt.replace(',','')
     # txt = txt.replace('\t',' ')
 
