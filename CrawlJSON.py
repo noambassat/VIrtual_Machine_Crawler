@@ -7,6 +7,8 @@ import requests
 import time
 import re
 
+
+
 main_df = pd.read_csv(r'Decisions_Table/Decisions_Table.csv',index_col=0)
 options = Options()
 options.add_argument('--headless')
@@ -14,11 +16,16 @@ options.add_argument('--disable-gpu')  # Last I checked this was necessary.
 
 def cleanTXT(txt):
     txt = txt.replace(u'\xa0', u' ')
+
     txt = txt.replace("נ ג ד","נגד")
     txt = txt.replace('-',' ')
-    txt = txt.replace('\n',' ')
+    # txt = txt.replace('\n',' ')
+
     txt = txt.replace('\t',' ')
+
     txt = txt.replace('  ',' ')
+
+    txt = txt.replace("נ ג ד", "נגד")
     if(txt==' ' or txt=='  '): return ''
 
 
@@ -31,22 +38,13 @@ def cleanTXT(txt):
 #     labels = []
 #     contents = []
 #     soup = soup.find('body')
-#     text = soup.text.splitlines()
-#     for sep, row in enumerate(text):
-#         row = cleanTXT(row)
-#         if(row.find(":")!=-1 and row.find("אינטרנט")==-1):
-#             print("label:" , row)
-#             next_sep = sep +1
-#             next = text[next_sep]
-#             content = ""
-#             print("contenttt: ")
-#             while(next.find(":")==-1):
-#                 if (next.find("נגד") != -1): break
-#                 content +=next
-#                 next_sep +=1
-#                 next = text[next_sep]
-#             print(content)
-#             sep = next_sep
+#     flag = 0
+#     for p in soup.findAll("p",{"class":"BodyRuller"}):
+#
+#         print("************************")
+#         text = cleanTXT(p.text)
+#         print(text)
+#
 #
 # CHECKER("https://supremedecisions.court.gov.il/Home/Download?path=HebrewVerdicts/20/520/073/e05&fileName=20073520.E05&type=2")
 def crawl_HTML(data, link, Type):
@@ -171,18 +169,18 @@ def CrawlTopWindow(CASE, n_decisions,LINK,Type, dict,case_name_num):
         details = soup.findAll("span",{"class":"caseDetails-info"})
 
         all_data = {}
-        data = {}
+        first_data = {}
 
         for i in range(len(labels)):
-            data[cleanTXT(labels[i].text)] = cleanTXT(details[i].text)
+            first_data[cleanTXT(labels[i].text)] = cleanTXT(details[i].text)
 
-        all_data[LABELS[0]] = data
+        all_data[LABELS[0]] = first_data
 
         tabs = soup.findAll("div",{"class":"tab-pane fade"})
         bigger_data = {}
         for i, tab in enumerate(tabs):
             labels = []
-            data = {}
+            data = []
             for body in tab.findAll("tbody"):
                 rows = [i for i in range(len(body.findAll('tr')))]
                 for j, tr in enumerate(body.findAll('tr')):
@@ -209,7 +207,7 @@ def CrawlTopWindow(CASE, n_decisions,LINK,Type, dict,case_name_num):
                             if(l=='#'): new_val += " "+ infos[n]
                         row['צד'] = new_val
 
-                    data[j+1] = row
+                    data.append(row)
                 if(len(data)<1):
                     all_data[LABELS[i + 1]] = 'חסר מידע'
                     continue
@@ -225,14 +223,16 @@ def CrawlTopWindow(CASE, n_decisions,LINK,Type, dict,case_name_num):
     all_data['מספר החלטות'] = n_decisions
     all_data['קישור לתיק'] = CASE
 
-    docs_arr={"החלטה אחרונה": crawl_HTML(all_data, LINK, Type)} # רשימת מסמכי הHTML , כרגע רק 1
+    doc= [crawl_HTML(all_data, LINK, Type)] # רשימת מסמכי הHTML , כרגע רק 1
     counter = 0
+    other_docs = []
     for row in dict.values():
         row.pop("Case Number")
-        if row not in docs_arr.values(): ####################
+        if row not in doc: ####################
             counter+=1
-            docs_arr[counter] = row
-    new_dict = {"פרטי תיק":all_data,"מסמכים":docs_arr}
+            other_docs.append(row)
+            other_docs.append(row)
+    new_dict = {"פרטי תיק":all_data,"מסמכים":{"פסיק דין או החלטה אחרונה":doc, "כל ההחלטות בתיק":other_docs}}
     driver.close()
     return new_dict
 
