@@ -227,6 +227,7 @@ def CrawlTopWindow(CASE, n_decisions,LINK,Type, dict,case_name_num):
     except KeyError:
         pass
 
+
     all_data['מספר החלטות'] = n_decisions
     all_data['קישור לתיק'] = CASE
 
