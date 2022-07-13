@@ -219,11 +219,14 @@ def CrawlTopWindow(CASE, n_decisions,LINK,Type, dict,case_name_num):
         all_data['תיק חסוי'] = True
 
     all_data = add_counters(all_data)
-    all_data['Full Case Number'] = case_name_num
-    print(case_name_num)
-    for i,n in enumerate(case_name_num):
-        print(i,": ",n)
-    # all_data["Case Number"] = case_name_num[:]
+    try:
+        all_data['Full Case Number'] = case_name_num
+        all_data['Case Number'] = case_name_num[case_name_num.find(" ")+1:]
+        all_data['Case Initials'] = case_name_num[:case_name_num.find(" ")]
+        all_data['Case Year'] = case_name_num[case_name_num.find("/")+1:]
+    except KeyError:
+        pass
+
     all_data['מספר החלטות'] = n_decisions
     all_data['קישור לתיק'] = CASE
 
