@@ -192,7 +192,7 @@ def CrawlTopWindow(CASE, n_decisions,LINK,Type, dict,case_name_num):
                         try:
                             label = (cleanTXT(td['data-label']))
                             info = (cleanTXT(td.text))
-                            if(len(info)<1): info = "חסר מידע"
+                            if(len(info)<1): info = "אין מידע"
                             labels.append(label)
                             infos.append(info)
                         except KeyError:
@@ -209,7 +209,7 @@ def CrawlTopWindow(CASE, n_decisions,LINK,Type, dict,case_name_num):
 
                     data.append(row)
                 if(len(data)<1):
-                    all_data[LABELS[i + 1]] = 'חסר מידע'
+                    all_data[LABELS[i + 1]] = 'אין מידע'
                     continue
                 all_data[LABELS[i + 1]] = data
 
@@ -219,7 +219,11 @@ def CrawlTopWindow(CASE, n_decisions,LINK,Type, dict,case_name_num):
         all_data['תיק חסוי'] = True
 
     all_data = add_counters(all_data)
-    all_data['Case Number'] = case_name_num
+    all_data['Full Case Number'] = case_name_num
+    print(case_name_num)
+    for i,n in enumerate(case_name_num):
+        print(i,": ",n)
+    # all_data["Case Number"] = case_name_num[:]
     all_data['מספר החלטות'] = n_decisions
     all_data['קישור לתיק'] = CASE
 
