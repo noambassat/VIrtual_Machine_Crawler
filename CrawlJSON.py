@@ -6,6 +6,7 @@ from bs4 import BeautifulSoup
 import pandas as pd
 import requests
 import time
+import re
 
 
 
@@ -16,19 +17,28 @@ options.add_argument('--headless')
 options.add_argument('--disable-gpu')  # Last I checked this was necessary.
 
 def cleanTXT(txt):
+    print("before: ", txt)
+
+    ####################################function
+    # for i,c in enumerate(txt.split()):
+    #     while c==' ':
+    #         c = txt[i+1:]
     txt = txt.replace(u'\xa0', u' ')
+
     txt = txt.replace("נ ג ד","נגד")
     txt = txt.replace('פסק-דין','פסק דין')
-    txt = txt.replace('\r',' ')
-    txt = txt.replace('\t',' ')#
-    txt = txt.replace('\n','') ###########################
-    txt = txt.replace('   ', '')
-    if(txt.find("<")!=-1 and txt.find(">")!=-1):
-        print(txt)
-        print(txt[:txt.find("<")] + txt[:txt.find(">")+1:])
-        return txt[:txt.find("<")]+" "+" " + txt[:txt.find(">")+1:]
+    txt = re.sub('\s+', ' ', txt)
+    txt = (re.sub(r'(\ )+', ' ', txt))
+    try:
+        if (txt[0].isspace()):   txt = txt[1:]
+        if (txt[-1].isspace()): txt = txt[:-1]
+    except IndexError: return re.sub(r'(\d)+\. ', '', txt)
+
+    if(txt.find("<")!=-1 and txt.find(">")!=-1): # Catch txt noise
+            return txt[:txt.find("<")]+" "+" " + txt[:txt.find(">")+1:]
 
     txt = txt.replace("נ ג ד", "נגד")
+    print("after: ", txt)
     if(txt==' ' or txt=='  '): return ''
 
     return txt

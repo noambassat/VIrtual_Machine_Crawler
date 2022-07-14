@@ -9,12 +9,19 @@ import re
 
 
 def cleanTXT(txt):
+
+    txt = (re.sub(r'(\ )+', ' ', txt))
+    try:
+        if (txt[0].isspace()):   txt = txt[1:]
+        if (txt[-1].isspace()): txt = txt[:-1]
+    except IndexError: return re.sub(r'(\d)+\. ', '', txt)
+
     txt = txt.replace(u'\xa0', u' ')
 
     txt = txt.replace("נ ג ד","נגד")
     txt = txt.replace('פסק-דין','פסק דין')
     txt = txt.replace('\r',' ')
-    txt = txt.replace("\n", ' ')
+
     txt = txt.replace('  ', ' ')
     txt = txt.replace("נ ג ד", "נגד")
 
@@ -87,3 +94,10 @@ def HTML_CRAWLER(link):
 # all = HTML_CRAWLER(link_hasuy)
 # for k, v in zip(all.keys(),all.values()):
 #     print(k,": ",v)
+#
+# txt = "   ddd          ddd          rsdgs     "
+# txt =(re.sub(r'(\ )+', ' ',txt))
+# if(txt[0].isspace()):   txt = txt[1:]
+# if(txt[-1].isspace()): txt= txt[:-1]
+#
+# print(txt)
