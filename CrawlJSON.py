@@ -1,5 +1,6 @@
 from selenium.common.exceptions import WebDriverException, InvalidSessionIdException
 from selenium.webdriver.chrome.options import Options
+from Parser import HTML_CRAWLER
 from selenium import webdriver
 from bs4 import BeautifulSoup
 import pandas as pd
@@ -16,63 +17,56 @@ options.add_argument('--disable-gpu')  # Last I checked this was necessary.
 
 def cleanTXT(txt):
     txt = txt.replace(u'\xa0', u' ')
-
     txt = txt.replace("נ ג ד","נגד")
-    txt = txt.replace('-',' ')
-    # txt = txt.replace('\n',' ')
+    txt = txt.replace('פסק-דין','פסק דין')
     txt = txt.replace('\r',' ')
-    # txt =txt.replace(',','')
-    # txt = txt.replace('\t',' ')
-
     txt = txt.replace('  ',' ')
-
     txt = txt.replace("נ ג ד", "נגד")
     if(txt==' ' or txt=='  '): return ''
-
-
 
     return txt
 
 def crawl_HTML(data, link, Type):
     xml = requests.get((link))
     soup = BeautifulSoup(xml.content, 'lxml')
-    labels = []
-    contents = []
-    text = soup.findAll("p",{"class":"BodyRuller"})
-    for s in range(len(text)):
-        string = cleanTXT(text[s].text)
-        space= string.find(":")
-        if(space!=-1):
-            labels.append(string[:space])
-            content = []
-            for i in range(s+1,len(text)):
+    # labels = []
+    # contents = []
+    # text = soup.findAll("p",{"class":"BodyRuller"})
+    # for s in range(len(text)):
+    #     string = cleanTXT(text[s].text)
+    #     space= string.find(":")
+    #     if(space!=-1):
+    #         labels.append(string[:space])
+    #         content = []
+    #         for i in range(s+1,len(text)):
+    #
+    #             string = cleanTXT(text[i].text)
+    #
+    #             if(string.find(":")!=-1):
+    #                 s=i+1
+    #                 break
+    #             if(string.find("נגד")!=-1 or string.find("המשיב ")!=-1): continue
+    #             if (len(string) > 1): content.append(string)
+    #
+    #         if(len(content)>1): contents.append(content)
 
-                string = cleanTXT(text[i].text)
-
-                if(string.find(":")!=-1):
-                    s=i+1
-                    break
-                if(string.find("נגד")!=-1 or string.find("המשיב ")!=-1): continue
-                if (len(string) > 1): content.append(string)
-
-            if(len(content)>1): contents.append(content)
-
-    dict = {}
+    dict = HTML_CRAWLER(link)
     dict['סוג מסמך'] = Type
     dict['מסמך מלא'] = (soup.text.replace('\n\n','')).replace(u'\xa0', u' ')
     dict['קישור למסמך'] = link
-    for i in range(len(labels)):
-        try:
-            dict[labels[i]] = contents[i]
-        except IndexError:
-            break
+    # for i in range(len(labels)):
+    #     try:
+    #         dict[labels[i]] = contents[i]
+    #     except IndexError:
+    #         break
 
     soup = BeautifulSoup(xml.content, 'lxml')
     conclusion = ""
 
-
+    #
     for row in soup.findAll("p",{"class":"Ruller4"}): conclusion += cleanTXT(row.text)
     dict["סיכום מסמך"] = conclusion
+    print(dict)
     return dict
 
 def Get_LINK(df,CASE): # רק פסק-דין או החלטה אחרונה כרגע
