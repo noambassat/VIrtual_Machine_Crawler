@@ -66,6 +66,7 @@ def HTML_CRAWLER(link):
             if len (row) == 0 : continue
             print(row)
             row = re.sub(r'(\d)\. ', '', row)
+            row.replace('-',' ')
             print(row)
             content.append(row)
         if(len(content)!=0): contents.append(content)
