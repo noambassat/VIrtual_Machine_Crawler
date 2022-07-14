@@ -19,11 +19,10 @@ def cleanTXT(txt):
     txt = txt.replace(u'\xa0', u' ')
     txt = txt.replace("נ ג ד","נגד")
     txt = txt.replace('פסק-דין','פסק דין')
-    txt = txt.replace('\r','')
-    txt = txt.replace('\t','')
-    txt =txt.replace('\n','')
-    txt = txt.replace('  ','')
-    txt = txt.replace('\n ','')
+    txt = txt.replace('\r',' ')
+    txt = txt.replace('\t',' ')
+    txt = txt.replace('\n ',' ')
+    txt = txt.replace('  ', ' ')
     txt = txt.replace("נ ג ד", "נגד")
     if(txt==' ' or txt=='  '): return ''
 
@@ -35,7 +34,7 @@ def crawl_HTML(data, link, Type):
 
     data_dict = HTML_CRAWLER(link)
     data_dict['סוג מסמך'] = Type
-    data_dict['מסמך מלא'] = cleanTXT(soup.text.replace('\n\n','').replace(u'\xa0', u' '))
+    data_dict['מסמך מלא'] = cleanTXT(soup.text.replace('\n\n',' ').replace(u'\xa0', u' '))
     data_dict['קישור למסמך'] = link
 
     conclusion = ""
@@ -63,7 +62,6 @@ def add_counters(data):
         if (key == "פרטים כלליים" or key == 'תיק חסוי'): continue # doesn't count this keys
         curr_key = 'מספר ' + str(key) + ' בתיק'
         temp_data[curr_key] = len(temp_data[key])
-        print(temp_data[key])
     return temp_data
 
 def CrawlTopWindow(CASE,LINK,Type, dict,case_name_num):
@@ -150,7 +148,7 @@ def CrawlTopWindow(CASE,LINK,Type, dict,case_name_num):
                             if (label.find("מ.תיק דלמטה") != -1): label = "מספר תיק דלמטה"
                             if (label.find("ת.החלטה") != -1): label = "תאריך החלטה"
 
-                            info = (cleanTXT(td.text)).replace('\n','')
+                            info = (cleanTXT(td.text)).replace('\n',' ')
                             if(len(info)<1): info = "אין מידע"
                             labels.append(label)
                             infos.append(info)
@@ -166,7 +164,6 @@ def CrawlTopWindow(CASE,LINK,Type, dict,case_name_num):
                             if(l=='#'): new_val += " "+ infos[n]
                         row['צד'] = new_val
                     if row not in data: data.append(row)
-                print("dataaa", data)
                 if(len(data)<1):
                     all_data[LABELS[i + 1]] = 'אין מידע'
                     continue
@@ -196,7 +193,7 @@ def CrawlTopWindow(CASE,LINK,Type, dict,case_name_num):
         if row not in doc: ####################
             counter+=1
             other_docs.append(row)
-    all_data['מספר החלטות'] = len(other_docs)
+    all_data['מספר החלטות בתיק'] = len(other_docs)
     all_data['קישור לתיק'] = CASE
     new_dict = {"פרטי תיק":all_data,"מסמכים":{"פסק דין או החלטה אחרונה":doc, "כל ההחלטות בתיק":other_docs}}
     driver.close()

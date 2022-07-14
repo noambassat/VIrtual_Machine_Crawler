@@ -10,11 +10,12 @@ import re
 
 def cleanTXT(txt):
     txt = txt.replace(u'\xa0', u' ')
+
     txt = txt.replace("נ ג ד","נגד")
     txt = txt.replace('פסק-דין','פסק דין')
-    txt = txt.replace('\r','')
+    txt = txt.replace('\r',' ')
     txt = txt.replace("\n", ' ')
-    txt = txt.replace('  ',' ')
+    txt = txt.replace('  ', ' ')
     txt = txt.replace("נ ג ד", "נגד")
 
     if(txt==' ' or txt=='  '): return ''
@@ -23,7 +24,7 @@ def cleanTXT(txt):
 
 def slicer(text,labels,contents):
     for text in text.split('\n\n'):
-        text = cleanTXT(text).replace('\n ', '').replace('\n', '')
+        text = cleanTXT(text).replace('\n ', ' ')
         if len(text) == 0: continue
         if(text[-1]==":"):
             labels.append(cleanTXT(text[:text.find(":")]))
@@ -58,11 +59,11 @@ def HTML_CRAWLER(link):
             continue  ################################################
 
 
-        labels.append(text[:text.find(":")].replace('\n',''))
+        labels.append(text[:text.find(":")].replace('\n',' '))
         info = (text[text.find(":")+1:])
         content = []
         for row in info.split('\n\n'): # content
-            row = cleanTXT(row).replace('\n ','').replace('\n','')
+            row = cleanTXT(row).replace('\n ',' ')
             if len (row) == 0 : continue
             row = re.sub(r'(\d)+\. ', '', row)
             row = row.replace('-',' ')
