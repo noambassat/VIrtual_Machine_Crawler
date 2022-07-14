@@ -62,7 +62,7 @@ def add_counters(data):
         temp_data[curr_key] = len(temp_data[key])
     return temp_data
 
-def CrawlTopWindow(CASE, n_decisions,LINK,Type, dict,case_name_num):
+def CrawlTopWindow(CASE,LINK,Type, dict,case_name_num):
     hidden_content = 0
     CASE_NUM = CASE[67:67+4]
     YEAR = CASE[62:66]
@@ -182,8 +182,7 @@ def CrawlTopWindow(CASE, n_decisions,LINK,Type, dict,case_name_num):
     except KeyError:
         pass
 
-    all_data['מספר החלטות'] = n_decisions
-    all_data['קישור לתיק'] = CASE
+
 
     doc= [crawl_HTML(all_data, LINK, Type)] # רשימת מסמכי הHTML , כרגע רק 1
     counter = 0
@@ -193,7 +192,8 @@ def CrawlTopWindow(CASE, n_decisions,LINK,Type, dict,case_name_num):
         if row not in doc: ####################
             counter+=1
             other_docs.append(row)
-            other_docs.append(row)
+    all_data['מספר החלטות'] = len(other_docs)
+    all_data['קישור לתיק'] = CASE
     new_dict = {"פרטי תיק":all_data,"מסמכים":{"פסק דין או החלטה אחרונה":doc, "כל ההחלטות בתיק":other_docs}}
     driver.close()
     return new_dict
@@ -243,4 +243,4 @@ def Crawl_Decisions(CASE):
     main_df.to_csv('Decisions_Table/Decisions_Table.csv')
     LINK, Type = Get_LINK(df,CASE)
     driver.close()
-    return df, len(df), LINK,Type, case_dec
+    return df, LINK,Type, case_dec
