@@ -30,9 +30,8 @@ def slicer(text,labels,contents):
         content = []
 
         for info in ((text.replace(";",","))[text.find(":")+1:]).split(','):
-            print(info)
             info = re.sub(r'(\d)\. ','', info)
-            print(info)
+            info = info.replace('-',' ')
 
             content.append(info)
         if len(content)!=0: contents.append(content)
@@ -64,10 +63,8 @@ def HTML_CRAWLER(link):
         for row in info.split('\n\n'): # content
             row = cleanTXT(row).replace('\n ','').replace('\n','')
             if len (row) == 0 : continue
-            print(row)
             row = re.sub(r'(\d)\. ', '', row)
-            row.replace('-',' ')
-            print(row)
+            row = row.replace('-',' ')
             content.append(row)
         if(len(content)!=0): contents.append(content)
 

@@ -119,7 +119,6 @@ def CrawlTopWindow(CASE, n_decisions,LINK,Type, dict,case_name_num):
 
         labels = soup.findAll("span",{"class":"caseDetails-label"})
         details = soup.findAll("span",{"class":"caseDetails-info"})
-
         all_data = {}
         first_data = {}
 
@@ -145,6 +144,7 @@ def CrawlTopWindow(CASE, n_decisions,LINK,Type, dict,case_name_num):
                             label = (cleanTXT(td['data-label']))
                             info = (cleanTXT(td.text))
                             if(len(info)<1): info = "אין מידע"
+
                             labels.append(label)
                             infos.append(info)
                         except KeyError:
