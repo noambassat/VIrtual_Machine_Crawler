@@ -219,7 +219,7 @@ def CrawlTopWindow(CASE, n_decisions,LINK,Type, dict,case_name_num):
             counter+=1
             other_docs.append(row)
             other_docs.append(row)
-    new_dict = {"פרטי תיק":all_data,"מסמכים":{"פסיק דין או החלטה אחרונה":doc, "כל ההחלטות בתיק":other_docs}}
+    new_dict = {"פרטי תיק":all_data,"מסמכים":{"פסק דין או החלטה אחרונה":doc, "כל ההחלטות בתיק":other_docs}}
     driver.close()
     return new_dict
 
