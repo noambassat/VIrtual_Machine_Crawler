@@ -258,6 +258,4 @@ def Crawl_Decisions(CASE):
     main_df.to_csv('Decisions_Table/Decisions_Table.csv')
     LINK, Type = Get_LINK(df,CASE)
     driver.close()
-    print(case_dec.values())
-    print(len(case_dec))
     return df, LINK,Type, case_dec
