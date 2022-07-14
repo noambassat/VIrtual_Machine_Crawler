@@ -206,6 +206,7 @@ def CrawlTopWindow(CASE,LINK,Type, dict,case_name_num):
         if row not in doc: ####################
             counter+=1
             other_docs.append(row)
+
     all_data['מספר החלטות בתיק'] = len(other_docs)
     all_data['קישור לתיק'] = CASE
     new_dict = {"פרטי תיק":all_data,"מסמכים":{"פסק דין או החלטה אחרונה":doc, "כל ההחלטות בתיק":other_docs}}
@@ -244,7 +245,7 @@ def Crawl_Decisions(CASE):
             if (len(temp) == 0): continue
             for link in hrefs:
                 temp['HTML_Link'] ='https://supremedecisions.court.gov.il/'+link['href']
-            case_dec[i] = temp
+            if(temp not in case_dec.values()): case_dec[i] = temp
 
     except AttributeError : pass
 
@@ -257,4 +258,6 @@ def Crawl_Decisions(CASE):
     main_df.to_csv('Decisions_Table/Decisions_Table.csv')
     LINK, Type = Get_LINK(df,CASE)
     driver.close()
+    print(case_dec.values())
+    print(len(case_dec))
     return df, LINK,Type, case_dec
