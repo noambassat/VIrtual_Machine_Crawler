@@ -20,9 +20,9 @@ def cleanTXT(txt):
     txt = txt.replace("נ ג ד","נגד")
     txt = txt.replace('פסק-דין','פסק דין')
     txt = txt.replace('\r',' ')
-    txt = txt.replace('\t','')#
-    txt = txt.replace('\n',' ') ###########################
-    txt = txt.replace('   ', ' ')
+    txt = txt.replace('\t',' ')#
+    txt = txt.replace('\n','') ###########################
+    txt = txt.replace('   ', '')
     if(txt.find("<")!=-1 and txt.find(">")!=-1):
         print(txt)
         print(txt[:txt.find("<")] + txt[:txt.find(">")+1:])
