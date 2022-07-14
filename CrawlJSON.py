@@ -142,6 +142,10 @@ def CrawlTopWindow(CASE, n_decisions,LINK,Type, dict,case_name_num):
 
                         try:
                             label = (cleanTXT(td['data-label']))
+                            if(label.find("שם ב.משפט")!=-1): label = "שם בית משפט"
+                            if (label.find("מ.תיק דלמטה") != -1): label = "מספר תיק דלמטה"
+                            if (label.find("ת.החלטה") != -1): label = "תאריך החלטה"
+
                             info = (cleanTXT(td.text)).replace('\n','')
                             if(len(info)<1): info = "אין מידע"
                             labels.append(label)

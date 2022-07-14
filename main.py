@@ -27,8 +27,8 @@ exe_path = 'C:/Users/Noam/Desktop/Courts Project/chromedriver.exe'
 
 # main_data_frame = pd.read_csv('Cases_Name.csv',encoding = "ISO-8859-8")
 
-start = "01-01-2022"
-end = "02-01-2022"
+start = "15-01-2022"
+end = "16-01-2022"
 
 all_dates = get_dates(start,end)
 print(all_dates)
@@ -81,22 +81,3 @@ END_RUN_TIME = datetime.now()
 print("FINISH, THE TIME IT TOOK, from 04.01.22-01.02.2022: ",END_RUN_TIME-START_RUN_TIME)######
 
 
-
-
-########################
-
-
-# בדקתי ריצה עבור 10 ימים 3 קייסים ביום
-# ההרכיה בגייסון
-# הוספתי בדיקה של תיק חסוי - במקרה זה התיק לא נכנס לקבצי הג'ייסון
-# בדיקה של ימי שבת
-# שמות הגייסון מורכבים מתאריך וממספר סידורי
-
-
-####################################
-
-
-# # איך מוחקים את האזהרות?
-# # firefox
-# לוודא שפסק-דין \ החלטה אחרונה חדשה בתיק קיים תדרוס את הישן?
-# מקרה של קייס חסוי, מה לעשות ?
