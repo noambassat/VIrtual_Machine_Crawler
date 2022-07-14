@@ -142,9 +142,8 @@ def CrawlTopWindow(CASE, n_decisions,LINK,Type, dict,case_name_num):
 
                         try:
                             label = (cleanTXT(td['data-label']))
-                            info = (cleanTXT(td.text))
+                            info = (cleanTXT(td.text)).replace('\n','')
                             if(len(info)<1): info = "אין מידע"
-
                             labels.append(label)
                             infos.append(info)
                         except KeyError:
