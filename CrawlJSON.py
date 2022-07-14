@@ -34,8 +34,7 @@ def cleanTXT(txt):
         if (txt[-1].isspace()): txt = txt[:-1]
     except IndexError: pass
 
-    while(txt.find("<")!=-1 and txt.find(">")!=-1): # Catch txt noise
-            txt = txt[:txt.find("<")]+" "+" " + txt[:txt.find(">")+1:]
+    txt = re.sub('<.*>', ' ', txt)
 
     txt = txt.replace("נ ג ד", "נגד")
     if(txt==' ' or txt=='  '): return ''
