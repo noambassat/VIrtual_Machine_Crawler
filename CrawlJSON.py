@@ -20,9 +20,14 @@ def cleanTXT(txt):
     txt = txt.replace("נ ג ד","נגד")
     txt = txt.replace('פסק-דין','פסק דין')
     txt = txt.replace('\r',' ')
-    txt = txt.replace('\t','')#
-    txt = txt.replace('\n','')#
-    txt = txt.replace('  ', ' ')
+    txt = txt.replace('\t',' ')#
+    # txt = txt.replace('\n',' ') ###########################
+    txt = txt.replace('   ', '')
+    if(txt.find("<")!=-1 and txt.find(">")!=-1):
+        print(txt)
+        print(txt[:txt.find("<")] + txt[:txt.find(">")+1:])
+        return txt[:txt.find("<")]+" "+" " + txt[:txt.find(">")+1:]
+
     txt = txt.replace("נ ג ד", "נגד")
     if(txt==' ' or txt=='  '): return ''
 
@@ -45,7 +50,7 @@ def crawl_HTML(data, link, Type):
 
 def Get_LINK(df,CASE): # רק פסק-דין או החלטה אחרונה כרגע
     if(len(df)==0): return '',''
-    Type = df['סוג מסמך'][0]
+    Type = cleanTXT(df['סוג מסמך'][0])
     LINK = df['HTML_Link'][0]
     for i in df.index:
         if(df['סוג מסמך'][i].find('דין')!=-1 and df['סוג מסמך'][i].find('פסק')!=-1 ):
@@ -225,8 +230,8 @@ def Crawl_Decisions(CASE):
                 if(label.find('#')!=-1): continue
                 if(label.find('מ.')!=-1 or label.find("מס'")!=-1): label = 'מספר עמודים'
                 temp['Case Number'] = CASE_NUM
-                info = cleanTXT( case.text)
-                if(info.find('פסק')!=-1 and info.find('דין')!=-1): indo = "פסק דין"
+                info = cleanTXT(case.text)
+                if(info.find('פסק')!=-1 and info.find('דין')!=-1): info = "פסק דין"
                 temp[label] = info
             if (len(temp) == 0): continue
             for link in hrefs:
