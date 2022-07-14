@@ -12,9 +12,11 @@ def cleanTXT(txt):
     txt = txt.replace(u'\xa0', u' ')
     txt = txt.replace("נ ג ד","נגד")
     txt = txt.replace('פסק-דין','פסק דין')
-    txt = txt.replace('\r',' ')
+    txt = txt.replace('\r','')
+    txt = txt.replace("\n", ' ')
     txt = txt.replace('  ',' ')
     txt = txt.replace("נ ג ד", "נגד")
+
     if(txt==' ' or txt=='  '): return ''
 
     return txt
@@ -24,7 +26,7 @@ def slicer(text,labels,contents):
         text = cleanTXT(text).replace('\n ', '').replace('\n', '')
         if len(text) == 0: continue
         if(text[-1]==":"):
-            labels.append(text[:text.find(":")])
+            labels.append(cleanTXT(text[:text.find(":")]))
             continue
         #
         content = []
@@ -32,8 +34,7 @@ def slicer(text,labels,contents):
         for info in ((text.replace(";",","))[text.find(":")+1:]).split(','):
             info = re.sub(r'(\d)+\. ','', info)
             info = info.replace('-',' ')
-
-            content.append(info)
+            content.append(cleanTXT(info))
         if len(content)!=0: contents.append(content)
 
     return labels,contents
@@ -65,12 +66,12 @@ def HTML_CRAWLER(link):
             if len (row) == 0 : continue
             row = re.sub(r'(\d)+\. ', '', row)
             row = row.replace('-',' ')
-            content.append(row)
+            content.append(cleanTXT(row))
         if(len(content)!=0): contents.append(content)
 
 
         # NEXT SESSION
-    all = {labels[n]:contents[n] for n in range(len(labels))}
+    all = {cleanTXT(labels[n]):contents[n] for n in range(len(labels))}
 
     return all
     # for k, v in zip(all.keys(),all.values()):

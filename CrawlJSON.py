@@ -19,8 +19,11 @@ def cleanTXT(txt):
     txt = txt.replace(u'\xa0', u' ')
     txt = txt.replace("נ ג ד","נגד")
     txt = txt.replace('פסק-דין','פסק דין')
-    txt = txt.replace('\r',' ')
-    txt = txt.replace('  ',' ')
+    txt = txt.replace('\r','')
+    txt = txt.replace('\t','')
+    txt =txt.replace('\n','')
+    txt = txt.replace('  ','')
+    txt = txt.replace('\n ','')
     txt = txt.replace("נ ג ד", "נגד")
     if(txt==' ' or txt=='  '): return ''
 
@@ -32,12 +35,12 @@ def crawl_HTML(data, link, Type):
 
     data_dict = HTML_CRAWLER(link)
     data_dict['סוג מסמך'] = Type
-    data_dict['מסמך מלא'] = (soup.text.replace('\n\n','')).replace(u'\xa0', u' ')
+    data_dict['מסמך מלא'] = cleanTXT(soup.text.replace('\n\n','').replace(u'\xa0', u' '))
     data_dict['קישור למסמך'] = link
 
     conclusion = ""
     for row in soup.findAll("p",{"class":"Ruller4"}): conclusion += cleanTXT(row.text)
-    data_dict["סיכום מסמך"] = conclusion
+    data_dict["סיכום מסמך"] = cleanTXT(conclusion)
 
     return data_dict
 
@@ -47,7 +50,7 @@ def Get_LINK(df,CASE): # רק פסק-דין או החלטה אחרונה כרג�
     LINK = df['HTML_Link'][0]
     for i in df.index:
         if(df['סוג מסמך'][i].find('דין')!=-1 and df['סוג מסמך'][i].find('פסק')!=-1 ):
-            Type = 'פסק דן'
+            Type = 'פסק דין'
             LINK = df['HTML_Link'][i]
             break
     return LINK, Type
@@ -60,6 +63,7 @@ def add_counters(data):
         if (key == "פרטים כלליים" or key == 'תיק חסוי'): continue # doesn't count this keys
         curr_key = 'מספר ' + str(key) + ' בתיק'
         temp_data[curr_key] = len(temp_data[key])
+        print(temp_data[key])
     return temp_data
 
 def CrawlTopWindow(CASE,LINK,Type, dict,case_name_num):
@@ -153,7 +157,7 @@ def CrawlTopWindow(CASE,LINK,Type, dict,case_name_num):
                         except KeyError:
                             pass
                     if(len(infos)<1): continue
-                    row = {labels[n]:infos[n] for n in range(len(labels))}
+                    row = {cleanTXT(labels[n]):cleanTXT(infos[n]) for n in range(len(labels))}
                     if "סוג צד" in labels:
 
                         new_val = ""
@@ -161,12 +165,12 @@ def CrawlTopWindow(CASE,LINK,Type, dict,case_name_num):
                             if(l=='סוג צד'): new_val += infos[n]
                             if(l=='#'): new_val += " "+ infos[n]
                         row['צד'] = new_val
-
-                    data.append(row)
+                    if row not in data: data.append(row)
+                print("dataaa", data)
                 if(len(data)<1):
                     all_data[LABELS[i + 1]] = 'אין מידע'
                     continue
-                all_data[LABELS[i + 1]] = data
+                else: all_data[LABELS[i + 1]] = data
 
         ### ADDING COUNTERS
 

@@ -27,8 +27,8 @@ exe_path = 'C:/Users/Noam/Desktop/Courts Project/chromedriver.exe'
 
 # main_data_frame = pd.read_csv('Cases_Name.csv',encoding = "ISO-8859-8")
 
-start = "15-01-2022"
-end = "16-01-2022"
+start = "01-01-2022"
+end = "02-01-2022"
 
 all_dates = get_dates(start,end)
 print(all_dates)
