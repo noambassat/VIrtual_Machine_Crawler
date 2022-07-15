@@ -56,7 +56,7 @@ def HTML_CRAWLER(link):
         soup = soup.find('body').find("div",{"class":"WordSection1"})
         dirs = soup.findAll("div",{"align":"right"})
     except AttributeError:
-        print(soup)
+        print(link)
         print("AttErr")
         return 0
     labels = []
