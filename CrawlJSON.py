@@ -74,7 +74,9 @@ def add_counters(data):
     for key in data.keys():
         if (key == "פרטים כלליים" or key == 'תיק חסוי'): continue # doesn't count this keys
         curr_key = 'מספר ' + str(key) + ' בתיק'
-        temp_data[curr_key] = len(temp_data[key])
+        if(data[key]=='אין מידע'): temp_data[curr_key] = 0
+        else:
+            temp_data[curr_key] = len(temp_data[key])
     return temp_data
 
 def CrawlTopWindow(CASE,LINK,Type, dict,case_name_num):
@@ -157,6 +159,7 @@ def CrawlTopWindow(CASE,LINK,Type, dict,case_name_num):
 
                         try:
                             label = (cleanTXT(td['data-label']))
+                            if(label=="#"): label = "מספר"
                             if(label.find("שם ב.משפט")!=-1): label = "שם בית משפט"
                             if (label.find("מ.תיק דלמטה") != -1): label = "מספר תיק דלמטה"
                             if (label.find("ת.החלטה") != -1): label = "תאריך החלטה"
@@ -174,7 +177,7 @@ def CrawlTopWindow(CASE,LINK,Type, dict,case_name_num):
                         new_val = ""
                         for n,l in enumerate(labels):
                             if(l=='סוג צד'): new_val += infos[n]
-                            if(l=='#'): new_val += " "+ infos[n]
+                            if(l=='מספר'): new_val += " "+ infos[n]
                         row['צד'] = new_val
                     if row not in data: data.append(row)
                 if(len(data)<1):
@@ -192,7 +195,7 @@ def CrawlTopWindow(CASE,LINK,Type, dict,case_name_num):
         all_data['Full Case Number'] = case_name_num
         all_data['Case Number'] = case_name_num[case_name_num.find(" ")+1:]
         all_data['Case Initials'] = case_name_num[:case_name_num.find(" ")]
-        all_data['Case Year'] = case_name_num[case_name_num.find("/")+1:]
+        all_data['Case Year'] = '20'+case_name_num[case_name_num.find("/")+1:]
     except KeyError:
         pass
 

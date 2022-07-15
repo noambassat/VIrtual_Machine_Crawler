@@ -1,5 +1,4 @@
 import json
-from io import StringIO
 
 from bs4 import Tag
 

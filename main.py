@@ -31,7 +31,7 @@ start = "01-01-2022"
 end = "02-01-2022"
 
 all_dates = get_dates(start,end)
-print(all_dates)
+
 for i in range(len(all_dates)):
     # main_data_frame = pd.read_csv('Cases_Name.csv', encoding="ISO-8859-8")
     try:
@@ -57,7 +57,7 @@ for i in range(len(all_dates)):
         # df.join(main_data_frame)
         name = 'DataFrames/Cases_Name '+start+'.csv'
         df.to_csv(name,encoding = "ISO-8859-8")
-
+        print(start)
         # print('  ... DataFrame: ... \n', df.head())
 
         driver.close()
