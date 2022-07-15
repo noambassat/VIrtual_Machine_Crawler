@@ -46,6 +46,7 @@ def crawl_HTML(data, link, Type):
     soup = BeautifulSoup(xml.content, 'lxml')
 
     data_dict = HTML_CRAWLER(link)
+    if(data_dict==0): data_dict = {}
     data_dict['סוג מסמך'] = Type
     data_dict['מסמך מלא'] = cleanTXT(soup.text.replace('\n\n',' ').replace(u'\xa0', u' '))
     data_dict['קישור למסמך'] = link

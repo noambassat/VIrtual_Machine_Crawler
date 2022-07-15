@@ -27,6 +27,14 @@ exe_path = 'C:/Users/Noam/Desktop/Courts Project/chromedriver.exe'
 
 # main_data_frame = pd.read_csv('Cases_Name.csv',encoding = "ISO-8859-8")
 
+
+################    CHECK THIS    ####################
+#  File "C:\Users\Noam\PycharmProjects\pythonProject5\Parser.py", line 57, in HTML_CRAWLER
+#     dirs = soup.findAll("div",{"align":"right"})
+# AttributeError: 'NoneType' object has no attribute 'findAll'
+
+
+
 start = "01-01-2022"
 end = "02-01-2022"
 

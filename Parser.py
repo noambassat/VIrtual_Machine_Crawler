@@ -52,8 +52,13 @@ def HTML_CRAWLER(link):
     soup = BeautifulSoup(xml.content, 'lxml')
     labels = []
     contents = []
-    soup = soup.find('body').find("div",{"class":"WordSection1"})
-    dirs = soup.findAll("div",{"align":"right"})
+    try:
+        soup = soup.find('body').find("div",{"class":"WordSection1"})
+        dirs = soup.findAll("div",{"align":"right"})
+    except AttributeError:
+        print(soup)
+        print("AttErr")
+        return 0
     labels = []
     contents = []
     for s in dirs:
