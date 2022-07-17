@@ -56,15 +56,21 @@ def HTML_CRAWLER(link):
         soup = soup.find('body').find("div",{"class":"WordSection1"})
         dirs = soup.findAll("div",{"align":"right"})
     except AttributeError:
-        soup = BeautifulSoup(xml.content, 'lxml')
-        soup = soup.find('body').find("div", {"class": "Section1"})
-        dirs = soup.findAll("div", {"align": "right"})
+        try:
+            soup = BeautifulSoup(xml.content, 'lxml')
+            soup = soup.find('body').find("div", {"class": "Section1"})
+            dirs = soup.findAll("div", {"align": "right"})
+            print(type(dirs))
+            dirs.append(soup.findAll('p',{"class":"Ruller3"}))
+            print(type(dirs))
+        except AttributeError:
+            print(link)
 
     labels = []
     contents = []
     for s in dirs:
         text = s.text
-
+        print(cleanTXT(text))
         if(len(text)==0 or text.find(":")==-1):continue
 
         if (text.find("בשם ה") != -1):

@@ -220,8 +220,13 @@ def CrawlTopWindow(CASE,LINK,Type, dict,case_name_num):
 def Crawl_Decisions(CASE):
     src = "https://elyon2.court.gov.il/Scripts9/mgrqispi93.dll?Appname=eScourt&Prgname=GetFileDetails_for_new_site&Arguments=-N2014-008568-0"
     CASE_NUM = CASE[67:67 + 4] + "/"+ CASE[64:64 + 2]
-    driver = webdriver.Chrome(executable_path='C:/Users/Noam/Desktop/Courts Project/chromedriver.exe',chrome_options=options)
-    driver.get(CASE)
+    try:
+        driver = webdriver.Chrome(executable_path='C:/Users/Noam/Desktop/Courts Project/chromedriver.exe',chrome_options=options)
+        driver.get(CASE)
+    except WebDriverException:
+        driver = webdriver.Chrome(executable_path='C:/Users/Noam/Desktop/Courts Project/chromedriver.exe',
+                                  chrome_options=options)
+        driver.get(CASE)
     time.sleep(1)
     response = requests.get(CASE)
     SOUP = BeautifulSoup(driver.page_source, 'html.parser')

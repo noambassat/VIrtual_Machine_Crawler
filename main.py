@@ -35,7 +35,7 @@ exe_path = 'C:/Users/Noam/Desktop/Courts Project/chromedriver.exe'
 
 
 
-start = "04-01-2022" #
+start = "01-01-2010" #
 end = "15-07-2022"
 
 all_dates = get_dates(start,end)
@@ -48,10 +48,10 @@ for i in range(len(all_dates)):
     except IndexError: break
 
     src = get_src(start, end)
-    driver = webdriver.Chrome(executable_path=exe_path,chrome_options=options)
 
 
     try:
+        driver = webdriver.Chrome(executable_path=exe_path, chrome_options=options)
         driver.get(src)
     except InvalidSessionIdException:
         print("Couldn't get src:\n", src)
