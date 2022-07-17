@@ -35,7 +35,7 @@ exe_path = 'C:/Users/Noam/Desktop/Courts Project/chromedriver.exe'
 
 
 
-start = "01-01-2010" #
+start = "23-01-2022" #
 end = "15-07-2022"
 
 all_dates = get_dates(start,end)
@@ -49,9 +49,9 @@ for i in range(len(all_dates)):
 
     src = get_src(start, end)
 
-
     try:
         driver = webdriver.Chrome(executable_path=exe_path, chrome_options=options)
+        print(src)
         driver.get(src)
     except InvalidSessionIdException:
         print("Couldn't get src:\n", src)
@@ -74,6 +74,7 @@ for i in range(len(all_dates)):
             # try:
             dec_df, LINK, conclusion, dict = Crawl_Decisions(CASE)
             if(len(dec_df)==0):continue
+            time.sleep(1)
             data = CrawlTopWindow(CASE, LINK, conclusion,dict,df[start][i])
             # except AttributeError:
             #     print(AttributeError)

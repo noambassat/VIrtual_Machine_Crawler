@@ -54,15 +54,18 @@ def HTML_CRAWLER(link):
     contents = []
     try:
         soup = soup.find('body').find("div",{"class":"WordSection1"})
-        dirs = soup.findAll("div",{"align":"right"})
+        dirs = soup.findAll("div", {"align": "right"})
+        print(type(dirs)) ################3
+        dirs.append(soup.findAll('p', {"class": "Ruller3"}))
+        print(type(dirs)) #####################
     except AttributeError:
         try:
             soup = BeautifulSoup(xml.content, 'lxml')
             soup = soup.find('body').find("div", {"class": "Section1"})
             dirs = soup.findAll("div", {"align": "right"})
-            print(type(dirs))
+            print(type(dirs)) ################
             dirs.append(soup.findAll('p',{"class":"Ruller3"}))
-            print(type(dirs))
+            print(type(dirs)) ###############
         except AttributeError:
             print(link)
 
