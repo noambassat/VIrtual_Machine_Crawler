@@ -35,7 +35,7 @@ exe_path = 'C:/Users/Noam/Desktop/Courts Project/chromedriver.exe'
 
 
 
-start = "23-01-2022" #
+start = "01-01-2010" #
 end = "15-07-2022"
 
 all_dates = get_dates(start,end)

@@ -93,7 +93,7 @@ def HTML_CRAWLER(link):
         # NEXT SESSION
     all = {}
     for n in range(len(labels)):
-        all[label[n]] =contents[n]
+        all[labels[n]] =contents[n]
         if(labels[n].find('לפני')!=-1): all["מספר השופטים"] = len(contents[n])
 
     return all
