@@ -8,6 +8,8 @@ import time
 import re
 
 
+
+
 def cleanTXT(txt):
 
     txt = (re.sub(r'(\ )+', ' ', txt))
@@ -28,42 +30,7 @@ def cleanTXT(txt):
     if(txt==' ' or txt=='  '): return ''
 
     return txt
-
-def slicer(text,labels,contents):
-    for text in text.split('\n\n'):
-        text = cleanTXT(text).replace('\n ', ' ')
-        if len(text) == 0: continue
-        if(text[-1]==":"):
-            labels.append(cleanTXT(text[:text.find(":")]))
-            continue
-        #
-        content = []
-
-        for info in ((text.replace(";",","))[text.find(":")+1:]).split(','):
-            info = re.sub(r'(\d)+\. ','', info)
-            info = info.replace('-',' ')
-            content.append(cleanTXT(info))
-        if len(content)!=0: contents.append(content)
-
-    return labels,contents
-
-def HTML_CRAWLER(link):
-    xml = requests.get(link)
-    soup = BeautifulSoup(xml.content, 'lxml')
-    labels = []
-    contents = []
-    try:
-        soup = soup.find('body').find("div",{"class":"WordSection1"})
-        dirs = soup.findAll("div", {"align": "right"})
-        # dirs.append(soup.findAll('p', {"class": "Ruller3"}))
-    except AttributeError:
-        try:
-            soup = BeautifulSoup(xml.content, 'lxml')
-            soup = soup.find('body').find("div", {"class": "Section1"})
-            dirs = soup.findAll("div", {"align": "right"})
-            # dirs.append(soup.findAll('p',{"class":"Ruller3"}))
-        except AttributeError:
-            print(link)
+def get_dict(dirs):
 
     labels = []
     contents = []
@@ -97,10 +64,52 @@ def HTML_CRAWLER(link):
         if(labels[n].find('פני')!=-1): all["מספר השופטים"] = len(contents[n])
 
     return all
-    # for k, v in zip(all.keys(),all.values()):
-    #     print(k,": ",v)
-    #
 
+def slicer(text,labels,contents):
+    for text in text.split('\n\n'):
+        text = cleanTXT(text).replace('\n ', ' ')
+        if len(text) == 0: continue
+        if(text.find(":")!=-1):
+            labels.append(cleanTXT(text[:text.find(":")]))
+            # continue
+        #
+        content = []
+
+        for info in ((text.replace(";",","))[text.find(":")+1:]).split(','):
+            info = re.sub(r'(\d)+\. ','', info)
+            info = cleanTXT(info.replace('-',' '))
+            content.append(cleanTXT(info))
+        if len(content)!=0: contents.append(content)
+
+    return labels,contents
+
+
+
+def HTML_CRAWLER(link):
+    xml = requests.get(link)
+    soup = BeautifulSoup(xml.content, 'lxml')
+
+    try:
+        soup = soup.find('body').find("div",{"class":"WordSection1"})
+        dirs = soup.findAll("div", {"align": "right"})
+        dirs_1 = soup.findAll('p', {"class": "Ruller3"})
+
+    except AttributeError:
+        try:
+            soup = BeautifulSoup(xml.content, 'lxml')
+            soup = soup.find('body').find("div", {"class": "Section1"})
+            dirs = soup.findAll("div", {"align": "right"})
+            dirs_1 = soup.findAll('p', {"class": "Ruller3"})
+        except AttributeError:
+            print(link)
+
+    one = get_dict(dirs)
+    all = {**one, **get_dict(dirs_1)}
+    print("@@@@@@@@@@@@@@@@@@@@@@@@@@@@")
+    for k, v in zip(all.keys(),all.values()):
+        print(k,": ",v)
+
+    return all
 
 #
 # link_psak_din = "https://supremedecisions.court.gov.il/Home/Download?path=HebrewVerdicts/20/520/073/e05&fileName=20073520.E05&type=2"
