@@ -94,7 +94,7 @@ def HTML_CRAWLER(link):
     all = {}
     for n in range(len(labels)):
         all[labels[n]] =contents[n]
-        if(labels[n].find('לפני')!=-1): all["מספר השופטים"] = len(contents[n])
+        if(labels[n].find('פני')!=-1): all["מספר השופטים"] = len(contents[n])
 
     return all
     # for k, v in zip(all.keys(),all.values()):
