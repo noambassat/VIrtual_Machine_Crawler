@@ -45,7 +45,6 @@ def get_dict(dirs):
         labels.append(text[:text.find(":")].replace('\n',' '))
 
         info = (text[text.find(":")+1:])
-        # print(info)
         content = []
         for row in info.split('\n\n'): # content
             row = cleanTXT(row).replace('\n ',' ')
@@ -104,12 +103,10 @@ def HTML_CRAWLER(link):
             print(link)
 
     one = get_dict(dirs)
-    all = {**one, **get_dict(dirs_1)}
-    print("@@@@@@@@@@@@@@@@@@@@@@@@@@@@")
-    for k, v in zip(all.keys(),all.values()):
-        print(k,": ",v)
+    return {**one, **get_dict(dirs_1)}
+    # for k, v in zip(all.keys(),all.values()):
+    #     print(k,": ",v)
 
-    return all
 
 #
 # link_psak_din = "https://supremedecisions.court.gov.il/Home/Download?path=HebrewVerdicts/20/520/073/e05&fileName=20073520.E05&type=2"
