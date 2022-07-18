@@ -11,7 +11,7 @@ import re
 
 
 def cleanTXT(txt):
-
+    txt = txt.replace("'","")
     txt = (re.sub(r'(\ )+', ' ', txt))
     try:
         if (txt[0].isspace()):   txt = txt[1:]
@@ -38,7 +38,7 @@ def get_dict(dirs):
         text = s.text
         if(len(text)==0 or text.find(":")==-1):continue
 
-        if (text.find("בשם ה") != -1):
+        if (text.find("בשם ה") != -1 and text.find("להצטרף")==-1):
             labels,contents = slicer(text, labels,contents)
             continue  ################################################
 
@@ -51,8 +51,7 @@ def get_dict(dirs):
             if len (row) == 0 : continue
             row = re.sub(r'(\d)+\. ', '', row)
             row = row.replace('-',' ')
-            content.append(cleanTXT(row))
-
+            if(len(row)!=0): content.append(cleanTXT(row))
         if(len(content)!=0): contents.append(content)
 
 
@@ -66,26 +65,17 @@ def get_dict(dirs):
 
 def slicer(text,labels,contents):
     for text in text.split('\n\n'):
+        content = []
         text = cleanTXT(text).replace('\n ', ' ')
         if len(text) == 0: continue
         if(text.find(":")!=-1):
             labels.append(cleanTXT(text[:text.find(":")]))
             # continue
-        #
-        content = []
-
-
-
-        # if(((text.replace(";",","))[text.find(":")+1:]).find(",")==-1):
-        #     content.append(cleanTXT(text[text.find(":")+1:]))
-        #     print(content)
-        # else:
         for info in ((text.replace(";",","))[text.find(":")+1:]).split(','):
             info = re.sub(r'(\d)+\. ','', info)
             info = cleanTXT(info.replace('-',' '))
-            content.append(cleanTXT(info))
-        contents.append(content)
-
+            if(len(info)!=0): content.append(cleanTXT(info))
+        if(len(content)!=0): contents.append(content)
     return labels,contents
 
 
