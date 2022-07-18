@@ -74,11 +74,17 @@ def slicer(text,labels,contents):
         #
         content = []
 
+
+
+        # if(((text.replace(";",","))[text.find(":")+1:]).find(",")==-1):
+        #     content.append(cleanTXT(text[text.find(":")+1:]))
+        #     print(content)
+        # else:
         for info in ((text.replace(";",","))[text.find(":")+1:]).split(','):
             info = re.sub(r'(\d)+\. ','', info)
             info = cleanTXT(info.replace('-',' '))
             content.append(cleanTXT(info))
-        if len(content)!=0: contents.append(content)
+        contents.append(content)
 
     return labels,contents
 
@@ -103,7 +109,7 @@ def HTML_CRAWLER(link):
             print(link)
 
     one = get_dict(dirs)
-    return {**one, **get_dict(dirs_1)}
+    return {**get_dict(dirs_1), **one}
     # for k, v in zip(all.keys(),all.values()):
     #     print(k,": ",v)
 
