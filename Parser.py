@@ -53,13 +53,17 @@ def get_dict(dirs):
             row = row.replace('-',' ')
             if(len(row)!=0): content.append(cleanTXT(row))
         if(len(content)!=0): contents.append(content)
+        else: contents.append("אין מידע")
 
 
         # NEXT SESSION
     all = {}
     for n in range(len(labels)):
-        all[labels[n]] =contents[n]
-        if(labels[n].find('פני')!=-1): all["מספר השופטים"] = len(contents[n])
+        try:
+            all[labels[n]] =contents[n]
+            if(labels[n].find('פני')!=-1): all["מספר השופטים"] = len(contents[n])
+        except IndexError:
+            pass
 
     return all
 
@@ -70,12 +74,14 @@ def slicer(text,labels,contents):
         if len(text) == 0: continue
         if(text.find(":")!=-1):
             labels.append(cleanTXT(text[:text.find(":")]))
+            continue
             # continue
         for info in ((text.replace(";",","))[text.find(":")+1:]).split(','):
             info = re.sub(r'(\d)+\. ','', info)
             info = cleanTXT(info.replace('-',' '))
             if(len(info)!=0): content.append(cleanTXT(info))
         if(len(content)!=0): contents.append(content)
+        else: contents.append("אין מידע")
     return labels,contents
 
 
