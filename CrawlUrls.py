@@ -45,31 +45,11 @@ def Get_URLS(Cases, start,end):
             if(word.find('/') == -1): continue
             case = word[:word.find('/')]
             year = '20' + word[word.find('/')+1:]
-            2022/3635
+            # 2022/3635   #######################################
+
             url = "https://supremedecisions.court.gov.il/Verdicts/Results/1/null/" \
                   +year+ "/"\
                         +case+"/null/null/null/null/null"
             URLS.append(url)
     return URLS
 
-###################################################################################################
-
-#
-#
-# driver = webdriver.Chrome(executable_path='C:/Users/Noam/Desktop/Courts Project/chromedriver.exe')
-#
-# start = '30/05/2022'
-# end =  '31/05/2022'
-# src = get_src(start, end)
-#
-# driver.get(src)
-#
-# time.sleep(1)
-#
-# Number = Get_Number_Of_Cases()
-# scroll_down(Number)
-# Cases = Get_Cases_Names()
-#
-# df =pd.DataFrame(Cases,columns=[start])
-# df.to_csv('Cases_Name.csv')
-# print(df.head())

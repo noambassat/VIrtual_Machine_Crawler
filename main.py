@@ -51,7 +51,6 @@ for i in range(len(all_dates)):
 
     try:
         driver = webdriver.Chrome(executable_path=exe_path, chrome_options=options)
-        print(src)
         driver.get(src)
     except InvalidSessionIdException:
         print("Couldn't get src:\n", src)

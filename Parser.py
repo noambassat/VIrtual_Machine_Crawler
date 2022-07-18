@@ -55,17 +55,13 @@ def HTML_CRAWLER(link):
     try:
         soup = soup.find('body').find("div",{"class":"WordSection1"})
         dirs = soup.findAll("div", {"align": "right"})
-        print(type(dirs)) ################3
-        dirs.append(soup.findAll('p', {"class": "Ruller3"}))
-        print(type(dirs)) #####################
+        # dirs.append(soup.findAll('p', {"class": "Ruller3"}))
     except AttributeError:
         try:
             soup = BeautifulSoup(xml.content, 'lxml')
             soup = soup.find('body').find("div", {"class": "Section1"})
             dirs = soup.findAll("div", {"align": "right"})
-            print(type(dirs)) ################
-            dirs.append(soup.findAll('p',{"class":"Ruller3"}))
-            print(type(dirs)) ###############
+            # dirs.append(soup.findAll('p',{"class":"Ruller3"}))
         except AttributeError:
             print(link)
 
@@ -73,16 +69,16 @@ def HTML_CRAWLER(link):
     contents = []
     for s in dirs:
         text = s.text
-        print(cleanTXT(text))
         if(len(text)==0 or text.find(":")==-1):continue
 
         if (text.find("בשם ה") != -1):
             labels,contents = slicer(text, labels,contents)
             continue  ################################################
 
-
         labels.append(text[:text.find(":")].replace('\n',' '))
+
         info = (text[text.find(":")+1:])
+        # print(info)
         content = []
         for row in info.split('\n\n'): # content
             row = cleanTXT(row).replace('\n ',' ')
@@ -90,11 +86,15 @@ def HTML_CRAWLER(link):
             row = re.sub(r'(\d)+\. ', '', row)
             row = row.replace('-',' ')
             content.append(cleanTXT(row))
+
         if(len(content)!=0): contents.append(content)
 
 
         # NEXT SESSION
-    all = {cleanTXT(labels[n]):contents[n] for n in range(len(labels))}
+    all = {}
+    for n in range(len(labels)):
+        all[label[n]] =contents[n]
+        if(labels[n].find('לפני')!=-1): all["מספר השופטים"] = len(contents[n])
 
     return all
     # for k, v in zip(all.keys(),all.values()):
