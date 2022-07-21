@@ -8,10 +8,10 @@ import requests
 import time
 import re
 
+dec_path = r'Decisions_Table/Decisions_Table.csv'
+exe_path='C:/Users/Noam/Desktop/Courts Project/chromedriver.exe'
 
-
-
-main_df = pd.read_csv(r'Decisions_Table/Decisions_Table.csv',index_col=0)
+main_df = pd.read_csv(dec_path,index_col=0)
 options = Options()
 options.add_argument('--headless')
 options.add_argument('--disable-gpu')  # Last I checked this was necessary.
@@ -86,11 +86,11 @@ def CrawlTopWindow(CASE,LINK,Type, dict,case_name_num):
     YEAR = CASE[62:66]
 
     try:
-        driver = webdriver.Chrome(executable_path='C:/Users/Noam/Desktop/Courts Project/chromedriver.exe',chrome_options=options)
+        driver = webdriver.Chrome(executable_path=exe_path,chrome_options=options)
         driver.get(CASE)
 
     except WebDriverException:
-        driver = webdriver.Chrome(executable_path='C:/Users/Noam/Desktop/Courts Project/chromedriver.exe',chrome_options=options)
+        driver = webdriver.Chrome(executable_path=exe_path,chrome_options=options)
         driver.get(CASE)
 
     time.sleep(1)
@@ -221,10 +221,10 @@ def Crawl_Decisions(CASE):
     src = "https://elyon2.court.gov.il/Scripts9/mgrqispi93.dll?Appname=eScourt&Prgname=GetFileDetails_for_new_site&Arguments=-N2014-008568-0"
     CASE_NUM = CASE[67:67 + 4] + "/"+ CASE[64:64 + 2]
     try:
-        driver = webdriver.Chrome(executable_path='C:/Users/Noam/Desktop/Courts Project/chromedriver.exe',chrome_options=options)
+        driver = webdriver.Chrome(executable_path=exe_path,chrome_options=options)
         driver.get(CASE)
     except WebDriverException:
-        driver = webdriver.Chrome(executable_path='C:/Users/Noam/Desktop/Courts Project/chromedriver.exe',
+        driver = webdriver.Chrome(executable_path=exe_path,
                                   chrome_options=options)
         driver.get(CASE)
     time.sleep(1)
