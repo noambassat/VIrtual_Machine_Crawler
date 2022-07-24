@@ -16,7 +16,7 @@ def scroll_down(driver, Number_Of_Cases):
     Counter = 99
     while(Number_Of_Cases>Counter):
         XPATH = '//*[@id="row_' + str(Counter) + '"]'
-        inner_SCROLL = driver.find_element_by_xpath(XPATH)
+        inner_SCROLL = driver.find_element('xpath',XPATH)
         location = inner_SCROLL.location_once_scrolled_into_view
         Counter +=100
     return driver
@@ -28,6 +28,7 @@ def Get_Cases_Names(driver,Number_Of_Cases):
     soup = BeautifulSoup(driver.page_source, 'html.parser')
     soup = soup.findAll('a', {'title': 'הצג תיק'})
     stop = 0
+
     while(len(soup)!=Number_Of_Cases and stop!=50):
         driver = scroll_down(driver, Number_Of_Cases)
         # elements = driver.find_elements_by_class_name('ng-scope')
@@ -38,9 +39,10 @@ def Get_Cases_Names(driver,Number_Of_Cases):
     return [s.text for s in soup]
 
 
-def Get_URLS(Cases, start,end):
+def Get_URLS(Cases):
     URLS = []
     for case in Cases:
+
         for word in case.split():
             if(word.find('/') == -1): continue
             case = word[:word.find('/')]

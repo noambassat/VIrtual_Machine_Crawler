@@ -21,17 +21,12 @@ options.add_argument('--disable-gpu')
 warnings.simplefilter(action='ignore', category=(FutureWarning, DeprecationWarning))
 
 
-PATH = open('C:/Users/Noam/Desktop/Courts Project/Paths.txt', 'r')
-filePath = 'C:/Users/Noam/PycharmProjects/pythonProject5/Json_Files/'
-exe_path = 'C:/Users/Noam/Desktop/Courts Project/chromedriver.exe'
+# PATH = open('C:/Users/Noam/Desktop/Courts Project/Paths.txt', 'r')
+filePath = '/home/ubuntu/pythonProject5/Json_Files/'
+exe_path = '/home/ubuntu/pythonProject5/chromedriver'
+DT_path = '/home/ubuntu/pythonProject5/DataFrames/'
 
 # main_data_frame = pd.read_csv('Cases_Name.csv',encoding = "ISO-8859-8")
-
-
-################    CHECK THIS    ####################
-#  File "C:\Users\Noam\PycharmProjects\pythonProject5\Parser.py", line 57, in HTML_CRAWLER
-#     dirs = soup.findAll("div",{"align":"right"})
-# AttributeError: 'NoneType' object has no attribute 'findAll'
 
 
 
@@ -62,13 +57,14 @@ for i in range(len(all_dates)):
         Cases = Get_Cases_Names(driver,Number)
         df = pd.DataFrame(Cases, columns=[start])
         # df.join(main_data_frame)
-        name = 'DataFrames/Cases_Name '+start+'.csv'
+        name = DT_path +'Cases_Name '+start+'.csv'
         df.to_csv(name,encoding = "ISO-8859-8")
         print(start)
         # print('  ... DataFrame: ... \n', df.head())
 
         driver.close()
-        URLS = Get_URLS(Cases, start, end)
+        URLS = Get_URLS(Cases)
+
         for i, CASE in enumerate(URLS):
             # try:
             dec_df, LINK, conclusion, dict = Crawl_Decisions(CASE)

@@ -9,7 +9,7 @@ import time
 import re
 
 dec_path = r'Decisions_Table/Decisions_Table.csv'
-exe_path='C:/Users/Noam/Desktop/Courts Project/chromedriver.exe'
+exe_path = '/home/ubuntu/pythonProject5/chromedriver'
 
 main_df = pd.read_csv(dec_path,index_col=0)
 options = Options()
