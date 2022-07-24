@@ -64,7 +64,7 @@ for i in range(len(all_dates)):
 
         driver.close()
         URLS = Get_URLS(Cases)
-
+        print(Number)
         for i, CASE in enumerate(URLS):
             # try:
             dec_df, LINK, conclusion, dict = Crawl_Decisions(CASE)
