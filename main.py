@@ -30,16 +30,16 @@ DT_path = '/home/ubuntu/pythonProject5/DataFrames/'
 
 
 
-start = "01-01-2010" #
+start = "26-01-2010" #
 end = "15-07-2022"
 
 all_dates = get_dates(start,end)
 
-for i in range(len(all_dates)):
+for j in range(len(all_dates)):
     # main_data_frame = pd.read_csv('Cases_Name.csv', encoding="ISO-8859-8")
     try:
-        start = all_dates[i]
-        end = all_dates[i+1]
+        start = all_dates[j]
+        end = all_dates[j+1]
     except IndexError: break
 
     src = get_src(start, end)
@@ -51,7 +51,7 @@ for i in range(len(all_dates)):
         print("Couldn't get src:\n", src)
         driver.close()
         continue
-    time.sleep(1)
+    time.sleep(2)
     try:
         Number = Get_Number_Of_Cases(driver)
         Cases = Get_Cases_Names(driver,Number)
@@ -59,12 +59,11 @@ for i in range(len(all_dates)):
         # df.join(main_data_frame)
         name = DT_path +'Cases_Name '+start+'.csv'
         df.to_csv(name,encoding = "ISO-8859-8")
-        print(start)
-        # print('  ... DataFrame: ... \n', df.head())
+
 
         driver.close()
         URLS = Get_URLS(Cases)
-        print(Number)
+        print(len(URLS))
         for i, CASE in enumerate(URLS):
             # try:
             dec_df, LINK, conclusion, dict = Crawl_Decisions(CASE)
@@ -80,6 +79,10 @@ for i in range(len(all_dates)):
             writeToJsonFile(filePath, json_name, data)
     except NoSuchElementException:
         continue
+    print("It took: ", datetime.now()-START_RUN_TIME,"for the ",(start), " with ", Number, " Cases")
+
+
+    driver.quit()
 END_RUN_TIME = datetime.now()
 print("FINISH, THE TIME IT TOOK, from 04.01.22-01.02.2022: ",END_RUN_TIME-START_RUN_TIME)######
 
