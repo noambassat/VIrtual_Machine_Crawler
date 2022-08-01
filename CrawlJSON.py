@@ -185,7 +185,7 @@ def CrawlTopWindow(CASE,LINK,Type, dict,case_name_num):
                     all_data[LABELS[i + 1]] = 'אין מידע'
                     continue
                 else: all_data[LABELS[i + 1]] = data
-
+        all_data['תיק חסוי'] = False
         ### ADDING COUNTERS
 
     else:
