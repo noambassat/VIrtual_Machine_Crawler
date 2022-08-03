@@ -60,11 +60,11 @@ def crawl_HTML(data, link, Type):
 def Get_LINK(df,CASE): # רק פסק-דין או החלטה אחרונה כרגע
     if(len(df)==0): return '',''
     Type = cleanTXT(df['סוג מסמך'][0])
-    LINK = df['HTML_Link'][0]
+    LINK = df['קישור למסמך הטמל'][0]
     for i in df.index:
         if(df['סוג מסמך'][i].find('דין')!=-1 and df['סוג מסמך'][i].find('פסק')!=-1 ):
             Type = 'פסק דין'
-            LINK = df['HTML_Link'][i]
+            LINK = df['קישור למסמך הטמל'][i]
             break
     return LINK, Type
 
@@ -193,10 +193,10 @@ def CrawlTopWindow(CASE,LINK,Type, dict,case_name_num):
 
     all_data = add_counters(all_data)
     try:
-        all_data['Full Case Number'] = case_name_num
-        all_data['Case Number'] = case_name_num[case_name_num.find(" ")+1:]
-        all_data['Case Initials'] = case_name_num[:case_name_num.find(" ")]
-        all_data['Case Year'] = '20'+case_name_num[case_name_num.find("/")+1:]
+        all_data['מספר תיק מלא'] = case_name_num
+        all_data['מספר תיק'] = case_name_num[case_name_num.find(" ")+1:]
+        all_data['ראשי תיבות תיק'] = case_name_num[:case_name_num.find(" ")]
+        all_data['שנת תיק'] = '20'+case_name_num[case_name_num.find("/")+1:]
     except KeyError:
         pass
 
@@ -206,7 +206,7 @@ def CrawlTopWindow(CASE,LINK,Type, dict,case_name_num):
     counter = 0
     other_docs = []
     for row in dict.values():
-        row.pop("Case Number")
+        row.pop("מספר תיק")
         if row not in doc: ####################
             counter+=1
             other_docs.append(row)
@@ -247,13 +247,13 @@ def Crawl_Decisions(CASE):
                 label = cleanTXT(case['data-label'])
                 if(label.find('#')!=-1): continue
                 if(label.find('מ.')!=-1 or label.find("מס'")!=-1): label = 'מספר עמודים'
-                temp['Case Number'] = CASE_NUM
+                temp['מספר תיק'] = CASE_NUM
                 info = cleanTXT(case.text)
                 if(info.find('פסק')!=-1 and info.find('דין')!=-1): info = "פסק דין"
                 temp[label] = info
             if (len(temp) == 0): continue
             for link in hrefs:
-                temp['HTML_Link'] ='https://supremedecisions.court.gov.il/'+link['href']
+                temp['קישור למסמך הטמל'] ='https://supremedecisions.court.gov.il/'+link['href']
             if(temp not in case_dec.values()): case_dec[i] = temp
 
     except AttributeError : pass
