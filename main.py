@@ -6,7 +6,7 @@ from CrawlUrls import get_src, Get_Cases_Names, Get_Number_Of_Cases, scroll_down
 from CrawlJSON import CrawlTopWindow, Crawl_Decisions
 from Save_As_Json import writeToJsonFile
 from Dates_Calculator import get_dates
-from selenium.common.exceptions import InvalidSessionIdException,NoSuchElementException
+from selenium.common.exceptions import InvalidSessionIdException,NoSuchElementException, UnexpectedAlertPresentException
 from selenium.webdriver.chrome.options import Options
 import warnings
 
@@ -30,7 +30,7 @@ DT_path = '/home/ubuntu/pythonProject5/DataFrames/'
 
 
 
-start = "26-01-2010" #
+start = "01-02-2010" #
 end = "15-07-2022"
 
 all_dates = get_dates(start,end)
@@ -78,6 +78,8 @@ for j in range(len(all_dates)):
 
             writeToJsonFile(filePath, json_name, data)
     except NoSuchElementException:
+        continue
+    except UnexpectedAlertPresentException:
         continue
     print("It took: ", datetime.now()-START_RUN_TIME,"for the ",(start), " with ", Number, " Cases")
 
