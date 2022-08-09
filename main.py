@@ -81,6 +81,8 @@ for j in range(len(all_dates)):
         continue
     except UnexpectedAlertPresentException:
         continue
+    except AttributeError:
+        continue
     print("It took: ", datetime.now()-START_RUN_TIME,"for the ",(start), " with ", Number, " Cases")
 
 
