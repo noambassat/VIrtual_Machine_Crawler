@@ -30,7 +30,7 @@ DT_path = '/home/ubuntu/pythonProject5/DataFrames/'
 
 
 
-start = "01-02-2010" #
+start = "01-01-2010" #
 end = "15-07-2022"
 
 all_dates = get_dates(start,end)
