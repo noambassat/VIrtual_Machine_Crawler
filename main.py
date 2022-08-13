@@ -29,64 +29,67 @@ DT_path = '/home/ubuntu/pythonProject5/DataFrames/'
 # main_data_frame = pd.read_csv('Cases_Name.csv',encoding = "ISO-8859-8")
 
 
+#### 05-03-2010  with  8  Cases ####
 
-start = "01-01-2010" #
-end = "15-07-2022"
+year = 2010
 
-all_dates = get_dates(start,end)
+while(year<=datetime.now().year):
+    start =  "01-01-"+str(year)
+    end= "07-01-"+str(year)
+    year += 1
+    all_dates = get_dates(start,end)
+    print(all_dates)
+    for j in range(len(all_dates)):
+        # main_data_frame = pd.read_csv('Cases_Name.csv', encoding="ISO-8859-8")
+        try:
+            start = all_dates[j]
+            end = all_dates[j+1]
+        except IndexError: break
 
-for j in range(len(all_dates)):
-    # main_data_frame = pd.read_csv('Cases_Name.csv', encoding="ISO-8859-8")
-    try:
-        start = all_dates[j]
-        end = all_dates[j+1]
-    except IndexError: break
+        src = get_src(start, end)
 
-    src = get_src(start, end)
+        try:
+            driver = webdriver.Chrome(executable_path=exe_path, chrome_options=options)
+            driver.get(src)
+        except InvalidSessionIdException:
+            print("Couldn't get src:\n", src)
+            driver.close()
+            continue
+        time.sleep(2)
+        try:
+            Number = Get_Number_Of_Cases(driver)
+            Cases = Get_Cases_Names(driver,Number)
+            df = pd.DataFrame(Cases, columns=[start])
+            # df.join(main_data_frame)
+            name = DT_path +'Cases_Name '+start+'.csv'
+            df.to_csv(name,encoding = "ISO-8859-8")
 
-    try:
-        driver = webdriver.Chrome(executable_path=exe_path, chrome_options=options)
-        driver.get(src)
-    except InvalidSessionIdException:
-        print("Couldn't get src:\n", src)
-        driver.close()
-        continue
-    time.sleep(2)
-    try:
-        Number = Get_Number_Of_Cases(driver)
-        Cases = Get_Cases_Names(driver,Number)
-        df = pd.DataFrame(Cases, columns=[start])
-        # df.join(main_data_frame)
-        name = DT_path +'Cases_Name '+start+'.csv'
-        df.to_csv(name,encoding = "ISO-8859-8")
+            driver.close()
+            URLS = Get_URLS(Cases)
+            print(len(URLS))
+            for i, CASE in enumerate(URLS):
+                # try:
+                dec_df, LINK, conclusion, dict = Crawl_Decisions(CASE)
+                if(len(dec_df)==0):continue
+                time.sleep(1)
+                data = CrawlTopWindow(CASE, LINK, conclusion,dict,df[start][i])
+                # except AttributeError:
+                #     print(AttributeError)
+                #     continue
+                if data == 0: continue
+                json_name = start + "__"+ str(i)
 
-
-        driver.close()
-        URLS = Get_URLS(Cases)
-        print(len(URLS))
-        for i, CASE in enumerate(URLS):
-            # try:
-            dec_df, LINK, conclusion, dict = Crawl_Decisions(CASE)
-            if(len(dec_df)==0):continue
-            time.sleep(1)
-            data = CrawlTopWindow(CASE, LINK, conclusion,dict,df[start][i])
-            # except AttributeError:
-            #     print(AttributeError)
-            #     continue
-            if data == 0: continue
-            json_name = start + "__"+ str(i)
-
-            writeToJsonFile(filePath, json_name, data)
-    except NoSuchElementException:
-        continue
-    except UnexpectedAlertPresentException:
-        continue
-    except AttributeError:
-        continue
-    print("It took: ", datetime.now()-START_RUN_TIME,"for the ",(start), " with ", Number, " Cases")
+                writeToJsonFile(filePath, json_name, data)
+        except NoSuchElementException:
+            continue
+        except UnexpectedAlertPresentException:
+            continue
+        except AttributeError:
+            continue
+        print("It took: ", datetime.now()-START_RUN_TIME,"for the ",(start), " with ", Number, " Cases")
 
 
-    driver.quit()
+        driver.quit()
 END_RUN_TIME = datetime.now()
 print("FINISH, THE TIME IT TOOK, from 04.01.22-01.02.2022: ",END_RUN_TIME-START_RUN_TIME)######
 
