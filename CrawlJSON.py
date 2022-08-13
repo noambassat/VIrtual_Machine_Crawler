@@ -3,6 +3,7 @@ from selenium.webdriver.chrome.options import Options
 from Parser import HTML_CRAWLER
 from selenium import webdriver
 from bs4 import BeautifulSoup
+from datetime import datetime
 import pandas as pd
 import requests
 import time
@@ -197,6 +198,7 @@ def CrawlTopWindow(CASE,LINK,Type, dict,case_name_num):
         all_data['מספר תיק'] = case_name_num[case_name_num.find(" ")+1:]
         all_data['ראשי תיבות תיק'] = case_name_num[:case_name_num.find(" ")]
         all_data['שנת תיק'] = '20'+case_name_num[case_name_num.find("/")+1:]
+        all_data["תאריך חילוץ הנתונים"] = datetime.now().date()
     except KeyError:
         pass
 
