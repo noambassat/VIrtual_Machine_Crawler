@@ -3,14 +3,29 @@ from selenium.webdriver.chrome.options import Options
 from Parser import HTML_CRAWLER
 from selenium import webdriver
 from bs4 import BeautifulSoup
-from datetime import datetime
 import pandas as pd
 import requests
 import time
 import re
 
 dec_path = r'Decisions_Table/Decisions_Table.csv'
-exe_path = '/home/ubuntu/pythonProject5/chromedriver'
+filePath = '/home/ubuntu/pythonProject5/Json_Files/'
+DT_path = '/home/ubuntu/pythonProject5/DataFrames/'
+exe_path = '/home/ubuntu/pythonProject5/geckodriver-v0.31.0-linux64/geckodriver'
+
+
+
+firefox_capabilities = webdriver.DesiredCapabilities.FIREFOX
+firefox_capabilities['marionette'] = True
+firefox_capabilities['headless'] = True
+
+proxy = "5.79.66.2:13080"
+firefox_capabilities['proxy'] = {
+    "proxyType": "MANUAL",
+    "httpProxy": proxy,
+    "sslProxy": proxy
+}
+
 
 main_df = pd.read_csv(dec_path,index_col=0)
 options = Options()
@@ -87,11 +102,11 @@ def CrawlTopWindow(CASE,LINK,Type, dict,case_name_num):
     YEAR = CASE[62:66]
 
     try:
-        driver = webdriver.Chrome(executable_path=exe_path,chrome_options=options)
+        driver = webdriver.Firefox(executable_path=exe_path, capabilities=firefox_capabilities)
         driver.get(CASE)
 
     except WebDriverException:
-        driver = webdriver.Chrome(executable_path=exe_path,chrome_options=options)
+        driver = webdriver.Firefox(executable_path=exe_path, capabilities=firefox_capabilities)
         driver.get(CASE)
 
     time.sleep(1)
@@ -198,7 +213,6 @@ def CrawlTopWindow(CASE,LINK,Type, dict,case_name_num):
         all_data['מספר תיק'] = case_name_num[case_name_num.find(" ")+1:]
         all_data['ראשי תיבות תיק'] = case_name_num[:case_name_num.find(" ")]
         all_data['שנת תיק'] = '20'+case_name_num[case_name_num.find("/")+1:]
-        all_data["תאריך חילוץ הנתונים"] = datetime.now().date()
     except KeyError:
         pass
 
@@ -223,11 +237,11 @@ def Crawl_Decisions(CASE):
     src = "https://elyon2.court.gov.il/Scripts9/mgrqispi93.dll?Appname=eScourt&Prgname=GetFileDetails_for_new_site&Arguments=-N2014-008568-0"
     CASE_NUM = CASE[67:67 + 4] + "/"+ CASE[64:64 + 2]
     try:
-        driver = webdriver.Chrome(executable_path=exe_path,chrome_options=options)
+        driver = webdriver.Firefox(executable_path=exe_path, capabilities=firefox_capabilities)
         driver.get(CASE)
     except WebDriverException:
-        driver = webdriver.Chrome(executable_path=exe_path,
-                                  chrome_options=options)
+        driver = webdriver.Firefox(executable_path=exe_path, capabilities=firefox_capabilities)
+
         driver.get(CASE)
     time.sleep(1)
     response = requests.get(CASE)
