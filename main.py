@@ -12,10 +12,10 @@ import warnings
 
 
 START_RUN_TIME = datetime.now()
-options = Options()
-options.add_argument('--headless')
-options.add_argument('--disable-gpu')
-
+# options = Options()
+# options.add_argument('--headless')
+# options.add_argument('--disable-gpu')
+#
 
 
 warnings.simplefilter(action='ignore', category=(FutureWarning, DeprecationWarning))
@@ -25,72 +25,86 @@ warnings.simplefilter(action='ignore', category=(FutureWarning, DeprecationWarni
 filePath = '/home/ubuntu/pythonProject5/Json_Files/'
 exe_path = '/home/ubuntu/pythonProject5/chromedriver'
 DT_path = '/home/ubuntu/pythonProject5/DataFrames/'
+exe_path = '/home/ubuntu/pythonProject5/geckodriver-v0.31.0-linux64/geckodriver'
+
+
+
+firefox_capabilities = webdriver.DesiredCapabilities.FIREFOX
+firefox_capabilities['marionette'] = True
+firefox_capabilities['headless'] = True
+
+proxy = "5.79.66.2:13080"
+firefox_capabilities['proxy'] = {
+    "proxyType": "MANUAL",
+    "httpProxy": proxy,
+    "sslProxy": proxy
+}
+
 
 # main_data_frame = pd.read_csv('Cases_Name.csv',encoding = "ISO-8859-8")
 
 
 #### 05-03-2010  with  8  Cases ####
 
-year = 2010
+start = "01-01-2013" #
+end = "15-07-2022"
 
-while(year<=datetime.now().year):
-    start =  "01-01-"+str(year)
-    end= "07-01-"+str(year)
-    year += 1
-    all_dates = get_dates(start,end)
-    print(all_dates)
-    for j in range(len(all_dates)):
-        # main_data_frame = pd.read_csv('Cases_Name.csv', encoding="ISO-8859-8")
-        try:
-            start = all_dates[j]
-            end = all_dates[j+1]
-        except IndexError: break
+all_dates = get_dates(start,end)
 
-        src = get_src(start, end)
+for j in range(len(all_dates)):
+    # main_data_frame = pd.read_csv('Cases_Name.csv', encoding="ISO-8859-8")
+    try:
+        start = all_dates[j]
+        end = all_dates[j+1]
+    except IndexError: break
 
-        try:
-            driver = webdriver.Chrome(executable_path=exe_path, chrome_options=options)
-            driver.get(src)
-        except InvalidSessionIdException:
-            print("Couldn't get src:\n", src)
-            driver.close()
-            continue
-        time.sleep(2)
-        try:
-            Number = Get_Number_Of_Cases(driver)
-            Cases = Get_Cases_Names(driver,Number)
-            df = pd.DataFrame(Cases, columns=[start])
-            # df.join(main_data_frame)
-            name = DT_path +'Cases_Name '+start+'.csv'
-            df.to_csv(name,encoding = "ISO-8859-8")
+    src = get_src(start, end)
 
-            driver.close()
-            URLS = Get_URLS(Cases)
-            print(len(URLS))
-            for i, CASE in enumerate(URLS):
-                # try:
-                dec_df, LINK, conclusion, dict = Crawl_Decisions(CASE)
-                if(len(dec_df)==0):continue
-                time.sleep(1)
-                data = CrawlTopWindow(CASE, LINK, conclusion,dict,df[start][i])
-                # except AttributeError:
-                #     print(AttributeError)
-                #     continue
-                if data == 0: continue
-                json_name = start + "__"+ str(i)
+    try:
+        driver = webdriver.Firefox(executable_path=exe_path, capabilities=firefox_capabilities)
+        driver.get(src)
+    except InvalidSessionIdException:
+        print("Couldn't get src:\n", src)
+        driver.close()
+        continue
+    time.sleep(2)
+    try:
+        Number = Get_Number_Of_Cases(driver)
+        Cases = Get_Cases_Names(driver,Number)
+        df = pd.DataFrame(Cases, columns=[start])
+        # df.join(main_data_frame)
+        name = DT_path +'Cases_Name '+start+'.csv'
+        df.to_csv(name,encoding = "ISO-8859-8")
 
-                writeToJsonFile(filePath, json_name, data)
-        except NoSuchElementException:
-            continue
-        except UnexpectedAlertPresentException:
-            continue
-        except AttributeError:
-            continue
-        print("It took: ", datetime.now()-START_RUN_TIME,"for the ",(start), " with ", Number, " Cases")
+        driver.close()
+        URLS = Get_URLS(Cases)
+        print(len(URLS))
+        for i, CASE in enumerate(URLS):
+            # try:
+            dec_df, LINK, conclusion, dict = Crawl_Decisions(CASE)
+            if(len(dec_df)==0):continue
+            time.sleep(1)
+            data = CrawlTopWindow(CASE, LINK, conclusion,dict,df[start][i])
+            # except AttributeError:
+            #     print(AttributeError)
+            #     continue
+            if data == 0: continue
+            json_name = start + "__"+ str(i)
+
+            writeToJsonFile(filePath, json_name, data)
+    except NoSuchElementException:
+        continue
+    except UnexpectedAlertPresentException:
+        continue
+    except AttributeError:
+        continue
+    except UnboundLocalError:
+    	continue
+    print("It took: ", datetime.now()-START_RUN_TIME,"for the ",(start), " with ", Number, " Cases")
 
 
-        driver.quit()
+    driver.quit()
 END_RUN_TIME = datetime.now()
 print("FINISH, THE TIME IT TOOK, from 04.01.22-01.02.2022: ",END_RUN_TIME-START_RUN_TIME)######
 
-
+#################################
