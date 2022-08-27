@@ -8,6 +8,7 @@ from Save_As_Json import writeToJsonFile
 from Dates_Calculator import get_dates
 from selenium.common.exceptions import InvalidSessionIdException,NoSuchElementException, UnexpectedAlertPresentException
 from selenium.webdriver.chrome.options import Options
+import requests
 import warnings
 
 
@@ -100,6 +101,8 @@ for j in range(len(all_dates)):
         continue
     except UnboundLocalError:
     	continue
+    except TimeoutError:
+        pass
     print("It took: ", datetime.now()-START_RUN_TIME,"for the ",(start), " with ", Number, " Cases")
 
 
