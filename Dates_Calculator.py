@@ -46,4 +46,3 @@ def get_dates_string_list(DATES):
         string_list_dates.append(decode_date(date))
     return string_list_dates
 
-
