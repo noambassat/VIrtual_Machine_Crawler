@@ -54,4 +54,3 @@ def Get_URLS(Cases):
                         +case+"/null/null/null/null/null"
             URLS.append(url)
     return URLS
-
