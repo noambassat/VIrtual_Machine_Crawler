@@ -6,18 +6,9 @@ from CrawlUrls import get_src, Get_Cases_Names, Get_Number_Of_Cases, scroll_down
 from CrawlJSON import CrawlTopWindow, Crawl_Decisions
 from Save_As_Json import writeToJsonFile
 from Dates_Calculator import get_dates
-from selenium.common.exceptions import InvalidSessionIdException,NoSuchElementException, UnexpectedAlertPresentException
+from selenium.common.exceptions import WebDriverException, InvalidSessionIdException,NoSuchElementException, UnexpectedAlertPresentException
 from selenium.webdriver.chrome.options import Options
 import requests
-import warnings
-
-
-START_RUN_TIME = datetime.now()
-# options = Options()
-# options.add_argument('--headless')
-# options.add_argument('--disable-gpu')
-#
-
 
 warnings.simplefilter(action='ignore', category=(FutureWarning, DeprecationWarning))
 
@@ -26,20 +17,15 @@ warnings.simplefilter(action='ignore', category=(FutureWarning, DeprecationWarni
 filePath = '/home/ubuntu/pythonProject5/Json_Files/'
 exe_path = '/home/ubuntu/pythonProject5/chromedriver'
 DT_path = '/home/ubuntu/pythonProject5/DataFrames/'
-exe_path = '/home/ubuntu/pythonProject5/geckodriver-v0.31.0-linux64/geckodriver'
+exe_path = '/home/ubuntu/pythonProject5/chromedriver'
+options = Options()
 
+options.add_argument('--disable-gpu')
+options.add_argument('--headless')
 
+PROXY = "5.79.66.2:13080"
 
-firefox_capabilities = webdriver.DesiredCapabilities.FIREFOX
-firefox_capabilities['marionette'] = True
-firefox_capabilities['headless'] = True
-
-proxy = "5.79.66.2:13080"
-firefox_capabilities['proxy'] = {
-    "proxyType": "MANUAL",
-    "httpProxy": proxy,
-    "sslProxy": proxy
-}
+options.add_argument('--proxy-server=%s' % PROXY)
 
 
 # main_data_frame = pd.read_csv('Cases_Name.csv',encoding = "ISO-8859-8")
@@ -62,9 +48,13 @@ for j in range(len(all_dates)):
     src = get_src(start, end)
 
     try:
-        driver = webdriver.Firefox(executable_path=exe_path, capabilities=firefox_capabilities)
+        driver = webdriver.Chrome(executable_path=exe_path, chrome_options=options)
         driver.get(src)
     except InvalidSessionIdException:
+        print("Couldn't get src:\n", src)
+        driver.close()
+        continue
+    except WebDriverException:
         print("Couldn't get src:\n", src)
         driver.close()
         continue
@@ -81,14 +71,10 @@ for j in range(len(all_dates)):
         URLS = Get_URLS(Cases)
         print(len(URLS))
         for i, CASE in enumerate(URLS):
-            # try:
             dec_df, LINK, conclusion, dict = Crawl_Decisions(CASE)
             if(len(dec_df)==0):continue
             time.sleep(1)
             data = CrawlTopWindow(CASE, LINK, conclusion,dict,df[start][i])
-            # except AttributeError:
-            #     print(AttributeError)
-            #     continue
             if data == 0: continue
             json_name = start + "__"+ str(i)
 
@@ -103,11 +89,10 @@ for j in range(len(all_dates)):
     	continue
     except TimeoutError:
         pass
+    except requests.exceptions.ConnectTimeout:
+        pass
     print("It took: ", datetime.now()-START_RUN_TIME,"for the ",(start), " with ", Number, " Cases")
 
-
-    driver.quit()
+    driver.close()
 END_RUN_TIME = datetime.now()
 print("FINISH, THE TIME IT TOOK, from 04.01.22-01.02.2022: ",END_RUN_TIME-START_RUN_TIME)######
-
-#################################

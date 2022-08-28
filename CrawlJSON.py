@@ -17,7 +17,7 @@ exe_path = '/home/ubuntu/pythonProject5/geckodriver-v0.31.0-linux64/geckodriver'
 
 firefox_capabilities = webdriver.DesiredCapabilities.FIREFOX
 firefox_capabilities['marionette'] = True
-firefox_capabilities['headless'] = True
+#firefox_capabilities['headless'] = True
 
 proxy = "5.79.66.2:13080"
 firefox_capabilities['proxy'] = {
@@ -137,6 +137,11 @@ def CrawlTopWindow(CASE,LINK,Type, dict,case_name_num):
     try:
         driver.get(src)
     except InvalidSessionIdException:
+        driver.close()
+        print("InvalidSessionIdException:\n", src)
+        return 0
+    except  WebDriverException:
+        driver.close()
         print("InvalidSessionIdException:\n", src)
         return 0
 
@@ -234,7 +239,6 @@ def CrawlTopWindow(CASE,LINK,Type, dict,case_name_num):
     return new_dict
 
 def Crawl_Decisions(CASE):
-    src = "https://elyon2.court.gov.il/Scripts9/mgrqispi93.dll?Appname=eScourt&Prgname=GetFileDetails_for_new_site&Arguments=-N2014-008568-0"
     CASE_NUM = CASE[67:67 + 4] + "/"+ CASE[64:64 + 2]
     try:
         driver = webdriver.Firefox(executable_path=exe_path, capabilities=firefox_capabilities)
@@ -244,7 +248,7 @@ def Crawl_Decisions(CASE):
 
         driver.get(CASE)
     time.sleep(1)
-    response = requests.get(CASE)
+    # response = requests.get(CASE)
     SOUP = BeautifulSoup(driver.page_source, 'html.parser')
     time.sleep(1)
     case_dec = {}
