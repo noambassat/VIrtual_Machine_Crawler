@@ -11,26 +11,17 @@ import re
 dec_path = r'Decisions_Table/Decisions_Table.csv'
 filePath = '/home/ubuntu/pythonProject5/Json_Files/'
 DT_path = '/home/ubuntu/pythonProject5/DataFrames/'
-exe_path = '/home/ubuntu/pythonProject5/geckodriver-v0.31.0-linux64/geckodriver'
-
-
-
-firefox_capabilities = webdriver.DesiredCapabilities.FIREFOX
-firefox_capabilities['marionette'] = True
-#firefox_capabilities['headless'] = True
-
-proxy = "5.79.66.2:13080"
-firefox_capabilities['proxy'] = {
-    "proxyType": "MANUAL",
-    "httpProxy": proxy,
-    "sslProxy": proxy
-}
+exe_path = '/home/ubuntu/pythonProject5/chromedriver'
 
 
 main_df = pd.read_csv(dec_path,index_col=0)
 options = Options()
+options.add_argument('--disable-gpu')
 options.add_argument('--headless')
-options.add_argument('--disable-gpu')  # Last I checked this was necessary.
+
+PROXY = "5.79.66.2:13080"
+
+options.add_argument('--proxy-server=%s' % PROXY)
 
 def cleanTXT(txt):
 
@@ -102,11 +93,11 @@ def CrawlTopWindow(CASE,LINK,Type, dict,case_name_num):
     YEAR = CASE[62:66]
 
     try:
-        driver = webdriver.Firefox(executable_path=exe_path, capabilities=firefox_capabilities)
+        driver = webdriver.Chrome(executable_path=exe_path, chrome_options=options)
         driver.get(CASE)
 
     except WebDriverException:
-        driver = webdriver.Firefox(executable_path=exe_path, capabilities=firefox_capabilities)
+        driver = webdriver.Chrome(executable_path=exe_path, chrome_options=options)
         driver.get(CASE)
 
     time.sleep(1)
@@ -241,14 +232,14 @@ def CrawlTopWindow(CASE,LINK,Type, dict,case_name_num):
 def Crawl_Decisions(CASE):
     CASE_NUM = CASE[67:67 + 4] + "/"+ CASE[64:64 + 2]
     try:
-        driver = webdriver.Firefox(executable_path=exe_path, capabilities=firefox_capabilities)
+        driver = webdriver.Chrome(executable_path=exe_path, chrome_options=options)
         driver.get(CASE)
     except WebDriverException:
-        driver = webdriver.Firefox(executable_path=exe_path, capabilities=firefox_capabilities)
+        driver = webdriver.Chrome(executable_path=exe_path, chrome_options=options)
 
         driver.get(CASE)
     time.sleep(1)
-    # response = requests.get(CASE)
+    response = requests.get(CASE)
     SOUP = BeautifulSoup(driver.page_source, 'html.parser')
     time.sleep(1)
     case_dec = {}
