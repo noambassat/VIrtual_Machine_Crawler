@@ -57,15 +57,21 @@ for j in range(len(all_dates)):
         driver.close()
         continue
     except WebDriverException:
-        print("WebDriverException:\n", src)
-        print("Error Desc:\n", WebDriverException)
+        print(str(wde))
+        print("-----")
+        print(wde.args)
+        print(src)
+        print("trying once again.....")
         driver.close()
         try:
             driver = webdriver.Chrome(executable_path=exe_path, chrome_options=options)
             driver.get(src)
-        except WebDriverException:
-            print("ONCE AGAIN")
-            continue
+        except WebDriverException as wde:
+            print(str(wde))
+            print("-----")
+            print(wde.args)
+            print(src)
+        continue
     time.sleep(2)
     try:
         Number = Get_Number_Of_Cases(driver)
