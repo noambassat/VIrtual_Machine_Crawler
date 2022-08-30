@@ -22,7 +22,7 @@ def scroll_down(driver, Number_Of_Cases):
     return driver
 
 
-def Get_Cases_Names(driver):
+def Get_Cases_Names(driver,Number_Of_Cases):
 
     # elements = driver.find_elements_by_class_name('ng-scope')
     soup = BeautifulSoup(driver.page_source, 'html.parser')
