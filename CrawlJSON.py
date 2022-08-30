@@ -49,9 +49,8 @@ def cleanTXT(txt):
     return txt
 
 def crawl_HTML(data, link, Type):
-    xml = requests.get((link))
+    xml = requests.get(link)
     soup = BeautifulSoup(xml.content, 'lxml')
-
     data_dict = HTML_CRAWLER(link)
     if(data_dict==0): data_dict = {}
     data_dict['סוג מסמך'] = Type
