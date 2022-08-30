@@ -75,7 +75,7 @@ for j in range(len(all_dates)):
     time.sleep(2)
     try:
         Number = Get_Number_Of_Cases(driver)
-        Cases = Get_Cases_Names(driver,Number)
+        Cases = Get_Cases_Names(driver)
         df = pd.DataFrame(Cases, columns=[start])
         # df.join(main_data_frame)
         name = DT_path +'Cases_Name '+start+'.csv'
