@@ -82,7 +82,13 @@ for j in range(len(all_dates)):
         myElem = WebDriverWait(driver, delay).until(EC.presence_of_element_located((By.ID, 'row_0')))
         print("Page is ready!")
     except TimeoutException:
-        print("Loading took too much time! ID in the code not working!")
+        print("Loading took too much time!")
+        print("Trying once again ...")
+        try:
+            myElem = WebDriverWait(driver, delay).until(EC.presence_of_element_located((By.ID, 'row_0')))
+            print("Page is ready!")
+        except TimeoutException:
+            print("Loading took too much time! ID in the code not working!")
 
     try:
         Number = Get_Number_Of_Cases(driver)  # Returns the number of the cases of that date
