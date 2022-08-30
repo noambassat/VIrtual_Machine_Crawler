@@ -2,6 +2,7 @@ from datetime import datetime
 import pandas as pd
 from selenium import webdriver
 import time
+import warnings
 from CrawlUrls import get_src, Get_Cases_Names, Get_Number_Of_Cases, scroll_down, Get_URLS
 from CrawlJSON import CrawlTopWindow, Crawl_Decisions
 from Save_As_Json import writeToJsonFile
@@ -11,7 +12,7 @@ from selenium.webdriver.chrome.options import Options
 import requests
 
 warnings.simplefilter(action='ignore', category=(FutureWarning, DeprecationWarning))
-
+START_RUN_TIME = datetime.now()
 
 # PATH = open('C:/Users/Noam/Desktop/Courts Project/Paths.txt', 'r')
 filePath = '/home/ubuntu/pythonProject5/Json_Files/'
@@ -20,12 +21,13 @@ DT_path = '/home/ubuntu/pythonProject5/DataFrames/'
 exe_path = '/home/ubuntu/pythonProject5/chromedriver'
 options = Options()
 
+
+options = Options()
+
 options.add_argument('--disable-gpu')
 options.add_argument('--headless')
 
-PROXY = "5.79.66.2:13080"
-
-options.add_argument('--proxy-server=%s' % PROXY)
+PROXY = "5.79.66.2:13081"
 
 
 # main_data_frame = pd.read_csv('Cases_Name.csv',encoding = "ISO-8859-8")
@@ -55,9 +57,15 @@ for j in range(len(all_dates)):
         driver.close()
         continue
     except WebDriverException:
-        print("Couldn't get src:\n", src)
+        print("WebDriverException:\n", src)
+        print("Error Desc:\n", WebDriverException)
         driver.close()
-        continue
+        try:
+            driver = webdriver.Chrome(executable_path=exe_path, chrome_options=options)
+            driver.get(src)
+        except WebDriverException:
+            print("ONCE AGAIN")
+            continue
     time.sleep(2)
     try:
         Number = Get_Number_Of_Cases(driver)

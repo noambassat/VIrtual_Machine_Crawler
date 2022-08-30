@@ -19,7 +19,7 @@ options = Options()
 options.add_argument('--disable-gpu')
 options.add_argument('--headless')
 
-PROXY = "5.79.66.2:13080"
+PROXY = "5.79.66.2:13081"
 
 options.add_argument('--proxy-server=%s' % PROXY)
 
