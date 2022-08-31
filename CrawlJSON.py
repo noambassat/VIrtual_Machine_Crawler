@@ -4,6 +4,7 @@ from selenium.webdriver.support.ui import WebDriverWait
 from selenium.common.exceptions import TimeoutException
 from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.common.by import By
+import datetime
 from Parser import HTML_CRAWLER
 from selenium import webdriver
 from bs4 import BeautifulSoup
@@ -13,14 +14,14 @@ import time
 import re
 
 dec_path = r'Decisions_Table/Decisions_Table.csv'
-filePath = '/home/ubuntu/pythonProject5/Json_Files/'
-DT_path = '/home/ubuntu/pythonProject5/DataFrames/'
-exe_path = '/home/ubuntu/pythonProject5/chromedriver'
+filePath = '/home/ubuntu/PycharmProjects/pythonProject5/Json_Files/'
+DT_path = '/home/ubuntu/PycharmProjects/pythonProject5/DataFrames/'
+exe_path = '/home/ubuntu/PycharmProjects/pythonProject5/chromedriver'
 
 main_df = pd.read_csv(dec_path, index_col=0)
 options = Options()
-options.add_argument('--disable-gpu')
-options.add_argument('--headless')
+# options.add_argument('--disable-gpu')
+# options.add_argument('--headless')
 
 PROXY = "5.79.66.2:13081"
 
@@ -106,11 +107,18 @@ def CrawlTopWindow(CASE, LINK, Type, dict, case_name_num):
         driver = webdriver.Chrome(executable_path=exe_path, chrome_options=options)
         driver.get(CASE)
 
+    delay = 5
+
     try:
         myElem = WebDriverWait(driver, delay).until(EC.presence_of_element_located((By.ID, 'row_0')))
-        print("Page is ready!")
+        print("Crawl top Page is ready!")
     except TimeoutException:
-        print("Loading took too much time! ID in the code not working!")
+        try:
+            myElem = WebDriverWait(driver, delay).until(EC.presence_of_element_located((By.ID, 'row_0')))
+            print("Crawl top Page is ready!")
+        except TimeoutException:
+            print("Loading took too much time! ID in the code not working!!!!!!")
+            return 0
     soup = BeautifulSoup(driver.page_source, 'html.parser')
 
     try:
@@ -220,6 +228,11 @@ def CrawlTopWindow(CASE, LINK, Type, dict, case_name_num):
         all_data['מספר תיק'] = case_name_num[case_name_num.find(" ") + 1:]
         all_data['ראשי תיבות תיק'] = case_name_num[:case_name_num.find(" ")]
         all_data['שנת תיק'] = '20' + case_name_num[case_name_num.find("/") + 1:]
+        curr_year = str(datetime.date.today().year)[2:]
+        print(curr_year)
+        if (int(case_name_num[case_name_num.find("/") + 1:]) > int(curr_year)): all_data['שנת תיק'] = '19' + case_name_num[
+                                                                                                 case_name_num.find(
+                                                                                                     "/") + 1:]
     except KeyError:
         pass
 
@@ -241,24 +254,37 @@ def CrawlTopWindow(CASE, LINK, Type, dict, case_name_num):
 
 def Crawl_Decisions(CASE):
     CASE_NUM = CASE[67:67 + 4] + "/" + CASE[64:64 + 2]
+   # https: // supremedecisions.court.gov.il / Verdicts / Results / 1 / null / 1994 / 6563 / null / null / null / null / null
+    delay = 7
+
     try:
         driver = webdriver.Chrome(executable_path=exe_path, chrome_options=options)
         driver.get(CASE)
     except WebDriverException:
+        driver.close()
         driver = webdriver.Chrome(executable_path=exe_path, chrome_options=options)
-
         driver.get(CASE)
-    time.sleep(1)
-    response = requests.get(CASE)
+    try:
+        myElem = WebDriverWait(driver, delay).until(EC.presence_of_element_located((By.ID, 'row_0')))
+        print("Inner Page is ready!")
+    except TimeoutException:
+        print("CrawlJson error:")
+        print("Loading took too much time!")
+        print("Trying once again ...")
+        try:
+            myElem = WebDriverWait(driver, delay).until(EC.presence_of_element_located((By.ID, 'row_0')))
+            print("Page is ready!")
+        except TimeoutException:
+            print("Loading took too much time! ID in the code not working!")
+
+    # response = requests.get(CASE)
     SOUP = BeautifulSoup(driver.page_source, 'html.parser')
-    time.sleep(1)
     case_dec = {}
     df = pd.DataFrame()
     try:
         hidden_case = SOUP.findAll('td')
 
         SOUP = SOUP.find("div", {"class": "processing-docs"}).findAll('tr')
-
         for i, s in enumerate(SOUP):
 
             temp = {}
@@ -278,6 +304,7 @@ def Crawl_Decisions(CASE):
             if (temp not in case_dec.values()): case_dec[i] = temp
 
     except AttributeError:
+        print(AttributeError.args)
         pass
 
     for row in (case_dec.values()):

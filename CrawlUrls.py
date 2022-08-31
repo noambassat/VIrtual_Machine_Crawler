@@ -1,5 +1,5 @@
 from bs4 import BeautifulSoup
-
+import datetime
 
 def get_src(start_date, end_date): return 'https://supremedecisions.court.gov.il/Verdicts/Results/1/null/null/null/2/null/' + start_date.replace('/','-') + '/' + end_date.replace('/','-') + '/null'
 
@@ -47,8 +47,11 @@ def Get_URLS(Cases):
             if(word.find('/') == -1): continue
             case = word[:word.find('/')]
             year = '20' + word[word.find('/')+1:]
+            curr_year = str(datetime.date.today().year)[2:]
+            print(curr_year)
+            if(int(word[word.find('/')+1:])>int(curr_year)): year = '19' +  word[word.find('/')+1:]
             # 2022/3635   #######################################
-
+# https://supremedecisions.court.gov.il/Verdicts/Results/1/null/1994/6563/null/null/null/null/null
             url = "https://supremedecisions.court.gov.il/Verdicts/Results/1/null/" \
                   +year+ "/"\
                         +case+"/null/null/null/null/null"
