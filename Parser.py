@@ -107,7 +107,7 @@ def HTML_CRAWLER(driver, link):
 
     except AttributeError:
         try:
-            soup = BeautifulSoup(xml.content, 'lxml')
+            soup = BeautifulSoup(driver.page_source, 'html.parser')
             soup = soup.find('body').find("div", {"class": "Section1"})
             dirs = soup.findAll("div", {"align": "right"})
             dirs_1 = soup.findAll('p', {"class": "Ruller3"})
