@@ -22,7 +22,7 @@ START_RUN_TIME = datetime.now()
 
 # PATH = open('C:/Users/Noam/Desktop/Courts Project/Paths.txt', 'r')
 filePath = '/home/ubuntu/PycharmProjects/pythonProject5/Json_Files/'
-#exe_path = '/home/ubuntu/pythonProject5/chromedriver'
+# exe_path = '/home/ubuntu/pythonProject5/chromedriver'
 DT_path = '/home/ubuntu/PycharmProjects/pythonProject5/DataFrames/'
 exe_path = '/home/ubuntu/PycharmProjects/pythonProject5/chromedriver'
 options = Options()
@@ -40,12 +40,11 @@ options.add_argument('--proxy-server=%s' % PROXY)
 start = "01-01-2010"  #
 end = "01-02-2010"
 YEAR = 2010
-while(YEAR<2023):
+while (YEAR < 2023):
     start = start[:6] + str(YEAR)
     end = end[:6] + str(YEAR)
     YEAR = int(start[6:]) + 1
     print(start)
-    print(end)
     print(YEAR)
     all_dates = get_dates(start, end)
 
@@ -113,13 +112,11 @@ while(YEAR<2023):
                 print("The len of decisions table: ", len(dec_df))
                 if (len(dec_df) == 0): continue
                 data = CrawlTopWindow(CASE, LINK, conclusion, dict, df[start][i])  # Gets the upper window
-                print("--- data is calculated!")
 
                 if data == 0:
                     print("Data Error! check the CrawlTopWindow from CrawlJSON file")
                     continue
                 json_name = start + "__" + str(i)
-                print(filePath)
                 writeToJsonFile(filePath, json_name, data)  # Write to Json file
                 print("--done saving to json--")
         except NoSuchElementException:
