@@ -126,7 +126,6 @@ def CrawlTopWindow(CASE, LINK, Type, dict, case_name_num):
             return 0
 
     delay = 5
-    print(1)
     try:
         myElem = WebDriverWait(driver, delay).until(EC.presence_of_element_located((By.ID, 'row_0')))
         print("Inner Page is ready!")
@@ -151,7 +150,6 @@ def CrawlTopWindow(CASE, LINK, Type, dict, case_name_num):
                 return 0
 
     soup = BeautifulSoup(driver.page_source, 'html.parser')
-    print(2)
     try:
         soup = soup.find("div", {"class": "details-view"})
         iframe = soup.find('iframe')
@@ -165,7 +163,6 @@ def CrawlTopWindow(CASE, LINK, Type, dict, case_name_num):
     except AttributeError:
         src = "https://elyon2.court.gov.il/Scripts9/mgrqispi93.dll?Appname=eScourt&Prgname=GetFileDetails_for_new_site&Arguments=-N" \
               + YEAR + "-00" + CASE_NUM + "-0"
-    print(3)
     try:
         driver.get(src)
     except WebDriverException:
@@ -181,7 +178,6 @@ def CrawlTopWindow(CASE, LINK, Type, dict, case_name_num):
         driver.close()
         print("InvalidSessionIdException:\n", src)
         return 0
-    print(4)
     soup = BeautifulSoup(driver.page_source, 'html.parser')
 
     if ((soup.find("head").title.text).find("חסוי") != -1):
@@ -197,7 +193,6 @@ def CrawlTopWindow(CASE, LINK, Type, dict, case_name_num):
         details = soup.findAll("span", {"class": "caseDetails-info"})
         all_data = {}
         first_data = {}
-        print(5)
         for i in range(len(labels)):
             first_data[cleanTXT(labels[i].text)] = cleanTXT(details[i].text)
 
@@ -205,7 +200,6 @@ def CrawlTopWindow(CASE, LINK, Type, dict, case_name_num):
 
         tabs = soup.findAll("div", {"class": "tab-pane fade"})
         bigger_data = {}
-        print(6)
         for i, tab in enumerate(tabs):
             labels = []
             data = []
@@ -245,7 +239,6 @@ def CrawlTopWindow(CASE, LINK, Type, dict, case_name_num):
                     continue
                 else:
                     all_data[LABELS[i + 1]] = data
-        print(7)
         all_data['תיק חסוי'] = False
         ### ADDING COUNTERS
 
