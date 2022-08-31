@@ -113,9 +113,11 @@ while(YEAR<2023):
                 print("The len of decisions table: ", len(dec_df))
                 if (len(dec_df) == 0): continue
                 data = CrawlTopWindow(CASE, LINK, conclusion, dict, df[start][i])  # Gets the upper window
-                print("data is calculated!")
-                print(len(data))
-                if data == 0: continue
+                print("--- data is calculated!")
+
+                if data == 0:
+                    print("Data Error! check the CrawlTopWindow from CrawlJSON file")
+                    continue
                 json_name = start + "__" + str(i)
                 print(filePath)
                 writeToJsonFile(filePath, json_name, data)  # Write to Json file

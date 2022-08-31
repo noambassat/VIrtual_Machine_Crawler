@@ -86,9 +86,19 @@ def slicer(text,labels,contents):
 
 
 
-def HTML_CRAWLER(link):
-    xml = requests.get(link)
-    soup = BeautifulSoup(xml.content, 'lxml')
+def HTML_CRAWLER(driver, link):
+    try:
+        driver.get(link)
+
+    except WebDriverException:
+        try:
+            driver.get(link)
+
+        except WebDriverException:
+            print("WebDriverException!")
+            return 0
+    time.sleep(3)
+    soup = BeautifulSoup(driver.page_source, 'html.parser')
 
     try:
         soup = soup.find('body').find("div",{"class":"WordSection1"})
