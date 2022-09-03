@@ -116,8 +116,9 @@ while (YEAR < 2023):
                             continue
                     print("The len of decisions table: ", len(dec_df))
                     time.sleep(1)
+                    ###### PROBLAM IN HERE
                     data = CrawlTopWindow(CASE, LINK, conclusion, dict, df[start][i])  # Gets the upper window
-
+                    #######
                     if data == 0:
                         print("Data Error! check the CrawlTopWindow from CrawlJSON file")
                         continue

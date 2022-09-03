@@ -10,6 +10,7 @@ from selenium import webdriver
 from bs4 import BeautifulSoup
 import pandas as pd
 import requests
+from requests import exceptions
 import time
 import re
 from urllib3.exceptions import InsecureRequestWarning
@@ -62,10 +63,12 @@ def crawl_HTML(sess, data, link, Type):
     proxies = {"http": "http://5.79.66.2:13081", "https": "https://5.79.66.2:13081"}
     time.sleep(1)
     try:
-        html_content = sess.get(link, proxies=proxies).text
+        html_content = sess.get(link, proxies=proxies, verify = False,timeout=5).text
+    except exceptions.Timeout:
+        html_content = sess.get(link, proxies=proxies, verify = False,timeout=5).text
     except OSError:
         sess1 = requests.Session()
-        html_content = sess1.get(link, proxies=proxies, verify = False).text
+        html_content = sess1.get(link, proxies=proxies, verify = False, timeout=5).text
     SOUP = BeautifulSoup(html_content, 'html.parser')
     data_dict = HTML_CRAWLER(sess, link)
     if (data_dict == 0): data_dict = {}
@@ -111,7 +114,11 @@ def CrawlTopWindow(CASE, LINK, Type, dict, case_name_num):
 
     sess = requests.Session()
     proxies = {"http": "http://5.79.66.2:13081", "https": "https://5.79.66.2:13081"}
-    html_content = sess.get(LINK, proxies=proxies, verify = False).text
+    try:
+        html_content = sess.get(LINK, proxies=proxies, verify = False,timeout=5).text
+    except exceptions.Timeout:
+        html_content = sess.get(LINK, proxies=proxies, verify=False, timeout=5).text
+    print("GOT HERE !!!")
     time.sleep(1)
     soup = BeautifulSoup(html_content, 'html.parser')
     # soup = BeautifulSoup(driver.page_source, 'html.parser')
@@ -129,12 +136,16 @@ def CrawlTopWindow(CASE, LINK, Type, dict, case_name_num):
         src = "https://elyon2.court.gov.il/Scripts9/mgrqispi93.dll?Appname=eScourt&Prgname=GetFileDetails_for_new_site&Arguments=-N" \
               + YEAR + "-00" + CASE_NUM + "-0"
     try:
-        html_content = sess.get(LINK, proxies=proxies, verify=False).text
+        html_content = sess.get(LINK, proxies=proxies, verify = False,timeout=5).text
+    except exceptions.Timeout:
+        html_content = sess.get(LINK, proxies=proxies, verify = False,timeout=5).text
     except WebDriverException:
         src = "https://elyon2.court.gov.il/Scripts9/mgrqispi93.dll?Appname=eScourt&Prgname=GetFileDetails_for_new_site&Arguments=-N" \
               + YEAR + "-00" + CASE_NUM + "-0"
     try:
-        html_content = sess.get(LINK, proxies=proxies, verify=False).text
+        html_content = sess.get(LINK, proxies=proxies, verify = False,timeout=5).text
+    except exceptions.Timeout:
+        html_content = sess.get(LINK, proxies=proxies, verify = False,timeout=5).text
     except InvalidSessionIdException:
 
         print("InvalidSessionIdException:\n", src)

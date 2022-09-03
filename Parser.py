@@ -8,7 +8,7 @@ import time
 import re
 from urllib3.exceptions import InsecureRequestWarning
 from urllib3 import disable_warnings
-
+from requests.exceptions import Timeout
 disable_warnings(InsecureRequestWarning)
 
 
@@ -93,7 +93,9 @@ def HTML_CRAWLER(sess, link):
     proxies = {"http": "http://5.79.66.2:13081", "https": "https://5.79.66.2:13081"}
     time.sleep(1)
     try:
-        html_content = sess.get(link, proxies=proxies).text
+        html_content = sess.get(link, proxies=proxies, verify = False,timeout=5).text
+    except Timeout:
+        html_content = sess.get(link, proxies=proxies, verify=False, timeout=5).text
     except OSError:
         sess1 = requests.Session()
         html_content = sess1.get(link, proxies=proxies, verify = False).text
