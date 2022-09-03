@@ -89,10 +89,14 @@ def slicer(text,labels,contents):
 
 
 
-def HTML_CRAWLER(link):
-    sess = requests.Session()
+def HTML_CRAWLER(sess, link):
     proxies = {"http": "http://5.79.66.2:13081", "https": "https://5.79.66.2:13081"}
-    html_content = sess.get(link, proxies=proxies, verify =False).text
+    time.sleep(1)
+    try:
+        html_content = sess.get(link, proxies=proxies).text
+    except OSError:
+        sess1 = requests.Session()
+        html_content = sess1.get(link, proxies=proxies, verify = False).text
     soup = BeautifulSoup(html_content, 'html.parser')
 
     try:

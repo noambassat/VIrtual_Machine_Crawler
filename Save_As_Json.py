@@ -19,4 +19,4 @@ def writeToJsonFile(filePath, fileName, data):
         json.dump(data, json_file, ensure_ascii=False, cls=SetEncoder)
 
 
-    print(filePathName)
+    print(fileName)

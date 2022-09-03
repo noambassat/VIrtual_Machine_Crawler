@@ -87,13 +87,11 @@ while (YEAR < 2023):
         delay = 5  # seconds
         try:
             myElem = WebDriverWait(driver, delay).until(EC.presence_of_element_located((By.ID, 'row_0')))
-            print("Page is ready!")
         except TimeoutException:
-            print("Loading took too much time!")
+            print("Loading took too much time")
             print("Trying once again ...")
             try:
                 myElem = WebDriverWait(driver, delay).until(EC.presence_of_element_located((By.ID, 'row_0')))
-                print("Page is ready!")
             except TimeoutException:
                 print("Loading took too much time! ID in the code not working!")
 
@@ -117,6 +115,7 @@ while (YEAR < 2023):
                             print("0 DEC!!!\n", CASE)
                             continue
                     print("The len of decisions table: ", len(dec_df))
+                    time.sleep(1)
                     data = CrawlTopWindow(CASE, LINK, conclusion, dict, df[start][i])  # Gets the upper window
 
                     if data == 0:
@@ -126,6 +125,11 @@ while (YEAR < 2023):
                     i -= 1
                     CASE = URLS[i]
                     ("OS Error, continue")
+                    continue
+                except UnexpectedAlertPresentException:
+                    i -= 1
+                    CASE = URLS[i]
+                    ("UnexpectedAlertPresentException, continue")
                     continue
                 json_name = start + "__" + str(i)
                 writeToJsonFile(filePath, json_name, data)  # Write to Json file

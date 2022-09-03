@@ -57,21 +57,17 @@ def cleanTXT(txt):
     return txt
 
 
-def crawl_HTML(data, link, Type):
-    sess1 = requests.Session()
+def crawl_HTML(sess, data, link, Type):
+    # sess1 = requests.Session()
     proxies = {"http": "http://5.79.66.2:13081", "https": "https://5.79.66.2:13081"}
     time.sleep(1)
-
     try:
-        html_content = sess1.get(link, proxies=proxies).text
+        html_content = sess.get(link, proxies=proxies).text
     except OSError:
         sess1 = requests.Session()
         html_content = sess1.get(link, proxies=proxies, verify = False).text
     SOUP = BeautifulSoup(html_content, 'html.parser')
-    print("GOT HERE!!!!!!")
-    print(link)
-    data_dict = HTML_CRAWLER(link)
-    print(2)
+    data_dict = HTML_CRAWLER(sess, link)
     if (data_dict == 0): data_dict = {}
     data_dict['סוג מסמך'] = Type
     data_dict['מסמך מלא'] = cleanTXT(SOUP.text.replace('\n\n', ' ').replace(u'\xa0', u' '))
@@ -116,6 +112,7 @@ def CrawlTopWindow(CASE, LINK, Type, dict, case_name_num):
     sess = requests.Session()
     proxies = {"http": "http://5.79.66.2:13081", "https": "https://5.79.66.2:13081"}
     html_content = sess.get(LINK, proxies=proxies, verify = False).text
+    time.sleep(1)
     soup = BeautifulSoup(html_content, 'html.parser')
     # soup = BeautifulSoup(driver.page_source, 'html.parser')
     try:
@@ -221,7 +218,7 @@ def CrawlTopWindow(CASE, LINK, Type, dict, case_name_num):
                                                                                                      "/") + 1:]
     except KeyError:
         pass
-    doc = [crawl_HTML(all_data, LINK, Type)]  # רשימת מסמכי הHTML , כרגע רק 1
+    doc = [crawl_HTML(sess, all_data, LINK, Type)]  # רשימת מסמכי הHTML , כרגע רק 1
     counter = 0
     other_docs = []
     for row in dict.values():
