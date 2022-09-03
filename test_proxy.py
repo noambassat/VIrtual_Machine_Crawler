@@ -17,4 +17,5 @@ url_to_get_via_https = "https://supremedecisions.court.gov.il/Verdicts/Results/1
 
 html_content = sess.get(url_to_get_via_https, proxies=proxies).text
 SOUP = BeautifulSoup(html_content, 'html.parser')
+
 print(SOUP.find("div",{"class":"modal-body"}))

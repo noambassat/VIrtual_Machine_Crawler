@@ -54,32 +54,21 @@ def cleanTXT(txt):
 
 
 def crawl_HTML(data, link, Type):
-    # xml = requests.get((link))
-    try:
-        driver = webdriver.Chrome(executable_path=exe_path, chrome_options=options)
-        driver.get(link)
-
-    except WebDriverException:
-        try:
-            driver = webdriver.Chrome(executable_path=exe_path, chrome_options=options)
-            driver.get(link)
-
-        except WebDriverException:
-            print("WebDriverException!")
-            return 0
+    sess = requests.Session()
+    proxies = {"http": "http://5.79.66.2:13081", "https": "https://5.79.66.2:13081"}
+    html_content = sess.get(link, proxies=proxies, timeout=30).text
+    print(link)
     time.sleep(3)
-    soup = BeautifulSoup(driver.page_source, 'html.parser')
-
-    data_dict = HTML_CRAWLER(driver, link)
+    SOUP = BeautifulSoup(html_content, 'html.parser')
+    data_dict = HTML_CRAWLER(link)
     if (data_dict == 0): data_dict = {}
     data_dict['סוג מסמך'] = Type
-    data_dict['מסמך מלא'] = cleanTXT(soup.text.replace('\n\n', ' ').replace(u'\xa0', u' '))
+    data_dict['מסמך מלא'] = cleanTXT(SOUP.text.replace('\n\n', ' ').replace(u'\xa0', u' '))
     data_dict['קישור למסמך'] = link
 
     conclusion = ""
-    for row in soup.findAll("p", {"class": "Ruller4"}): conclusion += cleanTXT(row.text)
+    for row in SOUP.findAll("p", {"class": "Ruller4"}): conclusion += cleanTXT(row.text)
     data_dict["סיכום מסמך"] = cleanTXT(conclusion)
-    driver.close() ##########
     return data_dict
 
 
@@ -112,44 +101,14 @@ def CrawlTopWindow(CASE, LINK, Type, dict, case_name_num):
     CASE_NUM = CASE[67:67 + 4]
     YEAR = CASE[62:66]
 
-    try:
-        driver = webdriver.Chrome(executable_path=exe_path, chrome_options=options)
-        driver.get(CASE)
+    sess = requests.Session()
+    proxies = {"http": "http://5.79.66.2:13081", "https": "https://5.79.66.2:13081"}
+    html_content = sess.get(LINK, proxies=proxies, timeout=30).text
+    print(LINK)
 
-    except WebDriverException:
-        try:
-            driver = webdriver.Chrome(executable_path=exe_path, chrome_options=options)
-            driver.get(CASE)
-
-        except WebDriverException:
-            print("WebDriverException!")
-            return 0
-
-    delay = 5
-    try:
-        myElem = WebDriverWait(driver, delay).until(EC.presence_of_element_located((By.ID, 'row_0')))
-        print("Inner Page is ready!")
-    except TimeoutException:
-        delay = 7
-        print("CrawlJson error:")
-        print("Loading took too much time!")
-        print("Trying once again ...")
-        try:
-            myElem = WebDriverWait(driver, delay).until(EC.presence_of_element_located((By.ID, 'row_0')))
-            print("Page is ready!")
-        except TimeoutException:
-            delay = 10
-            print("CrawlJson error:")
-            print("Loading took too much time!")
-            print("Trying once again ...")
-            try:
-                myElem = WebDriverWait(driver, delay).until(EC.presence_of_element_located((By.ID, 'row_0')))
-                print("Page is ready!")
-            except TimeoutException:
-                print("Loading took too much time! ID in the code not working!")
-                return 0
-
-    soup = BeautifulSoup(driver.page_source, 'html.parser')
+    time.sleep(5)
+    soup = BeautifulSoup(html_content, 'html.parser')
+    # soup = BeautifulSoup(driver.page_source, 'html.parser')
     try:
         soup = soup.find("div", {"class": "details-view"})
         iframe = soup.find('iframe')
@@ -164,22 +123,22 @@ def CrawlTopWindow(CASE, LINK, Type, dict, case_name_num):
         src = "https://elyon2.court.gov.il/Scripts9/mgrqispi93.dll?Appname=eScourt&Prgname=GetFileDetails_for_new_site&Arguments=-N" \
               + YEAR + "-00" + CASE_NUM + "-0"
     try:
-        driver.get(src)
+        html_content = sess.get(LINK, proxies=proxies, timeout=30).text
     except WebDriverException:
         src = "https://elyon2.court.gov.il/Scripts9/mgrqispi93.dll?Appname=eScourt&Prgname=GetFileDetails_for_new_site&Arguments=-N" \
               + YEAR + "-00" + CASE_NUM + "-0"
     try:
-        driver.get(src)
+        html_content = sess.get(LINK, proxies=proxies, timeout=30).text
     except InvalidSessionIdException:
-        driver.close()
+
         print("InvalidSessionIdException:\n", src)
         return 0
     except  WebDriverException:
-        driver.close()
+
         print("InvalidSessionIdException:\n", src)
         return 0
-    soup = BeautifulSoup(driver.page_source, 'html.parser')
-
+    time.sleep(5)
+    soup = BeautifulSoup(html_content, 'html.parser')
     if ((soup.find("head").title.text).find("חסוי") != -1):
         all_data = {}
         hidden_content = 1
@@ -195,8 +154,9 @@ def CrawlTopWindow(CASE, LINK, Type, dict, case_name_num):
         first_data = {}
         for i in range(len(labels)):
             first_data[cleanTXT(labels[i].text)] = cleanTXT(details[i].text)
-
-        all_data[LABELS[0]] = first_data
+        try:
+          all_data[LABELS[0]] = first_data
+        except IndexError: pass
 
         tabs = soup.findAll("div", {"class": "tab-pane fade"})
         bigger_data = {}
@@ -257,7 +217,7 @@ def CrawlTopWindow(CASE, LINK, Type, dict, case_name_num):
                                                                                                      "/") + 1:]
     except KeyError:
         pass
-    print(8)
+
     doc = [crawl_HTML(all_data, LINK, Type)]  # רשימת מסמכי הHTML , כרגע רק 1
     counter = 0
     other_docs = []
@@ -266,57 +226,53 @@ def CrawlTopWindow(CASE, LINK, Type, dict, case_name_num):
         if row not in doc:  ####################
             counter += 1
             other_docs.append(row)
-    print(9)
+
     all_data['מספר החלטות בתיק'] = len(other_docs)
     all_data['קישור לתיק'] = CASE
     new_dict = {"פרטי תיק": all_data, "מסמכים": {"פסק דין או החלטה אחרונה": doc, "כל ההחלטות בתיק": other_docs}}
-    driver.close()
-    print(10)
+
     return new_dict
 
 
 def Crawl_Decisions(CASE):
     CASE_NUM = CASE[67:67 + 4] + "/" + CASE[64:64 + 2]
    # https: // supremedecisions.court.gov.il / Verdicts / Results / 1 / null / 1994 / 6563 / null / null / null / null / null
-    delay = 7
-
     try:
-        driver = webdriver.Chrome(executable_path=exe_path, chrome_options=options)
+        driver = webdriver.Chrome(exe_path, options=options)
         driver.get(CASE)
-    except WebDriverException:
+    except InvalidSessionIdException:
+        print("Couldn't get src:\n", CASE)
         driver.close()
-        driver = webdriver.Chrome(executable_path=exe_path, chrome_options=options)
-        driver.get(CASE)
-    try:
-        myElem = WebDriverWait(driver, delay).until(EC.presence_of_element_located((By.ID, 'row_0')))
-        print("Inner Page is ready!")
-    except TimeoutException:
-        delay = 10
-        print("CrawlJson error:")
-        print("Loading took too much time!")
-        print("Trying once again ...")
+        driver = webdriver.Chrome(exe_path, options=options)
+    except WebDriverException as wde:
+        print(str(wde))
+        print("-----")
+        print(wde.args)
+        print(CASE)
+        print("trying once again.....")
+        driver.close()
+        driver = webdriver.Chrome(exe_path, options=options)
         try:
-            myElem = WebDriverWait(driver, delay).until(EC.presence_of_element_located((By.ID, 'row_0')))
-            print("Page is ready!")
-        except TimeoutException:
-            delay = 15
-            print("CrawlJson error:")
-            print("Loading took too much time!")
-            print("Trying once again ...")
-            try:
-                myElem = WebDriverWait(driver, delay).until(EC.presence_of_element_located((By.ID, 'row_0')))
-                print("Page is ready!")
-            except TimeoutException:
-                print("Loading took too much time! ID in the code not working!")
-
-    # response = requests.get(CASE)
-    SOUP = BeautifulSoup(driver.page_source, 'html.parser')
+            driver.get(CASE)
+        except WebDriverException as wde:
+            print(str(wde))
+            print("-----")
+            print(wde.args)
+            print(CASE)
+    time.sleep(3)
+    SOUP = BeautifulSoup(driver.content, 'html.parser')
+    # At least 2 secs must be waiting in order to load the webpage
+    delay = 5  # seconds    SOUP = BeautifulSoup(html_content, 'html.parser')
+    print("got here!!!")
     case_dec = {}
     df = pd.DataFrame()
     try:
         hidden_case = SOUP.findAll('td')
 
         SOUP = SOUP.find("div", {"class": "processing-docs"}).findAll('tr')
+        print("got here!!!")
+        ###
+
         for i, s in enumerate(SOUP):
 
             temp = {}
@@ -330,13 +286,16 @@ def Crawl_Decisions(CASE):
                 info = cleanTXT(case.text)
                 if (info.find('פסק') != -1 and info.find('דין') != -1): info = "פסק דין"
                 temp[label] = info
+                print("### 3")
+
             if (len(temp) == 0): continue
             for link in hrefs:
                 temp['קישור למסמך הטמל'] = 'https://supremedecisions.court.gov.il/' + link['href']
             if (temp not in case_dec.values()): case_dec[i] = temp
+        print("### 4")
 
     except AttributeError:
-        print(AttributeError.args)
+        print("AttributeError")
         pass
 
     for row in (case_dec.values()):
@@ -347,5 +306,5 @@ def Crawl_Decisions(CASE):
     main_df = main_df.reindex()
     main_df.to_csv('Decisions_Table/Decisions_Table.csv')
     LINK, Type = Get_LINK(df, CASE)
-    driver.close()
+    print("### 5")
     return df, LINK, Type, case_dec

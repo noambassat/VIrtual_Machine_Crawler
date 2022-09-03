@@ -1,0 +1,5 @@
+PATH = open('C:/Users/Noam/Desktop/Courts Project/Paths.txt', 'r')
+filePath = '/Json_Files/'
+exe_path = 'C:/Users/Noam/Desktop/Courts Project/chromedriver.exe'
+dec_path = r'Decisions_Table/Decisions_Table.csv'
+# exe_path = '/home/ubuntu/pythonProject5/chromedriver'

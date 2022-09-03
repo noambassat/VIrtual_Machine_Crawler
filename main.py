@@ -44,8 +44,7 @@ while (YEAR < 2023):
     start = start[:6] + str(YEAR)
     end = end[:6] + str(YEAR)
     YEAR = int(start[6:]) + 1
-    print(start)
-    print(YEAR)
+    print(YEAR - 1)
     all_dates = get_dates(start, end)
 
     driver = webdriver.Chrome(exe_path, options=options)

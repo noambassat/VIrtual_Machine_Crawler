@@ -1,59 +1,310 @@
-from bs4 import BeautifulSoup
+from selenium.common.exceptions import WebDriverException, InvalidSessionIdException
+from selenium.webdriver.support import expected_conditions as EC
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.common.exceptions import TimeoutException
+from selenium.webdriver.chrome.options import Options
+from selenium.webdriver.common.by import By
 import datetime
+from Parser import HTML_CRAWLER
+from selenium import webdriver
+from bs4 import BeautifulSoup
+import pandas as pd
+import requests
+import time
+import re
 
-def get_src(start_date, end_date): return 'https://supremedecisions.court.gov.il/Verdicts/Results/1/null/null/null/2/null/' + start_date.replace('/','-') + '/' + end_date.replace('/','-') + '/null'
+dec_path = r'Decisions_Table/Decisions_Table.csv'
+filePath = '/home/ubuntu/PycharmProjects/pythonProject5/Json_Files/'
+DT_path = '/home/ubuntu/PycharmProjects/pythonProject5/DataFrames/'
+exe_path = '/home/ubuntu/PycharmProjects/pythonProject5/chromedriver'
 
-def Get_Number_Of_Cases(driver):
-    soup = BeautifulSoup(driver.page_source, 'html.parser')
-    txt = soup.find('p', {'class': 'ng-binding'}).text
-    return [int(s) for s in txt.split() if s.isdigit()][0]
+main_df = pd.read_csv(dec_path, index_col=0)
+options = Options()
+# options.add_argument('--disable-gpu')
+# options.add_argument('--headless')
 
+PROXY = "5.79.66.2:13081"
 
-
-def scroll_down(driver, Number_Of_Cases):
-    driver.maximize_window()  # For maximizing window
-    driver.implicitly_wait(5)  # gives an implicit wait for 5 seconds
-    Counter = 99
-    while(Number_Of_Cases>Counter):
-        XPATH = '//*[@id="row_' + str(Counter) + '"]'
-        inner_SCROLL = driver.find_element('xpath',XPATH)
-        location = inner_SCROLL.location_once_scrolled_into_view
-        Counter +=100
-    return driver
-
-
-def Get_Cases_Names(driver,Number_Of_Cases):
-
-    # elements = driver.find_elements_by_class_name('ng-scope')
-    soup = BeautifulSoup(driver.page_source, 'html.parser')
-    soup = soup.findAll('a', {'title': 'הצג תיק'})
-    stop = 0
-
-    while(len(soup)!=Number_Of_Cases and stop!=50):
-        driver = scroll_down(driver, Number_Of_Cases)
-        # elements = driver.find_elements_by_class_name('ng-scope')
-
-        soup = BeautifulSoup(driver.page_source, 'html.parser')
-        soup = soup.findAll('a', {'title': 'הצג תיק'})
-        stop+=1
-    return [s.text for s in soup]
+options.add_argument('--proxy-server=%s' % PROXY)
 
 
-def Get_URLS(Cases):
-    URLS = []
-    for case in Cases:
+def cleanTXT(txt):
+    ####################################function
+    # for i,c in enumerate(txt.split()):
+    #     while c==' ':
+    #         c = txt[i+1:]
+    txt = txt.replace(u'\xa0', u' ')
 
-        for word in case.split():
-            if(word.find('/') == -1): continue
-            case = word[:word.find('/')]
-            year = '20' + word[word.find('/')+1:]
-            curr_year = str(datetime.date.today().year)[2:]
-            print(curr_year)
-            if(int(word[word.find('/')+1:])>int(curr_year)): year = '19' +  word[word.find('/')+1:]
-            # 2022/3635   #######################################
-# https://supremedecisions.court.gov.il/Verdicts/Results/1/null/1994/6563/null/null/null/null/null
-            url = "https://supremedecisions.court.gov.il/Verdicts/Results/1/null/" \
-                  +year+ "/"\
-                        +case+"/null/null/null/null/null"
-            URLS.append(url)
-    return URLS
+    txt = txt.replace("נ ג ד", "נגד")
+    txt = txt.replace('פסק-דין', 'פסק דין')
+    txt = re.sub('\s+', ' ', txt)
+    txt = (re.sub(r'(\ )+', ' ', txt))
+    try:
+        if (txt[0].isspace()):   txt = txt[1:]
+        if (txt[-1].isspace()): txt = txt[:-1]
+    except IndexError:
+        pass
+
+    txt = re.sub('<.*>', ' ', txt)
+
+    txt = txt.replace("נ ג ד", "נגד")
+    if (txt == ' ' or txt == '  '): return ''
+
+    return txt
+
+
+def crawl_HTML(data, link, Type):
+    sess = requests.Session()
+    proxies = {"http": "http://5.79.66.2:13081", "https": "https://5.79.66.2:13081"}
+    html_content = sess.get(link, proxies=proxies, timeout=30).text
+    print(link)
+    time.sleep(3)
+    SOUP = BeautifulSoup(html_content, 'html.parser')
+    data_dict = HTML_CRAWLER(link)
+    if (data_dict == 0): data_dict = {}
+    data_dict['סוג מסמך'] = Type
+    data_dict['מסמך מלא'] = cleanTXT(SOUP.text.replace('\n\n', ' ').replace(u'\xa0', u' '))
+    data_dict['קישור למסמך'] = link
+
+    conclusion = ""
+    for row in SOUP.findAll("p", {"class": "Ruller4"}): conclusion += cleanTXT(row.text)
+    data_dict["סיכום מסמך"] = cleanTXT(conclusion)
+    return data_dict
+
+
+def Get_LINK(df, CASE):  # רק פסק-דין או החלטה אחרונה כרגע
+    if (len(df) == 0): return '', ''
+    Type = cleanTXT(df['סוג מסמך'][0])
+    LINK = df['קישור למסמך הטמל'][0]
+    for i in df.index:
+        if (df['סוג מסמך'][i].find('דין') != -1 and df['סוג מסמך'][i].find('פסק') != -1):
+            Type = 'פסק דין'
+            LINK = df['קישור למסמך הטמל'][i]
+            break
+    return LINK, Type
+
+
+def add_counters(data):
+    temp_data = data.copy()
+    for key in data.keys():
+        if (key == "פרטים כלליים" or key == 'תיק חסוי'): continue  # doesn't count this keys
+        curr_key = 'מספר ' + str(key) + ' בתיק'
+        if (data[key] == 'אין מידע'):
+            temp_data[curr_key] = 0
+        else:
+            temp_data[curr_key] = len(temp_data[key])
+    return temp_data
+
+
+def CrawlTopWindow(CASE, LINK, Type, dict, case_name_num):
+    hidden_content = 0
+    CASE_NUM = CASE[67:67 + 4]
+    YEAR = CASE[62:66]
+
+    sess = requests.Session()
+    proxies = {"http": "http://5.79.66.2:13081", "https": "https://5.79.66.2:13081"}
+    html_content = sess.get(LINK, proxies=proxies, timeout=30).text
+    print(LINK)
+
+    time.sleep(5)
+    soup = BeautifulSoup(html_content, 'html.parser')
+    # soup = BeautifulSoup(driver.page_source, 'html.parser')
+    try:
+        soup = soup.find("div", {"class": "details-view"})
+        iframe = soup.find('iframe')
+        src = iframe['ng-src']
+    except KeyError:
+        src = "https://elyon2.court.gov.il/Scripts9/mgrqispi93.dll?Appname=eScourt&Prgname=GetFileDetails_for_new_site&Arguments=-N" \
+              + YEAR + "-00" + CASE_NUM + "-0"
+    except IndexError:
+        src = "https://elyon2.court.gov.il/Scripts9/mgrqispi93.dll?Appname=eScourt&Prgname=GetFileDetails_for_new_site&Arguments=-N" \
+              + YEAR + "-00" + CASE_NUM + "-0"
+    except AttributeError:
+        src = "https://elyon2.court.gov.il/Scripts9/mgrqispi93.dll?Appname=eScourt&Prgname=GetFileDetails_for_new_site&Arguments=-N" \
+              + YEAR + "-00" + CASE_NUM + "-0"
+    try:
+        html_content = sess.get(LINK, proxies=proxies, timeout=30).text
+    except WebDriverException:
+        src = "https://elyon2.court.gov.il/Scripts9/mgrqispi93.dll?Appname=eScourt&Prgname=GetFileDetails_for_new_site&Arguments=-N" \
+              + YEAR + "-00" + CASE_NUM + "-0"
+    try:
+        html_content = sess.get(LINK, proxies=proxies, timeout=30).text
+    except InvalidSessionIdException:
+
+        print("InvalidSessionIdException:\n", src)
+        return 0
+    except  WebDriverException:
+
+        print("InvalidSessionIdException:\n", src)
+        return 0
+    time.sleep(5)
+    soup = BeautifulSoup(html_content, 'html.parser')
+    if ((soup.find("head").title.text).find("חסוי") != -1):
+        all_data = {}
+        hidden_content = 1
+
+    if not hidden_content:
+        LABELS = []
+        for a in soup.findAll("div", {"class": "item"}):
+            LABELS.append(cleanTXT(a.text))
+
+        labels = soup.findAll("span", {"class": "caseDetails-label"})
+        details = soup.findAll("span", {"class": "caseDetails-info"})
+        all_data = {}
+        first_data = {}
+        for i in range(len(labels)):
+            first_data[cleanTXT(labels[i].text)] = cleanTXT(details[i].text)
+        try:
+          all_data[LABELS[0]] = first_data
+        except IndexError: pass
+
+        tabs = soup.findAll("div", {"class": "tab-pane fade"})
+        bigger_data = {}
+        for i, tab in enumerate(tabs):
+            labels = []
+            data = []
+            for body in tab.findAll("tbody"):
+                rows = [i for i in range(len(body.findAll('tr')))]
+                for j, tr in enumerate(body.findAll('tr')):
+                    labels = []
+                    infos = []
+                    row = {}
+                    for z, td in enumerate(tr.findAll("td")):
+
+                        try:
+                            label = (cleanTXT(td['data-label']))
+                            if (label == "#"): label = "מספר"
+                            if (label.find("שם ב.משפט") != -1): label = "שם בית משפט"
+                            if (label.find("מ.תיק דלמטה") != -1): label = "מספר תיק דלמטה"
+                            if (label.find("ת.החלטה") != -1): label = "תאריך החלטה"
+
+                            info = (cleanTXT(td.text)).replace('\n', ' ')
+                            if (len(info) < 1): info = "אין מידע"
+                            labels.append(label)
+                            infos.append(info)
+                        except KeyError:
+                            pass
+                    if (len(infos) < 1): continue
+                    row = {cleanTXT(labels[n]): cleanTXT(infos[n]) for n in range(len(labels))}
+                    if "סוג צד" in labels:
+
+                        new_val = ""
+                        for n, l in enumerate(labels):
+                            if (l == 'סוג צד'): new_val += infos[n]
+                            if (l == 'מספר'): new_val += " " + infos[n]
+                        row['צד'] = new_val
+                    if row not in data: data.append(row)
+                if (len(data) < 1):
+                    all_data[LABELS[i + 1]] = 'אין מידע'
+                    continue
+                else:
+                    all_data[LABELS[i + 1]] = data
+        all_data['תיק חסוי'] = False
+        ### ADDING COUNTERS
+
+    else:
+        all_data['תיק חסוי'] = True
+
+    all_data = add_counters(all_data)
+    try:
+        all_data['מספר תיק מלא'] = case_name_num
+        all_data['מספר תיק'] = case_name_num[case_name_num.find(" ") + 1:]
+        all_data['ראשי תיבות תיק'] = case_name_num[:case_name_num.find(" ")]
+        all_data['שנת תיק'] = '20' + case_name_num[case_name_num.find("/") + 1:]
+        curr_year = str(datetime.date.today().year)[2:]
+        if (int(case_name_num[case_name_num.find("/") + 1:]) > int(curr_year)): all_data['שנת תיק'] = '19' + case_name_num[
+                                                                                                 case_name_num.find(
+                                                                                                     "/") + 1:]
+    except KeyError:
+        pass
+
+    doc = [crawl_HTML(all_data, LINK, Type)]  # רשימת מסמכי הHTML , כרגע רק 1
+    counter = 0
+    other_docs = []
+    for row in dict.values():
+        row.pop("מספר תיק")
+        if row not in doc:  ####################
+            counter += 1
+            other_docs.append(row)
+
+    all_data['מספר החלטות בתיק'] = len(other_docs)
+    all_data['קישור לתיק'] = CASE
+    new_dict = {"פרטי תיק": all_data, "מסמכים": {"פסק דין או החלטה אחרונה": doc, "כל ההחלטות בתיק": other_docs}}
+
+    return new_dict
+
+
+def Crawl_Decisions(CASE):
+    CASE_NUM = CASE[67:67 + 4] + "/" + CASE[64:64 + 2]
+   # https: // supremedecisions.court.gov.il / Verdicts / Results / 1 / null / 1994 / 6563 / null / null / null / null / null
+    try:
+        driver = webdriver.Chrome(exe_path, options=options)
+        driver.get(CASE)
+    except InvalidSessionIdException:
+        print("Couldn't get src:\n", CASE)
+        driver.close()
+        driver = webdriver.Chrome(exe_path, options=options)
+    except WebDriverException as wde:
+        print(str(wde))
+        print("-----")
+        print(wde.args)
+        print(CASE)
+        print("trying once again.....")
+        driver.close()
+        driver = webdriver.Chrome(exe_path, options=options)
+        try:
+            driver.get(CASE)
+        except WebDriverException as wde:
+            print(str(wde))
+            print("-----")
+            print(wde.args)
+            print(CASE)
+    time.sleep(3)
+    SOUP = BeautifulSoup(driver.content, 'html.parser')
+    # At least 2 secs must be waiting in order to load the webpage
+    delay = 5  # seconds    SOUP = BeautifulSoup(html_content, 'html.parser')
+    print("got here!!!")
+    case_dec = {}
+    df = pd.DataFrame()
+    try:
+        hidden_case = SOUP.findAll('td')
+
+        SOUP = SOUP.find("div", {"class": "processing-docs"}).findAll('tr')
+        print("got here!!!")
+        ###
+
+        for i, s in enumerate(SOUP):
+
+            temp = {}
+
+            hrefs = s.findAll("a", {'title': 'פתיחה כ-HTML'})
+            for case in (s.findAll("td", {"ng-binding"})):
+                label = cleanTXT(case['data-label'])
+                if (label.find('#') != -1): continue
+                if (label.find('מ.') != -1 or label.find("מס'") != -1): label = 'מספר עמודים'
+                temp['מספר תיק'] = CASE_NUM
+                info = cleanTXT(case.text)
+                if (info.find('פסק') != -1 and info.find('דין') != -1): info = "פסק דין"
+                temp[label] = info
+                print("### 3")
+
+            if (len(temp) == 0): continue
+            for link in hrefs:
+                temp['קישור למסמך הטמל'] = 'https://supremedecisions.court.gov.il/' + link['href']
+            if (temp not in case_dec.values()): case_dec[i] = temp
+        print("### 4")
+
+    except AttributeError:
+        print("AttributeError")
+        pass
+
+    for row in (case_dec.values()):
+        df = df.append(row, ignore_index=True)
+    df.drop_duplicates(inplace=True)
+    main_df = pd.read_csv(r'Decisions_Table/Decisions_Table.csv', index_col=0)
+    main_df = main_df.append(df)
+    main_df = main_df.reindex()
+    main_df.to_csv('Decisions_Table/Decisions_Table.csv')
+    LINK, Type = Get_LINK(df, CASE)
+    print("### 5")
+    return df, LINK, Type, case_dec
