@@ -51,6 +51,7 @@ while (YEAR < 2023):
 
 
     for j in range(len(all_dates)):
+        START_TIME = datetime.now()
         try:
             start = all_dates[j]
             end = all_dates[j + 1]
@@ -96,6 +97,7 @@ while (YEAR < 2023):
                 print("Loading took too much time! ID in the code not working!")
 
         try:
+            time.sleep(1)
             Number = Get_Number_Of_Cases(driver)  # All the cases that appeared that date
             Cases = Get_Cases_Names(driver, Number)  # List of Case names
             df = pd.DataFrame(Cases, columns=[start])
@@ -165,6 +167,7 @@ while (YEAR < 2023):
         except requests.exceptions.ConnectTimeout:
 
             pass
+        print("*** FINISH, THE TIME IT TOOK: ", datetime.now() - START_TIME," ***")  ######
     END_RUN_TIME = datetime.now()
-    print("FINISH, THE TIME IT TOOK, from 04.01.22-01.02.2022: ", END_RUN_TIME - START_RUN_TIME)  ######
+    print("FINISH, THE TIME IT TOOK: ", END_RUN_TIME - START_RUN_TIME)  ######
 driver.close()
