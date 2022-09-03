@@ -40,6 +40,7 @@ options.add_argument('--proxy-server=%s' % PROXY)
 start = "01-01-2010"  #
 end = "01-02-2010"
 YEAR = 2010
+driver = webdriver.Chrome(exe_path, options=options)
 while (YEAR < 2023):
     start = start[:6] + str(YEAR)
     end = end[:6] + str(YEAR)
@@ -47,7 +48,7 @@ while (YEAR < 2023):
     print(YEAR - 1)
     all_dates = get_dates(start, end)
 
-    driver = webdriver.Chrome(exe_path, options=options)
+
 
     for j in range(len(all_dates)):
         try:
@@ -105,7 +106,7 @@ while (YEAR < 2023):
             df.to_csv(name, encoding="ISO-8859-8")
 
             URLS = Get_URLS(Cases)  # List of current date's links
-            print(len(URLS))
+            print("Number of cases: ",len(URLS))
             for i, CASE in enumerate(URLS):
                 try:
                     dec_df, LINK, conclusion, dict = Crawl_Decisions(driver, CASE)  # Gets the button window
@@ -113,7 +114,7 @@ while (YEAR < 2023):
                     if (len(dec_df) == 0):
                         dec_df, LINK, conclusion, dict = Crawl_Decisions(driver, CASE)
                         if (len(dec_df) == 0):
-                            print("0 DEC!\n", CASE)
+                            print("0 DEC!!!\n", CASE)
                             continue
                     print("The len of decisions table: ", len(dec_df))
                     data = CrawlTopWindow(CASE, LINK, conclusion, dict, df[start][i])  # Gets the upper window
@@ -124,6 +125,7 @@ while (YEAR < 2023):
                 except OSError:
                     i -= 1
                     CASE = URLS[i]
+                    ("OS Error, continue")
                     continue
                 json_name = start + "__" + str(i)
                 writeToJsonFile(filePath, json_name, data)  # Write to Json file

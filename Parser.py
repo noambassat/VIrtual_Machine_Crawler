@@ -90,7 +90,6 @@ def slicer(text,labels,contents):
 
 
 def HTML_CRAWLER(link):
-    print("GOT TO PARSER \n", link)
     sess = requests.Session()
     proxies = {"http": "http://5.79.66.2:13081", "https": "https://5.79.66.2:13081"}
     html_content = sess.get(link, proxies=proxies, verify =False).text
@@ -108,6 +107,7 @@ def HTML_CRAWLER(link):
             dirs = soup.findAll("div", {"align": "right"})
             dirs_1 = soup.findAll('p', {"class": "Ruller3"})
         except AttributeError:
+            print("Attribute Error during parsing in: ")
             print(link)
 
     one = get_dict(dirs)

@@ -58,12 +58,20 @@ def cleanTXT(txt):
 
 
 def crawl_HTML(data, link, Type):
-    sess = requests.Session()
+    sess1 = requests.Session()
     proxies = {"http": "http://5.79.66.2:13081", "https": "https://5.79.66.2:13081"}
-    html_content = sess.get(link, proxies=proxies, verify=False).text
-    time.sleep(3)
+    time.sleep(1)
+
+    try:
+        html_content = sess1.get(link, proxies=proxies).text
+    except OSError:
+        sess1 = requests.Session()
+        html_content = sess1.get(link, proxies=proxies, verify = False).text
     SOUP = BeautifulSoup(html_content, 'html.parser')
+    print("GOT HERE!!!!!!")
+    print(link)
     data_dict = HTML_CRAWLER(link)
+    print(2)
     if (data_dict == 0): data_dict = {}
     data_dict['סוג מסמך'] = Type
     data_dict['מסמך מלא'] = cleanTXT(SOUP.text.replace('\n\n', ' ').replace(u'\xa0', u' '))
@@ -109,7 +117,6 @@ def CrawlTopWindow(CASE, LINK, Type, dict, case_name_num):
     proxies = {"http": "http://5.79.66.2:13081", "https": "https://5.79.66.2:13081"}
     html_content = sess.get(LINK, proxies=proxies, verify = False).text
     soup = BeautifulSoup(html_content, 'html.parser')
-
     # soup = BeautifulSoup(driver.page_source, 'html.parser')
     try:
         soup = soup.find("div", {"class": "details-view"})
@@ -143,7 +150,6 @@ def CrawlTopWindow(CASE, LINK, Type, dict, case_name_num):
     if ((soup.find("head").title.text).find("חסוי") != -1):
         all_data = {}
         hidden_content = 1
-
     if not hidden_content:
         LABELS = []
         for a in soup.findAll("div", {"class": "item"}):
@@ -158,7 +164,6 @@ def CrawlTopWindow(CASE, LINK, Type, dict, case_name_num):
         try:
           all_data[LABELS[0]] = first_data
         except IndexError: pass
-
         tabs = soup.findAll("div", {"class": "tab-pane fade"})
         bigger_data = {}
         for i, tab in enumerate(tabs):
@@ -202,10 +207,8 @@ def CrawlTopWindow(CASE, LINK, Type, dict, case_name_num):
                     all_data[LABELS[i + 1]] = data
         all_data['תיק חסוי'] = False
         ### ADDING COUNTERS
-
     else:
         all_data['תיק חסוי'] = True
-
     all_data = add_counters(all_data)
     try:
         all_data['מספר תיק מלא'] = case_name_num
@@ -218,7 +221,6 @@ def CrawlTopWindow(CASE, LINK, Type, dict, case_name_num):
                                                                                                      "/") + 1:]
     except KeyError:
         pass
-
     doc = [crawl_HTML(all_data, LINK, Type)]  # רשימת מסמכי הHTML , כרגע רק 1
     counter = 0
     other_docs = []
@@ -227,11 +229,9 @@ def CrawlTopWindow(CASE, LINK, Type, dict, case_name_num):
         if row not in doc:  ####################
             counter += 1
             other_docs.append(row)
-
     all_data['מספר החלטות בתיק'] = len(other_docs)
     all_data['קישור לתיק'] = CASE
     new_dict = {"פרטי תיק": all_data, "מסמכים": {"פסק דין או החלטה אחרונה": doc, "כל ההחלטות בתיק": other_docs}}
-
     return new_dict
 
 
