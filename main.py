@@ -107,13 +107,23 @@ while (YEAR < 2023):
             URLS = Get_URLS(Cases)  # List of current date's links
             print(len(URLS))
             for i, CASE in enumerate(URLS):
-                dec_df, LINK, conclusion, dict = Crawl_Decisions(driver, CASE)  # Gets the button window
-                print("The len of decisions table: ", len(dec_df))
-                if (len(dec_df) == 0): continue
-                data = CrawlTopWindow(CASE, LINK, conclusion, dict, df[start][i])  # Gets the upper window
+                try:
+                    dec_df, LINK, conclusion, dict = Crawl_Decisions(driver, CASE)  # Gets the button window
 
-                if data == 0:
-                    print("Data Error! check the CrawlTopWindow from CrawlJSON file")
+                    if (len(dec_df) == 0):
+                        dec_df, LINK, conclusion, dict = Crawl_Decisions(driver, CASE)
+                        if (len(dec_df) == 0):
+                            print("0 DEC!\n", CASE)
+                            continue
+                    print("The len of decisions table: ", len(dec_df))
+                    data = CrawlTopWindow(CASE, LINK, conclusion, dict, df[start][i])  # Gets the upper window
+
+                    if data == 0:
+                        print("Data Error! check the CrawlTopWindow from CrawlJSON file")
+                        continue
+                except OSError:
+                    i -= 1
+                    CASE = URLS[i]
                     continue
                 json_name = start + "__" + str(i)
                 writeToJsonFile(filePath, json_name, data)  # Write to Json file

@@ -6,7 +6,10 @@ import pandas as pd
 import requests
 import time
 import re
+from urllib3.exceptions import InsecureRequestWarning
+from urllib3 import disable_warnings
 
+disable_warnings(InsecureRequestWarning)
 
 
 
@@ -87,6 +90,7 @@ def slicer(text,labels,contents):
 
 
 def HTML_CRAWLER(link):
+    print("GOT TO PARSER \n", link)
     sess = requests.Session()
     proxies = {"http": "http://5.79.66.2:13081", "https": "https://5.79.66.2:13081"}
     html_content = sess.get(link, proxies=proxies, verify =False).text

@@ -12,6 +12,10 @@ import pandas as pd
 import requests
 import time
 import re
+from urllib3.exceptions import InsecureRequestWarning
+from urllib3 import disable_warnings
+
+disable_warnings(InsecureRequestWarning)
 
 dec_path = r'Decisions_Table/Decisions_Table.csv'
 filePath = '/home/ubuntu/PycharmProjects/pythonProject5/Json_Files/'
