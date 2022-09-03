@@ -88,8 +88,8 @@ def slicer(text,labels,contents):
 
 def HTML_CRAWLER(link):
     sess = requests.Session()
-    html_content = sess.get(link).text
-    print(html_content)
+    proxies = {"http": "http://5.79.66.2:13081", "https": "https://5.79.66.2:13081"}
+    html_content = sess.get(link, proxies=proxies, verify =False).text
     soup = BeautifulSoup(html_content, 'html.parser')
 
     try:
@@ -116,13 +116,3 @@ def HTML_CRAWLER(link):
 # link_psak_din = "https://supremedecisions.court.gov.il/Home/Download?path=HebrewVerdicts/20/520/073/e05&fileName=20073520.E05&type=2"
 # link_hasuy = "https://supremedecisions.court.gov.il/Home/Download?path=HebrewVerdicts/21/650/089/e05&fileName=21089650.E05&type=2"
 #
-# all = HTML_CRAWLER(link_hasuy)
-# for k, v in zip(all.keys(),all.values()):
-#     print(k,": ",v)
-#
-# txt = "   ddd          ddd          rsdgs     "
-# txt =(re.sub(r'(\ )+', ' ',txt))
-# if(txt[0].isspace()):   txt = txt[1:]
-# if(txt[-1].isspace()): txt= txt[:-1]
-#
-# print(txt)

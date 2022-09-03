@@ -107,7 +107,7 @@ while (YEAR < 2023):
             URLS = Get_URLS(Cases)  # List of current date's links
             print(len(URLS))
             for i, CASE in enumerate(URLS):
-                dec_df, LINK, conclusion, dict = Crawl_Decisions(CASE)  # Gets the button window
+                dec_df, LINK, conclusion, dict = Crawl_Decisions(driver, CASE)  # Gets the button window
                 print("The len of decisions table: ", len(dec_df))
                 if (len(dec_df) == 0): continue
                 data = CrawlTopWindow(CASE, LINK, conclusion, dict, df[start][i])  # Gets the upper window
