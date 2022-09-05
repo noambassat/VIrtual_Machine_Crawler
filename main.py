@@ -37,137 +37,141 @@ options.add_argument('--proxy-server=%s' % PROXY)
 
 # main_data_frame = pd.read_csv('Cases_Name.csv',encoding = "ISO-8859-8")
 
-start = "01-01-2010"  #
-end = "01-02-2010"
+Start = "01-01-2010"  #
+End = "07-01-2010"
 YEAR = 2010
 driver = webdriver.Chrome(exe_path, options=options)
 while (YEAR < 2023):
-    start = start[:6] + str(YEAR)
-    end = end[:6] + str(YEAR)
-    YEAR = int(start[6:]) + 1
-    print(YEAR - 1)
-    all_dates = get_dates(start, end)
+    try:
+        Start = Start[:6] + str(YEAR)
+        End = End[:6] + str(YEAR)
+        YEAR = int(Start[6:]) + 1
+        print(YEAR - 1)
+        all_dates = get_dates(Start, End)
 
+        for j in range(len(all_dates)):
+            START_TIME = datetime.now()
+            try:
+                start = all_dates[j]
+                end = all_dates[j + 1]
+            except IndexError:
+                break
 
+            src = get_src(start, end)  # Current date link
 
-    for j in range(len(all_dates)):
-        START_TIME = datetime.now()
-        try:
-            start = all_dates[j]
-            end = all_dates[j + 1]
-        except IndexError:
-            break
-
-        src = get_src(start, end)  # Current date link
-
-        try:
-            driver.get(src)
-        except InvalidSessionIdException:
-            print("Couldn't get src:\n", src)
-            driver.close()
-            driver = webdriver.Chrome(exe_path, options=options)
-            continue
-        except WebDriverException as wde:
-            print(str(wde))
-            print("-----")
-            print(wde.args)
-            print(src)
-            print("trying once again.....")
-            driver.close()
-            driver = webdriver.Chrome(exe_path, options=options)
             try:
                 driver.get(src)
+            except InvalidSessionIdException:
+                print("Couldn't get src:\n", src)
+                driver.close()
+                driver = webdriver.Chrome(exe_path, options=options)
+                continue
             except WebDriverException as wde:
                 print(str(wde))
                 print("-----")
                 print(wde.args)
                 print(src)
-            continue
+                print("trying once again.....")
+                driver.close()
+                driver = webdriver.Chrome(exe_path, options=options)
+                try:
+                    driver.get(src)
+                except WebDriverException as wde:
+                    print(str(wde))
+                    print("-----")
+                    print(wde.args)
+                    print(src)
+                continue
 
-        # At least 2 secs must be waiting in order to load the webpage
-        delay = 5  # seconds
-        try:
-            myElem = WebDriverWait(driver, delay).until(EC.presence_of_element_located((By.ID, 'row_0')))
-        except TimeoutException:
-            print("Loading took too much time")
-            print("Trying once again ...")
+            # At least 2 secs must be waiting in order to load the webpage
+            delay = 5  # seconds
             try:
                 myElem = WebDriverWait(driver, delay).until(EC.presence_of_element_located((By.ID, 'row_0')))
             except TimeoutException:
-                print("Loading took too much time! ID in the code not working!")
-
-        try:
-            time.sleep(1)
-            Number = Get_Number_Of_Cases(driver)  # All the cases that appeared that date
-            Cases = Get_Cases_Names(driver, Number)  # List of Case names
-            df = pd.DataFrame(Cases, columns=[start])
-            # df.join(main_data_frame)
-            name = DT_path + 'Cases_Name ' + start + '.csv'
-            df.to_csv(name, encoding="ISO-8859-8")
-
-            URLS = Get_URLS(Cases)  # List of current date's links
-            print("Number of cases: ",len(URLS))
-            for i, CASE in enumerate(URLS):
+                print("Loading took too much time")
+                print("Trying once again ...")
                 try:
-                    dec_df, LINK, conclusion, dict = Crawl_Decisions(driver, CASE)  # Gets the button window
+                    myElem = WebDriverWait(driver, delay).until(EC.presence_of_element_located((By.ID, 'row_0')))
+                except TimeoutException:
+                    print("Loading took too much time! ID in the code not working!")
 
-                    if (len(dec_df) == 0):
-                        dec_df, LINK, conclusion, dict = Crawl_Decisions(driver, CASE)
+            try:
+                time.sleep(1)
+                Number = Get_Number_Of_Cases(driver)  # All the cases that appeared that date
+                Cases = Get_Cases_Names(driver, Number)  # List of Case names
+                df = pd.DataFrame(Cases, columns=[start])
+                # df.join(main_data_frame)
+                name = DT_path + 'Cases_Name ' + start + '.csv'
+                df.to_csv(name, encoding="ISO-8859-8")
+
+                URLS = Get_URLS(Cases)  # List of current date's links
+                print("Number of cases: ", len(URLS))
+                for i, CASE in enumerate(URLS):
+                    try:
+                        dec_df, LINK, conclusion, dict = Crawl_Decisions(driver, CASE)  # Gets the button window
+
                         if (len(dec_df) == 0):
-                            print("0 DEC!!!\n", CASE)
+                            dec_df, LINK, conclusion, dict = Crawl_Decisions(driver, CASE)
+                            if (len(dec_df) == 0):
+                                print("0 DEC!!!\n", CASE)
+                                continue
+                        print("The len of decisions table: ", len(dec_df))
+                        time.sleep(1)
+                        ###### PROBLAM IN HERE
+                        data = CrawlTopWindow(CASE, LINK, conclusion, dict, df[start][i])  # Gets the upper window
+                        #######
+                        if data == 0:
+                            print("Data Error! check the CrawlTopWindow from CrawlJSON file")
                             continue
-                    print("The len of decisions table: ", len(dec_df))
-                    time.sleep(1)
-                    ###### PROBLAM IN HERE
-                    data = CrawlTopWindow(CASE, LINK, conclusion, dict, df[start][i])  # Gets the upper window
-                    #######
-                    if data == 0:
-                        print("Data Error! check the CrawlTopWindow from CrawlJSON file")
+                    except OSError:
+                        i -= 1
+                        CASE = URLS[i]
+                        ("OS Error, continue")
                         continue
-                except OSError:
-                    i -= 1
-                    CASE = URLS[i]
-                    ("OS Error, continue")
-                    continue
-                except UnexpectedAlertPresentException:
-                    i -= 1
-                    CASE = URLS[i]
-                    ("UnexpectedAlertPresentException, continue")
-                    continue
-                json_name = start + "__" + str(i)
-                writeToJsonFile(filePath, json_name, data)  # Write to Json file
-                print("--done saving to json--")
-        except NoSuchElementException:
-            print(NoSuchElementException)
+                    except UnexpectedAlertPresentException:
+                        i -= 1
+                        CASE = URLS[i]
+                        ("UnexpectedAlertPresentException, continue")
+                        continue
+                    json_name = start + "__" + str(i)
+                    writeToJsonFile(filePath, json_name, data)  # Write to Json file
+                    print("--done saving to json--")
+            except NoSuchElementException:
+                print(NoSuchElementException)
 
-            continue
+                continue
 
-        except UnexpectedAlertPresentException:
+            except UnexpectedAlertPresentException:
 
-            print(UnexpectedAlertPresentException)
+                print(UnexpectedAlertPresentException)
 
-            continue
+                continue
 
-        except AttributeError:
+            except AttributeError:
 
-            print(AttributeError.args)
+                print(AttributeError.args)
 
-            continue
+                continue
 
-        except UnboundLocalError:
+            except UnboundLocalError:
 
-            print(UnboundLocalError)
+                print(UnboundLocalError)
 
-            continue
+                continue
 
-        except TimeoutError:
+            except TimeoutError:
 
-            pass
+                pass
 
-        except requests.exceptions.ConnectTimeout:
+            except requests.exceptions.ConnectTimeout:
 
-            pass
-        print("*** FINISH, THE TIME IT TOOK: ", datetime.now() - START_TIME," ***")  ######
+                pass
+            print("*** FINISH, THE TIME IT TOOK: ", datetime.now() - START_TIME, " ***")  ######
+    except WebDriverException:
+        driver = webdriver.Chrome(exe_path, options=options)
+        driver = webdriver.Chrome(exe_path, options=options)
+        YEAR -= 1
+        continue
     END_RUN_TIME = datetime.now()
     print("FINISH, THE TIME IT TOOK: ", END_RUN_TIME - START_RUN_TIME)  ######
 driver.close()
