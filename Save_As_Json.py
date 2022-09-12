@@ -2,6 +2,7 @@ import json
 
 from bs4 import Tag
 
+#!/usr/bin/env python3 # -*- coding: utf-8 -*-
 
 class SetEncoder(json.JSONEncoder):
     def default(self, obj):

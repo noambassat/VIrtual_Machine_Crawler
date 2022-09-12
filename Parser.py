@@ -1,8 +1,5 @@
-from selenium.common.exceptions import WebDriverException, InvalidSessionIdException
-from selenium.webdriver.chrome.options import Options
-from selenium import webdriver
+
 from bs4 import BeautifulSoup
-import pandas as pd
 import requests
 import time
 import re
@@ -14,6 +11,11 @@ disable_warnings(InsecureRequestWarning)
 
 
 def cleanTXT(txt):
+    # try:
+    #     txt = text.encode('cp1252').decode('cp1255',errors='replace')
+    # except UnicodeError:
+    # 	txt = text
+
     txt = txt.replace("'","")
     txt = (re.sub(r'(\ )+', ' ', txt))
     try:
@@ -91,7 +93,6 @@ def slicer(text,labels,contents):
 
 def HTML_CRAWLER(sess, link):
     proxies = {"http": "http://5.79.66.2:13081", "https": "https://5.79.66.2:13081"}
-    time.sleep(1)
     try:
         html_content = sess.get(link, proxies=proxies, verify = False,timeout=5).text
     except Timeout:
@@ -99,6 +100,7 @@ def HTML_CRAWLER(sess, link):
     except OSError:
         sess1 = requests.Session()
         html_content = sess1.get(link, proxies=proxies, verify = False).text
+    time.sleep(0.5)
     soup = BeautifulSoup(html_content, 'html.parser')
 
     try:
@@ -110,7 +112,7 @@ def HTML_CRAWLER(sess, link):
         try:
             soup = BeautifulSoup(html_content, 'html.parser')
             soup = soup.find('body').find("div", {"class": "Section1"})
-            dirs = soup.findAll("div", {"align": "right"})
+            dirs = soup.findAll("div", {"align": "right"}) # list of the labels
             dirs_1 = soup.findAll('p', {"class": "Ruller3"})
         except AttributeError:
             print("Attribute Error during parsing in: ")

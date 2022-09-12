@@ -16,6 +16,7 @@ from selenium.common.exceptions import WebDriverException, InvalidSessionIdExcep
     UnexpectedAlertPresentException
 from selenium.webdriver.chrome.options import Options
 import requests
+#!/usr/bin/env python3 # -*- coding: utf-8 -*-
 
 warnings.simplefilter(action='ignore', category=(FutureWarning, DeprecationWarning))
 START_RUN_TIME = datetime.now()
@@ -96,7 +97,7 @@ while (YEAR < 2023):
                     print("Loading took too much time! ID in the code not working!")
 
             try:
-                time.sleep(1)
+                time.sleep(0.5)
                 Number = Get_Number_Of_Cases(driver)  # All the cases that appeared that date
                 Cases = Get_Cases_Names(driver, Number)  # List of Case names
                 df = pd.DataFrame(Cases, columns=[start])
@@ -116,7 +117,6 @@ while (YEAR < 2023):
                                 print("0 DEC!!!\n", CASE)
                                 continue
                         print("The len of decisions table: ", len(dec_df))
-                        time.sleep(1)
                         ###### PROBLAM IN HERE
                         data = CrawlTopWindow(CASE, LINK, conclusion, dict, df[start][i])  # Gets the upper window
                         #######
@@ -149,22 +149,22 @@ while (YEAR < 2023):
 
             except AttributeError:
 
-                print(AttributeError.args)
+                print("AttributeError")
 
                 continue
 
             except UnboundLocalError:
 
-                print(UnboundLocalError)
+                print("UnboundLocalError")
 
                 continue
 
             except TimeoutError:
-
+                print("TIME OUT ERROR!!!")
                 pass
 
             except requests.exceptions.ConnectTimeout:
-
+                print("requests.exceptions.ConnectTimeout")
                 pass
             print("*** FINISH, THE TIME IT TOOK: ", datetime.now() - START_TIME, " ***")  ######
     except WebDriverException:

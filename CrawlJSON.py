@@ -15,7 +15,7 @@ import time
 import re
 from urllib3.exceptions import InsecureRequestWarning
 from urllib3 import disable_warnings
-
+#!/usr/bin/env python3 # -*- coding: utf-8 -*-
 disable_warnings(InsecureRequestWarning)
 
 dec_path = r'Decisions_Table/Decisions_Table.csv'
@@ -33,11 +33,23 @@ PROXY = "5.79.66.2:13081"
 options.add_argument('--proxy-server=%s' % PROXY)
 
 
-def cleanTXT(txt):
+def cleanTXT(text):
     ####################################function
     # for i,c in enumerate(txt.split()):
     #     while c==' ':
     #         c = txt[i+1:]
+    # try:
+    #     txt = text.encode('cp1252').decode('cp1255',errors='replace')
+    # except UnicodeError:
+    # 	txt = text
+    # try:
+    #     txt= str(txt.encode('UTF-8'))
+    # except AttributeError:
+    #     pass
+    try:
+        txt = text.encode('cp1252').decode('cp1255', errors='replace')
+    except UnicodeEncodeError:
+        txt = text
     txt = txt.replace(u'\xa0', u' ')
 
     txt = txt.replace("נ ג ד", "נגד")
@@ -61,14 +73,15 @@ def cleanTXT(txt):
 def crawl_HTML(sess, data, link, Type):
     # sess1 = requests.Session()
     proxies = {"http": "http://5.79.66.2:13081", "https": "https://5.79.66.2:13081"}
-    time.sleep(1)
+
     try:
-        html_content = sess.get(link, proxies=proxies, verify = False,timeout=5).text
+        html_content = sess.get(link, proxies=proxies, verify=False, timeout=5).text
     except exceptions.Timeout:
-        html_content = sess.get(link, proxies=proxies, verify = False,timeout=5).text
+        html_content = sess.get(link, proxies=proxies, verify=False, timeout=5).text
     except OSError:
         sess1 = requests.Session()
-        html_content = sess1.get(link, proxies=proxies, verify = False, timeout=5).text
+        html_content = sess1.get(link, proxies=proxies, verify=False, timeout=5).text
+    time.sleep(0.5)
     SOUP = BeautifulSoup(html_content, 'html.parser')
     data_dict = HTML_CRAWLER(sess, link)
     if (data_dict == 0): data_dict = {}
@@ -78,7 +91,6 @@ def crawl_HTML(sess, data, link, Type):
     conclusion = ""
     for row in SOUP.findAll("p", {"class": "Ruller4"}): conclusion += cleanTXT(row.text)
     data_dict["סיכום מסמך"] = cleanTXT(conclusion)
-
 
     return data_dict
 
@@ -114,34 +126,42 @@ def CrawlTopWindow(CASE, LINK, Type, dict, case_name_num):
 
     sess = requests.Session()
     proxies = {"http": "http://5.79.66.2:13081", "https": "https://5.79.66.2:13081"}
+
+    # try:
+    #     html_content = sess.get(LINK, proxies=proxies, verify=False, timeout=5).text
+    # except exceptions.Timeout:
+    #     html_content = sess.get(LINK, proxies=proxies, verify=False, timeout=5).text
+    # time.sleep(1)
+    # soup = BeautifulSoup(html_content, 'html.parser')
+    # print("#1")
+    # # soup = BeautifulSoup(driver.page_source, 'html.parser')
+    # try:
+    #     soup = soup.find("div", {"class": "details-view"})
+    #     iframe = soup.find('iframe')
+    #     src = iframe['ng-src']
+    # except KeyError:
+    #     src = "https://elyon2.court.gov.il/Scripts9/mgrqispi93.dll?Appname=eScourt&Prgname=GetFileDetails_for_new_site&Arguments=-N" \
+    #           + YEAR + "-00" + CASE_NUM + "-0"
+    # except IndexError:
+    #     src = "https://elyon2.court.gov.il/Scripts9/mgrqispi93.dll?Appname=eScourt&Prgname=GetFileDetails_for_new_site&Arguments=-N" \
+    #           + YEAR + "-00" + CASE_NUM + "-0"
+    # except AttributeError:
+    #     src = "https://elyon2.court.gov.il/Scripts9/mgrqispi93.dll?Appname=eScourt&Prgname=GetFileDetails_for_new_site&Arguments=-N" \
+    #           + YEAR + "-00" + CASE_NUM + "-0"
+    src = "https://elyon2.court.gov.il/Scripts9/mgrqispi93.dll?Appname=eScourt&Prgname=GetFileDetails_for_new_site&Arguments=-N" \
+          + YEAR + "-00" + CASE_NUM + "-0"
+    print(LINK)
+    print(src)
+    time.sleep(0.5)
+    print("#1")
     try:
-        html_content = sess.get(LINK, proxies=proxies, verify = False,timeout=5).text
+        html_content = sess.get(src, proxies=proxies, verify=False, timeout=5).text
+        time.sleep(0.5)
     except exceptions.Timeout:
-        html_content = sess.get(LINK, proxies=proxies, verify=False, timeout=5).text
-    print("GOT HERE !!!")
-    time.sleep(1)
-    soup = BeautifulSoup(html_content, 'html.parser')
-    # soup = BeautifulSoup(driver.page_source, 'html.parser')
-    try:
-        soup = soup.find("div", {"class": "details-view"})
-        iframe = soup.find('iframe')
-        src = iframe['ng-src']
-    except KeyError:
-        src = "https://elyon2.court.gov.il/Scripts9/mgrqispi93.dll?Appname=eScourt&Prgname=GetFileDetails_for_new_site&Arguments=-N" \
-              + YEAR + "-00" + CASE_NUM + "-0"
-    except IndexError:
-        src = "https://elyon2.court.gov.il/Scripts9/mgrqispi93.dll?Appname=eScourt&Prgname=GetFileDetails_for_new_site&Arguments=-N" \
-              + YEAR + "-00" + CASE_NUM + "-0"
-    except AttributeError:
-        src = "https://elyon2.court.gov.il/Scripts9/mgrqispi93.dll?Appname=eScourt&Prgname=GetFileDetails_for_new_site&Arguments=-N" \
-              + YEAR + "-00" + CASE_NUM + "-0"
-    try:
-        html_content = sess.get(LINK, proxies=proxies, verify = False,timeout=5).text
-    except exceptions.Timeout:
-        html_content = sess.get(LINK, proxies=proxies, verify = False,timeout=5).text
-    except WebDriverException:
-        src = "https://elyon2.court.gov.il/Scripts9/mgrqispi93.dll?Appname=eScourt&Prgname=GetFileDetails_for_new_site&Arguments=-N" \
-              + YEAR + "-00" + CASE_NUM + "-0"
+        print("Time out exception!!!")
+    # except WebDriverException:
+    #     src = "https://elyon2.court.gov.il/Scripts9/mgrqispi93.dll?Appname=eScourt&Prgname=GetFileDetails_for_new_site&Arguments=-N" \
+    #           + YEAR + "-00" + CASE_NUM + "-0"
     except InvalidSessionIdException:
 
         print("InvalidSessionIdException:\n", src)
@@ -150,7 +170,11 @@ def CrawlTopWindow(CASE, LINK, Type, dict, case_name_num):
 
         print("InvalidSessionIdException:\n", src)
         return 0
+
+    time.sleep(0.5)
     soup = BeautifulSoup(html_content, 'html.parser')
+    print("#2")
+
     if ((soup.find("head").title.text).find("חסוי") != -1):
         all_data = {}
         hidden_content = 1
@@ -166,8 +190,9 @@ def CrawlTopWindow(CASE, LINK, Type, dict, case_name_num):
         for i in range(len(labels)):
             first_data[cleanTXT(labels[i].text)] = cleanTXT(details[i].text)
         try:
-          all_data[LABELS[0]] = first_data
-        except IndexError: pass
+            all_data[LABELS[0]] = first_data
+        except IndexError:
+            print('')
         tabs = soup.findAll("div", {"class": "tab-pane fade"})
         bigger_data = {}
         for i, tab in enumerate(tabs):
@@ -191,9 +216,9 @@ def CrawlTopWindow(CASE, LINK, Type, dict, case_name_num):
                             info = (cleanTXT(td.text)).replace('\n', ' ')
                             if (len(info) < 1): info = "אין מידע"
                             labels.append(label)
-                            infos.append(info)
+                            infos.append(cleanTXT(info))
                         except KeyError:
-                            pass
+                            print('')
                     if (len(infos) < 1): continue
                     row = {cleanTXT(labels[n]): cleanTXT(infos[n]) for n in range(len(labels))}
                     if "סוג צד" in labels:
@@ -220,11 +245,12 @@ def CrawlTopWindow(CASE, LINK, Type, dict, case_name_num):
         all_data['ראשי תיבות תיק'] = case_name_num[:case_name_num.find(" ")]
         all_data['שנת תיק'] = '20' + case_name_num[case_name_num.find("/") + 1:]
         curr_year = str(datetime.date.today().year)[2:]
-        if (int(case_name_num[case_name_num.find("/") + 1:]) > int(curr_year)): all_data['שנת תיק'] = '19' + case_name_num[
-                                                                                                 case_name_num.find(
-                                                                                                     "/") + 1:]
+        if (int(case_name_num[case_name_num.find("/") + 1:]) > int(curr_year)): all_data[
+            'שנת תיק'] = '19' + case_name_num[
+                                case_name_num.find(
+                                    "/") + 1:]
     except KeyError:
-        pass
+        print("KEY ERROR ...")
     doc = [crawl_HTML(sess, all_data, LINK, Type)]  # רשימת מסמכי הHTML , כרגע רק 1
     counter = 0
     other_docs = []
@@ -241,7 +267,7 @@ def CrawlTopWindow(CASE, LINK, Type, dict, case_name_num):
 
 def Crawl_Decisions(driver, CASE):
     CASE_NUM = CASE[67:67 + 4] + "/" + CASE[64:64 + 2]
-   # https: // supremedecisions.court.gov.il / Verdicts / Results / 1 / null / 1994 / 6563 / null / null / null / null / null
+    # https: // supremedecisions.court.gov.il / Verdicts / Results / 1 / null / 1994 / 6563 / null / null / null / null / null
     try:
         # driver = webdriver.Chrome(exe_path, options=options)
         driver.get(CASE)
@@ -270,7 +296,7 @@ def Crawl_Decisions(driver, CASE):
 
     except TimeoutException:
         print("Loading took too much time! crawl dec")
-
+    time.sleep(0.5)
     SOUP = BeautifulSoup(driver.page_source, 'html.parser')
     # At least 2 secs must be waiting in order to load the webpage
 

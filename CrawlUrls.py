@@ -50,7 +50,6 @@ def Get_URLS(Cases):
             curr_year = str(datetime.date.today().year)[2:]
 
             if(int(word[word.find('/')+1:])>int(curr_year)): year = '19' +  word[word.find('/')+1:]
-            # 2022/3635   #######################################
 
             url = "https://supremedecisions.court.gov.il/Verdicts/Results/1/null/" \
                   +year+ "/"\

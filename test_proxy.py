@@ -277,3 +277,11 @@ for row in dict.values():
 all_data['מספר החלטות בתיק'] = len(other_docs)
 all_data['קישור לתיק'] = CASE
 new_dict = {"פרטי תיק": all_data, "מסמכים": {"פסק דין או החלטה אחרונה": doc, "כל ההחלטות בתיק": other_docs}}
+
+
+
+
+# LINKS:
+# https://supremedecisions.court.gov.il/Home/Download?path=HebrewVerdicts/94/630/065/d04&fileName=94065630.D04&type=2
+# https://elyon2.court.gov.il/Scripts9/mgrqispi93.dll?Appname=eScourt&Prgname=GetFileDetails_for_new_site&Arguments=-N1994-006563-0
+# */
