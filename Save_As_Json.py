@@ -1,6 +1,5 @@
-import json
-
 from bs4 import Tag
+import json
 
 #!/usr/bin/env python3 # -*- coding: utf-8 -*-
 
@@ -18,6 +17,5 @@ def writeToJsonFile(filePath, fileName, data):
 
     with open(filePathName, 'w', encoding='utf8') as json_file:
         json.dump(data, json_file, ensure_ascii=False, cls=SetEncoder)
-
 
     print(fileName)

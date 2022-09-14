@@ -6,8 +6,11 @@ def get_src(start_date, end_date): return 'https://supremedecisions.court.gov.il
 def Get_Number_Of_Cases(driver):
     soup = BeautifulSoup(driver.page_source, 'html.parser')
     txt = soup.find('p', {'class': 'ng-binding'}).text
-    return [int(s) for s in txt.split() if s.isdigit()][0]
-
+    try:
+        return [int(s) for s in txt.split() if s.isdigit()][0]
+    except IndexError:
+        print("IndexError from def Get_Number_Of_Cases(driver):\n, the list is: ",[int(s) for s in txt.split() if s.isdigit()]  )
+        return 0
 
 
 def scroll_down(driver, Number_Of_Cases):
@@ -49,7 +52,7 @@ def Get_URLS(Cases):
             year = '20' + word[word.find('/')+1:]
             curr_year = str(datetime.date.today().year)[2:]
 
-            if(int(word[word.find('/')+1:])>int(curr_year)): year = '19' +  word[word.find('/')+1:]
+            if(int(word[word.find('/')+1:])>int(curr_year)): year = '19' + word[word.find('/')+1:]
 
             url = "https://supremedecisions.court.gov.il/Verdicts/Results/1/null/" \
                   +year+ "/"\

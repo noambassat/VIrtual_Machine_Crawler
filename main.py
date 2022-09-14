@@ -95,55 +95,82 @@ while (YEAR < 2023):
                     myElem = WebDriverWait(driver, delay).until(EC.presence_of_element_located((By.ID, 'row_0')))
                 except TimeoutException:
                     print("Loading took too much time! ID in the code not working!")
-
+            print("Time until now (get webdriver) is: ", datetime.now()-START_RUN_TIME)
             try:
                 time.sleep(0.5)
                 Number = Get_Number_Of_Cases(driver)  # All the cases that appeared that date
+                print("Time until now (Get_Number_Of_Cases) is: ", datetime.now() - START_RUN_TIME)
                 Cases = Get_Cases_Names(driver, Number)  # List of Case names
+                print("Time until now (Get_Cases_Names) is: ", datetime.now() - START_RUN_TIME)
+
                 df = pd.DataFrame(Cases, columns=[start])
                 # df.join(main_data_frame)
                 name = DT_path + 'Cases_Name ' + start + '.csv'
                 df.to_csv(name, encoding="ISO-8859-8")
 
                 URLS = Get_URLS(Cases)  # List of current date's links
+                print("Time until now (Get_URLS) is: ", datetime.now() - START_RUN_TIME)
+
                 print("Number of cases: ", len(URLS))
                 for i, CASE in enumerate(URLS):
                     try:
-                        dec_df, LINK, conclusion, dict = Crawl_Decisions(driver, CASE)  # Gets the button window
-
-                        if (len(dec_df) == 0):
-                            dec_df, LINK, conclusion, dict = Crawl_Decisions(driver, CASE)
-                            if (len(dec_df) == 0):
-                                print("0 DEC!!!\n", CASE)
+                        for I in range(3):
+                            try:
+                                dec_df, LINK, conclusion, dict = Crawl_Decisions(driver, CASE)  # Gets the button window
+                            except OSError as error:
+                                print("OS Error, on Crawl_Decisions, error num:",I+1)
+                                print(error)
                                 continue
+                            if(len(dec_df)>0): break
+                        if (len(dec_df) == 0):
+                            print("0 DEC!!!\n", CASE)
+                            continue
+                        print("Time until now (Crawl_Decisions) is: ", datetime.now() - START_RUN_TIME)
+
                         print("The len of decisions table: ", len(dec_df))
                         ###### PROBLAM IN HERE
-                        data = CrawlTopWindow(CASE, LINK, conclusion, dict, df[start][i])  # Gets the upper window
+                        for I in range(3):
+
+                            try:
+                                data = CrawlTopWindow(CASE, LINK, conclusion, dict, df[start][i])  # Gets the upper window
+                            # print("check type the len: ",type(data))
+                                if(len(data)>10): break
+                            except OSError as error:
+                                print("OS Error, on CrawlTopWindow, error num:", I + 1)
+                                print(error)
+                                data = CrawlTopWindow(CASE, LINK, conclusion, dict, df[start][i])  # Gets the upper window
+
+
+                        if(len(data)<10):  data = CrawlTopWindow(CASE, LINK, conclusion, dict, df[start][i])  # Gets the upper window
                         #######
+                        print("Time until now (CrawlTopWindow) is: ", datetime.now() - START_RUN_TIME)
+
                         if data == 0:
                             print("Data Error! check the CrawlTopWindow from CrawlJSON file")
                             continue
-                    except OSError:
-                        i -= 1
-                        CASE = URLS[i]
-                        ("OS Error, continue")
-                        continue
+
+
+                    except KeyError:
+                        print("KEY ERROR")
+
                     except UnexpectedAlertPresentException:
                         i -= 1
                         CASE = URLS[i]
-                        ("UnexpectedAlertPresentException, continue")
+                        print("UnexpectedAlertPresentException, continue")
                         continue
                     json_name = start + "__" + str(i)
                     writeToJsonFile(filePath, json_name, data)  # Write to Json file
                     print("--done saving to json--")
+                    print("Time until now (Done downloading current file) is: ", datetime.now() - START_RUN_TIME)
+
             except NoSuchElementException:
-                print(NoSuchElementException)
+                print("NoSuchElementException")
 
                 continue
 
             except UnexpectedAlertPresentException:
 
-                print(UnexpectedAlertPresentException)
+                print("UnexpectedAlertPresentException")
 
                 continue
 
@@ -169,7 +196,7 @@ while (YEAR < 2023):
             print("*** FINISH, THE TIME IT TOOK: ", datetime.now() - START_TIME, " ***")  ######
     except WebDriverException:
         driver = webdriver.Chrome(exe_path, options=options)
-        driver = webdriver.Chrome(exe_path, options=options)
+        print("WEB DRIVER EXCEPTION!")
         YEAR -= 1
         continue
     END_RUN_TIME = datetime.now()

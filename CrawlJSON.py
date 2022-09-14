@@ -15,7 +15,13 @@ import time
 import re
 from urllib3.exceptions import InsecureRequestWarning
 from urllib3 import disable_warnings
-#!/usr/bin/env python3 # -*- coding: utf-8 -*-
+import requests
+from requests.adapters import HTTPAdapter
+from requests.packages.urllib3.util.retry import Retry
+
+
+
+# !/usr/bin/env python3 # -*- coding: utf-8 -*-
 disable_warnings(InsecureRequestWarning)
 
 dec_path = r'Decisions_Table/Decisions_Table.csv'
@@ -23,7 +29,7 @@ filePath = '/home/ubuntu/PycharmProjects/pythonProject5/Json_Files/'
 DT_path = '/home/ubuntu/PycharmProjects/pythonProject5/DataFrames/'
 exe_path = '/home/ubuntu/PycharmProjects/pythonProject5/chromedriver'
 
-main_df = pd.read_csv(dec_path, index_col=0)
+main_df = pd.read_csv(dec_path, index_col=0, dtype='unicode',low_memory=False)
 options = Options()
 # options.add_argument('--disable-gpu')
 # options.add_argument('--headless')
@@ -74,11 +80,17 @@ def crawl_HTML(sess, data, link, Type):
     # sess1 = requests.Session()
     proxies = {"http": "http://5.79.66.2:13081", "https": "https://5.79.66.2:13081"}
 
+
     try:
+        retry = Retry(connect=3, backoff_factor=1)
+        adapter = HTTPAdapter(max_retries=retry)
+        sess.mount('http://', adapter)
+        sess.mount('https://', adapter)
         html_content = sess.get(link, proxies=proxies, verify=False, timeout=5).text
     except exceptions.Timeout:
         html_content = sess.get(link, proxies=proxies, verify=False, timeout=5).text
     except OSError:
+        print("OSError from crawl_html func")
         sess1 = requests.Session()
         html_content = sess1.get(link, proxies=proxies, verify=False, timeout=5).text
     time.sleep(0.5)
@@ -127,52 +139,26 @@ def CrawlTopWindow(CASE, LINK, Type, dict, case_name_num):
     sess = requests.Session()
     proxies = {"http": "http://5.79.66.2:13081", "https": "https://5.79.66.2:13081"}
 
-    # try:
-    #     html_content = sess.get(LINK, proxies=proxies, verify=False, timeout=5).text
-    # except exceptions.Timeout:
-    #     html_content = sess.get(LINK, proxies=proxies, verify=False, timeout=5).text
-    # time.sleep(1)
-    # soup = BeautifulSoup(html_content, 'html.parser')
-    # print("#1")
-    # # soup = BeautifulSoup(driver.page_source, 'html.parser')
-    # try:
-    #     soup = soup.find("div", {"class": "details-view"})
-    #     iframe = soup.find('iframe')
-    #     src = iframe['ng-src']
-    # except KeyError:
-    #     src = "https://elyon2.court.gov.il/Scripts9/mgrqispi93.dll?Appname=eScourt&Prgname=GetFileDetails_for_new_site&Arguments=-N" \
-    #           + YEAR + "-00" + CASE_NUM + "-0"
-    # except IndexError:
-    #     src = "https://elyon2.court.gov.il/Scripts9/mgrqispi93.dll?Appname=eScourt&Prgname=GetFileDetails_for_new_site&Arguments=-N" \
-    #           + YEAR + "-00" + CASE_NUM + "-0"
-    # except AttributeError:
-    #     src = "https://elyon2.court.gov.il/Scripts9/mgrqispi93.dll?Appname=eScourt&Prgname=GetFileDetails_for_new_site&Arguments=-N" \
-    #           + YEAR + "-00" + CASE_NUM + "-0"
     src = "https://elyon2.court.gov.il/Scripts9/mgrqispi93.dll?Appname=eScourt&Prgname=GetFileDetails_for_new_site&Arguments=-N" \
           + YEAR + "-00" + CASE_NUM + "-0"
-    print(LINK)
-    print(src)
+    # print(LINK)
+    # print(src)
     time.sleep(0.5)
     print("#1")
-    try:
-        html_content = sess.get(src, proxies=proxies, verify=False, timeout=5).text
-        time.sleep(0.5)
-    except exceptions.Timeout:
-        print("Time out exception!!!")
-    # except WebDriverException:
-    #     src = "https://elyon2.court.gov.il/Scripts9/mgrqispi93.dll?Appname=eScourt&Prgname=GetFileDetails_for_new_site&Arguments=-N" \
-    #           + YEAR + "-00" + CASE_NUM + "-0"
-    except InvalidSessionIdException:
 
-        print("InvalidSessionIdException:\n", src)
-        return 0
-    except  WebDriverException:
+    retry = Retry(connect=3, backoff_factor=1)
+    adapter = HTTPAdapter(max_retries=retry)
+    sess.mount('http://', adapter)
+    sess.mount('https://', adapter)
+    html_content = sess.get(src, proxies=proxies, verify=False, timeout=30).text
 
-        print("InvalidSessionIdException:\n", src)
-        return 0
+    if(html_content==None): print("******************* NONE *******************")
+    if(len(html_content)<=50): print("############# LEN = 0 !!!!! ##################")
+    print(type(html_content))
 
     time.sleep(0.5)
     soup = BeautifulSoup(html_content, 'html.parser')
+
     print("#2")
 
     if ((soup.find("head").title.text).find("חסוי") != -1):
@@ -192,7 +178,7 @@ def CrawlTopWindow(CASE, LINK, Type, dict, case_name_num):
         try:
             all_data[LABELS[0]] = first_data
         except IndexError:
-            print('')
+            pass
         tabs = soup.findAll("div", {"class": "tab-pane fade"})
         bigger_data = {}
         for i, tab in enumerate(tabs):
@@ -218,7 +204,7 @@ def CrawlTopWindow(CASE, LINK, Type, dict, case_name_num):
                             labels.append(label)
                             infos.append(cleanTXT(info))
                         except KeyError:
-                            print('')
+                            pass
                     if (len(infos) < 1): continue
                     row = {cleanTXT(labels[n]): cleanTXT(infos[n]) for n in range(len(labels))}
                     if "סוג צד" in labels:
@@ -334,7 +320,7 @@ def Crawl_Decisions(driver, CASE):
     for row in (case_dec.values()):
         df = df.append(row, ignore_index=True)
     df.drop_duplicates(inplace=True)
-    main_df = pd.read_csv(r'Decisions_Table/Decisions_Table.csv', index_col=0)
+    main_df = pd.read_csv(r'Decisions_Table/Decisions_Table.csv', index_col=0, dtype='unicode',low_memory=False)
     main_df = main_df.append(df)
     main_df = main_df.reindex()
     main_df.to_csv('Decisions_Table/Decisions_Table.csv')

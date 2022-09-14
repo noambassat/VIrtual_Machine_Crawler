@@ -1,13 +1,13 @@
-
 from bs4 import BeautifulSoup
-import requests
 import time
 import re
 from urllib3.exceptions import InsecureRequestWarning
 from urllib3 import disable_warnings
 from requests.exceptions import Timeout
 disable_warnings(InsecureRequestWarning)
-
+import requests
+from requests.adapters import HTTPAdapter
+from requests.packages.urllib3.util.retry import Retry
 
 
 def cleanTXT(txt):
@@ -51,7 +51,7 @@ def get_dict(dirs):
 
         info = (text[text.find(":")+1:])
         content = []
-        for row in info.split('\n\n'): # content
+        for row in info.split('\n\n'):  # content
             row = cleanTXT(row).replace('\n ',' ')
             if len (row) == 0 : continue
             row = re.sub(r'(\d)+\. ', '', row)
@@ -93,28 +93,41 @@ def slicer(text,labels,contents):
 
 def HTML_CRAWLER(sess, link):
     proxies = {"http": "http://5.79.66.2:13081", "https": "https://5.79.66.2:13081"}
+
     try:
-        html_content = sess.get(link, proxies=proxies, verify = False,timeout=5).text
+        retry = Retry(connect=3, backoff_factor=1)
+        adapter = HTTPAdapter(max_retries=retry)
+        sess.mount('http://', adapter)
+        sess.mount('https://', adapter)
+        html_content = sess.get(link, proxies=proxies, verify=False, timeout=15).text
     except Timeout:
-        html_content = sess.get(link, proxies=proxies, verify=False, timeout=5).text
+        html_content = sess.get(link, proxies=proxies, verify=False, timeout=15).text
+
     except OSError:
+        print("OSError from parser!!!")
         sess1 = requests.Session()
-        html_content = sess1.get(link, proxies=proxies, verify = False).text
+        html_content = sess1.get(link, proxies=proxies, verify=False, timeout=5).text
+
     time.sleep(0.5)
     soup = BeautifulSoup(html_content, 'html.parser')
 
     try:
+
         soup = soup.find('body').find("div",{"class":"WordSection1"})
         dirs = soup.findAll("div", {"align": "right"})
         dirs_1 = soup.findAll('p', {"class": "Ruller3"})
 
     except AttributeError:
+
         try:
+
             soup = BeautifulSoup(html_content, 'html.parser')
             soup = soup.find('body').find("div", {"class": "Section1"})
             dirs = soup.findAll("div", {"align": "right"}) # list of the labels
             dirs_1 = soup.findAll('p', {"class": "Ruller3"})
+
         except AttributeError:
+
             print("Attribute Error during parsing in: ")
             print(link)
 
