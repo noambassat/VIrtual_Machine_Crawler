@@ -150,13 +150,15 @@ def CrawlTopWindow(CASE, LINK, Type, dict, case_name_num):
     adapter = HTTPAdapter(max_retries=retry)
     sess.mount('http://', adapter)
     sess.mount('https://', adapter)
-    html_content = sess.get(src, proxies=proxies, verify=False, timeout=30).text
+    for I in range(3):
+        try:
+            html_content = sess.get(src, proxies=proxies, verify=False, timeout=15).text
+        except OSError:
+            print("OSERROR IN CRAWL TOP WINDOW, NUMBER: ",I)
+        if (len(html_content) >= 10): continue
 
-    if(html_content==None): print("******************* NONE *******************")
-    if(len(html_content)<=50): print("############# LEN = 0 !!!!! ##################")
-    print(type(html_content))
 
-    time.sleep(0.5)
+
     soup = BeautifulSoup(html_content, 'html.parser')
 
     print("#2")
