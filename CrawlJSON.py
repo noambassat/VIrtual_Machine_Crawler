@@ -131,6 +131,7 @@ def add_counters(data):
 
 
 def CrawlTopWindow(CASE, LINK, Type, dict, case_name_num):
+
     hidden_content = 0
     CASE_NUM = CASE[67:67 + 4]
     YEAR = CASE[62:66]
