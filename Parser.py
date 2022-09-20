@@ -11,10 +11,6 @@ from requests.packages.urllib3.util.retry import Retry
 
 
 def cleanTXT(txt):
-    # try:
-    #     txt = text.encode('cp1252').decode('cp1255',errors='replace')
-    # except UnicodeError:
-    # 	txt = text
 
     txt = txt.replace("'","")
     txt = (re.sub(r'(\ )+', ' ', txt))
