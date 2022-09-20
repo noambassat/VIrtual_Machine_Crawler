@@ -38,12 +38,13 @@ options.add_argument('--proxy-server=%s' % PROXY)
 
 # main_data_frame = pd.read_csv('Cases_Name.csv',encoding = "ISO-8859-8")
 
-Start = "01-01-2010"  #
-End = "07-01-2010"
-YEAR = 2010
+Start = "01-01-2014"  #
+End = "07-01-2014"
+YEAR = 2014
 driver = webdriver.Chrome(exe_path, options=options)
 while (YEAR < 2023):
     try:
+
         Start = Start[:6] + str(YEAR)
         End = End[:6] + str(YEAR)
         YEAR = int(Start[6:]) + 1
@@ -95,13 +96,13 @@ while (YEAR < 2023):
                     myElem = WebDriverWait(driver, delay).until(EC.presence_of_element_located((By.ID, 'row_0')))
                 except TimeoutException:
                     print("Loading took too much time! ID in the code not working!")
-            print("Time until now (get webdriver) is: ", datetime.now()-START_RUN_TIME)
+            print("Time until now (get webdriver) is: ", datetime.now()-START_TIME)
             try:
                 time.sleep(0.5)
                 Number = Get_Number_Of_Cases(driver)  # All the cases that appeared that date
-                print("Time until now (Get_Number_Of_Cases) is: ", datetime.now() - START_RUN_TIME)
+                print("Time until now CURR DATE Get_Number_Of_Cases is: ", datetime.now() - START_TIME)
                 Cases = Get_Cases_Names(driver, Number)  # List of Case names
-                print("Time until now (Get_Cases_Names) is: ", datetime.now() - START_RUN_TIME)
+                print("Time until now CURR DATE Get_Cases_Names is: ", datetime.now() - START_TIME)
 
                 df = pd.DataFrame(Cases, columns=[start])
                 # df.join(main_data_frame)
@@ -109,10 +110,11 @@ while (YEAR < 2023):
                 df.to_csv(name, encoding="ISO-8859-8")
 
                 URLS = Get_URLS(Cases)  # List of current date's links
-                print("Time until now (Get_URLS) is: ", datetime.now() - START_RUN_TIME)
+                print("Time until now CURR DATE (Get_URLS) is: ", datetime.now() - START_TIME)
 
                 print("Number of cases: ", len(URLS))
                 for i, CASE in enumerate(URLS):
+                    START_CURR_TIME = datetime.now()
                     try:
                         for I in range(3):
                             try:
@@ -125,7 +127,7 @@ while (YEAR < 2023):
                         if (len(dec_df) == 0):
                             print("0 DEC!!!\n", CASE)
                             continue
-                        print("Time until now (Crawl_Decisions) is: ", datetime.now() - START_RUN_TIME)
+                        print("Time until now current case (Crawl_Decisions) is: ", datetime.now() - START_CURR_TIME)
 
                         print("The len of decisions table: ", len(dec_df))
                         ###### PROBLAM IN HERE
@@ -134,16 +136,16 @@ while (YEAR < 2023):
                             try:
                                 data = CrawlTopWindow(CASE, LINK, conclusion, dict, df[start][i])  # Gets the upper window
                             # print("check type the len: ",type(data))
-                                if(len(data)>10): break
+
                             except OSError as error:
                                 print("OS Error, on CrawlTopWindow, error num:", I + 1)
                                 print(error)
                                 data = CrawlTopWindow(CASE, LINK, conclusion, dict, df[start][i])  # Gets the upper window
+                            if (len(data) > 10): break
 
-
-                        if(len(data)<10):  data = CrawlTopWindow(CASE, LINK, conclusion, dict, df[start][i])  # Gets the upper window
                         #######
-                        print("Time until now (CrawlTopWindow) is: ", datetime.now() - START_RUN_TIME)
+                        data['פרטי תיק']['תאריך יצוא הקובץ'] = str(datetime.datetime.now().date())
+                        print("Time until now current case (CrawlTopWindow) is: ", datetime.now() - START_CURR_TIME)
 
                         if data == 0:
                             print("Data Error! check the CrawlTopWindow from CrawlJSON file")
@@ -161,7 +163,7 @@ while (YEAR < 2023):
                     json_name = start + "__" + str(i)
                     writeToJsonFile(filePath, json_name, data)  # Write to Json file
                     print("--done saving to json--")
-                    print("Time until now (Done downloading current file) is: ", datetime.now() - START_RUN_TIME)
+                    print("Time until now current case (Done downloading current file) is: ", datetime.now() - START_CURR_TIME)
 
             except NoSuchElementException:
                 print("NoSuchElementException")

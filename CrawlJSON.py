@@ -93,7 +93,6 @@ def crawl_HTML(sess, data, link, Type):
         print("OSError from crawl_html func")
         sess1 = requests.Session()
         html_content = sess1.get(link, proxies=proxies, verify=False, timeout=5).text
-    time.sleep(0.5)
     SOUP = BeautifulSoup(html_content, 'html.parser')
     data_dict = HTML_CRAWLER(sess, link)
     if (data_dict == 0): data_dict = {}
@@ -143,7 +142,6 @@ def CrawlTopWindow(CASE, LINK, Type, dict, case_name_num):
           + YEAR + "-00" + CASE_NUM + "-0"
     # print(LINK)
     # print(src)
-    time.sleep(0.5)
     print("#1")
 
     retry = Retry(connect=3, backoff_factor=1)
@@ -155,13 +153,13 @@ def CrawlTopWindow(CASE, LINK, Type, dict, case_name_num):
             html_content = sess.get(src, proxies=proxies, verify=False, timeout=15).text
         except OSError:
             print("OSERROR IN CRAWL TOP WINDOW, NUMBER: ",I)
-        if (len(html_content) >= 10): continue
+        if (len(html_content) >= 10): break
 
 
 
     soup = BeautifulSoup(html_content, 'html.parser')
 
-    print("#2")
+
 
     if ((soup.find("head").title.text).find("חסוי") != -1):
         all_data = {}
@@ -239,6 +237,7 @@ def CrawlTopWindow(CASE, LINK, Type, dict, case_name_num):
                                     "/") + 1:]
     except KeyError:
         print("KEY ERROR ...")
+    print("#2")
     doc = [crawl_HTML(sess, all_data, LINK, Type)]  # רשימת מסמכי הHTML , כרגע רק 1
     counter = 0
     other_docs = []
@@ -284,7 +283,6 @@ def Crawl_Decisions(driver, CASE):
 
     except TimeoutException:
         print("Loading took too much time! crawl dec")
-    time.sleep(0.5)
     SOUP = BeautifulSoup(driver.page_source, 'html.parser')
     # At least 2 secs must be waiting in order to load the webpage
 

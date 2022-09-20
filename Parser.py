@@ -94,21 +94,22 @@ def slicer(text,labels,contents):
 def HTML_CRAWLER(sess, link):
     proxies = {"http": "http://5.79.66.2:13081", "https": "https://5.79.66.2:13081"}
 
-    try:
-        retry = Retry(connect=3, backoff_factor=1)
-        adapter = HTTPAdapter(max_retries=retry)
-        sess.mount('http://', adapter)
-        sess.mount('https://', adapter)
-        html_content = sess.get(link, proxies=proxies, verify=False, timeout=15).text
-    except Timeout:
-        html_content = sess.get(link, proxies=proxies, verify=False, timeout=15).text
+    retry = Retry(connect=3, backoff_factor=1)
+    adapter = HTTPAdapter(max_retries=retry)
+    sess.mount('http://', adapter)
+    sess.mount('https://', adapter)
+    for I in range(3):
+        try:
+            html_content = sess.get(link, proxies=proxies, verify=False, timeout=15).text
+        except OSError:
+            print("OSERROR IN CRAWL HTML, PARSER, NUMBER: ",I)
+        if (len(html_content) >= 10): break
+    #
+    # except OSError:
+    #     print("OSError from parser!!!")
+    #     sess1 = requests.Session()
+    #     html_content = sess1.get(link, proxies=proxies, verify=False, timeout=10).text
 
-    except OSError:
-        print("OSError from parser!!!")
-        sess1 = requests.Session()
-        html_content = sess1.get(link, proxies=proxies, verify=False, timeout=5).text
-
-    time.sleep(0.5)
     soup = BeautifulSoup(html_content, 'html.parser')
 
     try:
