@@ -96,6 +96,7 @@ while (YEAR < 2023):
                     myElem = WebDriverWait(driver, delay).until(EC.presence_of_element_located((By.ID, 'row_0')))
                 except TimeoutException:
                     print("Loading took too much time! ID in the code not working!")
+
             print("Time until now (get webdriver) is: ", datetime.now()-START_TIME)
             try:
                 time.sleep(0.5)
@@ -114,6 +115,7 @@ while (YEAR < 2023):
 
                 print("Number of cases: ", len(URLS))
                 for i, CASE in enumerate(URLS):
+                    print("____________________________________")
                     START_CURR_TIME = datetime.now()
                     try:
                         for I in range(3):
@@ -134,6 +136,7 @@ while (YEAR < 2023):
                         for I in range(3):
 
                             try:
+                                #
                                 data = CrawlTopWindow(CASE, LINK, conclusion, dict, df[start][i])  # Gets the upper window
                             # print("check type the len: ",type(data))
 
