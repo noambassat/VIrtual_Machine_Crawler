@@ -4,6 +4,8 @@ from selenium.webdriver.support.ui import WebDriverWait
 from selenium.common.exceptions import TimeoutException
 from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.common.by import By
+import http.client
+import urllib.parse
 import datetime
 from Parser import HTML_CRAWLER
 from selenium import webdriver
@@ -19,8 +21,6 @@ import requests
 from requests.adapters import HTTPAdapter
 from requests.packages.urllib3.util.retry import Retry
 
-
-
 # !/usr/bin/env python3 # -*- coding: utf-8 -*-
 disable_warnings(InsecureRequestWarning)
 
@@ -29,7 +29,7 @@ filePath = '/home/ubuntu/PycharmProjects/pythonProject5/Json_Files/'
 DT_path = '/home/ubuntu/PycharmProjects/pythonProject5/DataFrames/'
 exe_path = '/home/ubuntu/PycharmProjects/pythonProject5/chromedriver'
 
-main_df = pd.read_csv(dec_path, index_col=0, dtype='unicode',low_memory=False)
+main_df = pd.read_csv(dec_path, index_col=0, dtype='unicode', low_memory=False)
 options = Options()
 # options.add_argument('--disable-gpu')
 # options.add_argument('--headless')
@@ -76,25 +76,35 @@ def cleanTXT(text):
     return txt
 
 
-def crawl_HTML(sess, data, link, Type):
+def crawl_HTML( data, link, Type):
     # sess1 = requests.Session()
-    proxies = {"http": "http://5.79.66.2:13081", "https": "https://5.79.66.2:13081"}
-
+    # proxies = {"http": "http://5.79.66.2:13081", "https": "https://5.79.66.2:13081"}
 
     try:
-        retry = Retry(connect=3, backoff_factor=1)
-        adapter = HTTPAdapter(max_retries=retry)
-        sess.mount('http://', adapter)
-        sess.mount('https://', adapter)
-        html_content = sess.get(link, proxies=proxies, verify=False, timeout=5).text
+        src = "/v1?url=" + (urllib.parse.quote(link,
+                                               safe="")) + "&api_key=LO1P2fbVVQD1KFq436QwVW58o7iD05IQ&device=desktop&proxy_type=datacenter&render_js=1&wait_until=domcontentloaded&timeout=30000"
+
+        conn = http.client.HTTPSConnection("api.webscrapingapi.com")
+
+        conn.request("GET", src)
+        res = conn.getresponse()
+        data = res.read()
+
+        html_content = (data.decode("utf-8"))
+        # retry = Retry(connect=3, backoff_factor=1)
+        # adapter = HTTPAdapter(max_retries=retry)
+        # sess.mount('http://', adapter)
+        # sess.mount('https://', adapter)
+        # html_content = sess.get(link, proxies=proxies, verify=False, timeout=5).text
     except exceptions.Timeout:
-        html_content = sess.get(link, proxies=proxies, verify=False, timeout=5).text
+        print("TIME OUT ERROR")
+        # html_content = sess.get(link, proxies=proxies, verify=False, timeout=5).text
     except OSError:
         print("OSError from crawl_html func")
-        sess1 = requests.Session()
-        html_content = sess1.get(link, proxies=proxies, verify=False, timeout=5).text
+        # sess1 = requests.Session()
+        # html_content = sess1.get(link, proxies=proxies, verify=False, timeout=5).text
     SOUP = BeautifulSoup(html_content, 'html.parser')
-    data_dict = HTML_CRAWLER(sess, link)
+    data_dict = HTML_CRAWLER(link)
     if (data_dict == 0): data_dict = {}
     data_dict['סוג מסמך'] = Type
     data_dict['מסמך מלא'] = cleanTXT(SOUP.text.replace('\n\n', ' ').replace(u'\xa0', u' '))
@@ -131,36 +141,41 @@ def add_counters(data):
 
 
 def CrawlTopWindow(CASE, LINK, Type, dict, case_name_num):
-
     hidden_content = 0
     CASE_NUM = CASE[67:67 + 4]
     YEAR = CASE[62:66]
 
-    sess = requests.Session()
-    proxies = {"http": "http://5.79.66.2:13081", "https": "https://5.79.66.2:13081"}
+    # sess = requests.Session()
+    # proxies = {"http": "http://5.79.66.2:13081", "https": "https://5.79.66.2:13081"}
 
     src = "https://elyon2.court.gov.il/Scripts9/mgrqispi93.dll?Appname=eScourt&Prgname=GetFileDetails_for_new_site&Arguments=-N" \
           + YEAR + "-00" + CASE_NUM + "-0"
     # print(LINK)
     # print(src)
     print("#1")
-
-    retry = Retry(connect=3, backoff_factor=1)
-    adapter = HTTPAdapter(max_retries=retry)
-    sess.mount('http://', adapter)
-    sess.mount('https://', adapter)
+    print(src)  #################
+    # retry = Retry(connect=3, backoff_factor=1)
+    # adapter = HTTPAdapter(max_retries=retry)
+    # sess.mount('http://', adapter)
+    # sess.mount('https://', adapter)
     for I in range(3):
         try:
-            html_content = sess.get(src, proxies=proxies, verify=False, timeout=15).text
+            src = "/v1?url=" + (urllib.parse.quote(src,
+                                                   safe="")) + "&api_key=LO1P2fbVVQD1KFq436QwVW58o7iD05IQ&device=desktop&proxy_type=datacenter&render_js=1&wait_until=domcontentloaded&timeout=30000"
+
+            conn = http.client.HTTPSConnection("api.webscrapingapi.com")
+
+            conn.request("GET", src)
+            res = conn.getresponse()
+            data = res.read()
+
+            html_content = (data.decode("utf-8"))
+            # html_content = sess.get(src, proxies=proxies, verify=False, timeout=15).text
         except OSError:
-            print("OSERROR IN CRAWL TOP WINDOW, NUMBER: ",I)
+            print("OSERROR IN CRAWL TOP WINDOW, NUMBER: ", I)
         if (len(html_content) >= 10): break
 
-
-
     soup = BeautifulSoup(html_content, 'html.parser')
-
-
 
     if ((soup.find("head").title.text).find("חסוי") != -1):
         all_data = {}
@@ -239,7 +254,7 @@ def CrawlTopWindow(CASE, LINK, Type, dict, case_name_num):
     except KeyError:
         print("KEY ERROR ...")
     print("#2")
-    doc = [crawl_HTML(sess, all_data, LINK, Type)]  # רשימת מסמכי הHTML , כרגע רק 1
+    doc = [crawl_HTML( all_data, LINK, Type)]  # רשימת מסמכי הHTML , כרגע רק 1
     counter = 0
     other_docs = []
     for row in dict.values():
@@ -321,7 +336,7 @@ def Crawl_Decisions(driver, CASE):
     for row in (case_dec.values()):
         df = df.append(row, ignore_index=True)
     df.drop_duplicates(inplace=True)
-    main_df = pd.read_csv(r'Decisions_Table/Decisions_Table.csv', index_col=0, dtype='unicode',low_memory=False)
+    main_df = pd.read_csv(r'Decisions_Table/Decisions_Table.csv', index_col=0, dtype='unicode', low_memory=False)
     main_df = main_df.append(df)
     main_df = main_df.reindex()
     main_df.to_csv('Decisions_Table/Decisions_Table.csv')

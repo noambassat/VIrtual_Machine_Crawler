@@ -9,6 +9,9 @@ import requests
 from requests.adapters import HTTPAdapter
 from requests.packages.urllib3.util.retry import Retry
 
+import http.client
+import urllib.parse
+
 
 def cleanTXT(txt):
 
@@ -87,16 +90,25 @@ def slicer(text,labels,contents):
 
 
 
-def HTML_CRAWLER(sess, link):
-    proxies = {"http": "http://5.79.66.2:13081", "https": "https://5.79.66.2:13081"}
-
-    retry = Retry(connect=3, backoff_factor=1)
-    adapter = HTTPAdapter(max_retries=retry)
-    sess.mount('http://', adapter)
-    sess.mount('https://', adapter)
+def HTML_CRAWLER(link):
+    # proxies = {"http": "http://5.79.66.2:13081", "https": "https://5.79.66.2:13081"}
+    #
+    # retry = Retry(connect=3, backoff_factor=1)
+    # adapter = HTTPAdapter(max_retries=retry)
+    # sess.mount('http://', adapter)
+    # sess.mount('https://', adapter)
     for I in range(3):
         try:
-            html_content = sess.get(link, proxies=proxies, verify=False, timeout=15).text
+            link = "/v1?url=" + (urllib.parse.quote(link,
+                                                   safe="")) + "&api_key=LO1P2fbVVQD1KFq436QwVW58o7iD05IQ&device=desktop&proxy_type=datacenter&render_js=1&wait_until=domcontentloaded&timeout=30000"
+
+            conn = http.client.HTTPSConnection("api.webscrapingapi.com")
+
+            conn.request("GET", link)
+            res = conn.getresponse()
+            data = res.read()
+
+            html_content = (data.decode("utf-8"))
         except OSError:
             print("OSERROR IN CRAWL HTML, PARSER, NUMBER: ",I)
         if (len(html_content) >= 10): break
