@@ -38,9 +38,9 @@ options.add_argument('--proxy-server=%s' % PROXY)
 
 # main_data_frame = pd.read_csv('Cases_Name.csv',encoding = "ISO-8859-8")
 
-Start = "01-01-2014"  #
-End = "07-01-2014"
-YEAR = 2014
+Start = "01-01-2016"  #
+End = "07-01-2016"
+YEAR = 2016
 driver = webdriver.Chrome(exe_path, options=options)
 while (YEAR < 2023):
     try:
@@ -144,7 +144,8 @@ while (YEAR < 2023):
                                 print("OS Error, on CrawlTopWindow, error num:", I + 1)
                                 print(error)
                                 data = CrawlTopWindow(CASE, LINK, conclusion, dict, df[start][i])  # Gets the upper window
-                            if (len(data) > 10): break
+
+                            if (len(data) > 1): break
 
                         #######
                         data['פרטי תיק']['תאריך יצוא הקובץ'] = str(datetime.datetime.now().date())
