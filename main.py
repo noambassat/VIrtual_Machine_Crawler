@@ -16,7 +16,8 @@ from selenium.common.exceptions import WebDriverException, InvalidSessionIdExcep
     UnexpectedAlertPresentException
 from selenium.webdriver.chrome.options import Options
 import requests
-#!/usr/bin/env python3 # -*- coding: utf-8 -*-
+
+# !/usr/bin/env python3 # -*- coding: utf-8 -*-
 
 warnings.simplefilter(action='ignore', category=(FutureWarning, DeprecationWarning))
 START_RUN_TIME = datetime.now()
@@ -97,7 +98,7 @@ while (YEAR < 2023):
                 except TimeoutException:
                     print("Loading took too much time! ID in the code not working!")
 
-            print("Time until now (get webdriver) is: ", datetime.now()-START_TIME)
+            print("Time until now (get webdriver) is: ", datetime.now() - START_TIME)
             try:
                 time.sleep(0.5)
                 Number = Get_Number_Of_Cases(driver)  # All the cases that appeared that date
@@ -122,10 +123,10 @@ while (YEAR < 2023):
                             try:
                                 dec_df, LINK, conclusion, dict = Crawl_Decisions(driver, CASE)  # Gets the button window
                             except OSError as error:
-                                print("OS Error, on Crawl_Decisions, error num:",I+1)
+                                print("OS Error, on Crawl_Decisions, error num:", I + 1)
                                 print(error)
                                 continue
-                            if(len(dec_df)>0): break
+                            if (len(dec_df) > 0): break
                         if (len(dec_df) == 0):
                             print("0 DEC!!!\n", CASE)
                             continue
@@ -137,15 +138,17 @@ while (YEAR < 2023):
 
                             try:
                                 #
-                                data = CrawlTopWindow(CASE, LINK, conclusion, dict, df[start][i])  # Gets the upper window
+                                data = CrawlTopWindow(CASE, LINK, conclusion, dict,
+                                                      df[start][i])  # Gets the upper window
                             # print("check type the len: ",type(data))
 
                             except OSError as error:
                                 print("OS Error, on CrawlTopWindow, error num:", I + 1)
                                 print(error)
-                                data = CrawlTopWindow(CASE, LINK, conclusion, dict, df[start][i])  # Gets the upper window
+                                data = CrawlTopWindow(CASE, LINK, conclusion, dict,
+                                                      df[start][i])  # Gets the upper window
 
-                            if (len(data) > 1): break
+                            if (len(data) > 10): break
 
                         #######
                         data['פרטי תיק']['תאריך יצוא הקובץ'] = str(datetime.datetime.now().date())
@@ -167,7 +170,8 @@ while (YEAR < 2023):
                     json_name = start + "__" + str(i)
                     writeToJsonFile(filePath, json_name, data)  # Write to Json file
                     print("--done saving to json--")
-                    print("Time until now current case (Done downloading current file) is: ", datetime.now() - START_CURR_TIME)
+                    print("Time until now current case (Done downloading current file) is: ",
+                          datetime.now() - START_CURR_TIME)
 
             except NoSuchElementException:
                 print("NoSuchElementException")

@@ -150,10 +150,9 @@ def CrawlTopWindow(CASE, LINK, Type, dict, case_name_num):
 
     src = "https://elyon2.court.gov.il/Scripts9/mgrqispi93.dll?Appname=eScourt&Prgname=GetFileDetails_for_new_site&Arguments=-N" \
           + YEAR + "-00" + CASE_NUM + "-0"
-    # print(LINK)
-    # print(src)
+
     print("#1")
-    print(src)  #################
+
     # retry = Retry(connect=3, backoff_factor=1)
     # adapter = HTTPAdapter(max_retries=retry)
     # sess.mount('http://', adapter)
