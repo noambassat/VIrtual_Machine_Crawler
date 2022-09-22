@@ -243,6 +243,7 @@ def CrawlTopWindow(CASE, LINK, Type, dict, case_name_num):
         all_data['מספר תיק'] = case_name_num[case_name_num.find(" ") + 1:]
         all_data['ראשי תיבות תיק'] = case_name_num[:case_name_num.find(" ")]
         all_data['שנת תיק'] = '20' + case_name_num[case_name_num.find("/") + 1:]
+        all_data['תאריך יצוא התיק'] = datetime.datetime.now().date()
         curr_year = str(datetime.date.today().year)[2:]
         if (int(case_name_num[case_name_num.find("/") + 1:]) > int(curr_year)): all_data[
             'שנת תיק'] = '19' + case_name_num[

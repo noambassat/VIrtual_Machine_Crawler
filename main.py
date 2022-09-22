@@ -39,9 +39,9 @@ options.add_argument('--proxy-server=%s' % PROXY)
 
 # main_data_frame = pd.read_csv('Cases_Name.csv',encoding = "ISO-8859-8")
 
-Start = "01-01-2016"  #
-End = "07-01-2016"
-YEAR = 2016
+Start = "01-01-2010"  #
+End = "07-01-2010"
+YEAR = 2010
 driver = webdriver.Chrome(exe_path, options=options)
 while (YEAR < 2023):
     try:
@@ -53,6 +53,7 @@ while (YEAR < 2023):
         all_dates = get_dates(Start, End)
 
         for j in range(len(all_dates)):
+
             START_TIME = datetime.now()
             try:
                 start = all_dates[j]
