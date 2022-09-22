@@ -11,7 +11,8 @@ class SetEncoder(json.JSONEncoder):
             return json.JSONEncoder.default(self, obj.text)
         return json.JSONEncoder.default(self, obj)
 
-
+# In case of date's bug - the issue isn't here, it's during adding a datetime.datetime.now().date() feilds
+# need to be as str()
 def writeToJsonFile(filePath, fileName, data):
     filePathName = filePath + str(fileName) + '.json'
     with open(filePathName, 'w', encoding='utf8') as json_file:
