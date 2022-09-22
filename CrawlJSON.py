@@ -144,18 +144,10 @@ def CrawlTopWindow(CASE, LINK, Type, dict, case_name_num):
     CASE_NUM = CASE[67:67 + 4]
     YEAR = CASE[62:66]
 
-    # sess = requests.Session()
-    # proxies = {"http": "http://5.79.66.2:13081", "https": "https://5.79.66.2:13081"}
 
     src = "https://elyon2.court.gov.il/Scripts9/mgrqispi93.dll?Appname=eScourt&Prgname=GetFileDetails_for_new_site&Arguments=-N" \
           + YEAR + "-00" + CASE_NUM + "-0"
 
-    print("#1")
-
-    # retry = Retry(connect=3, backoff_factor=1)
-    # adapter = HTTPAdapter(max_retries=retry)
-    # sess.mount('http://', adapter)
-    # sess.mount('https://', adapter)
     for I in range(3):
         try:
             conn = http.client.HTTPSConnection("api.webscrapingapi.com")
@@ -251,7 +243,7 @@ def CrawlTopWindow(CASE, LINK, Type, dict, case_name_num):
                                     "/") + 1:]
     except KeyError:
         print("KEY ERROR ...")
-    print("#2")
+    print("crawling top window ...")
     doc = [crawl_HTML( all_data, LINK, Type)]  # רשימת מסמכי הHTML , כרגע רק 1
     counter = 0
     other_docs = []

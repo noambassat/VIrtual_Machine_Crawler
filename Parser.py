@@ -96,7 +96,6 @@ def HTML_CRAWLER(link):
 
     for I in range(3):
         try:
-            print(link)
             conn = http.client.HTTPSConnection("api.webscrapingapi.com")
             src = "/v1?url=" + (urllib.parse.quote(link, safe="")) + "&api_key=4AcAfWEcuu9LzMeCiM4brs5XaBhGrKFT&device=desktop&proxy_type=datacenter&render_js=1&wait_until=domcontentloaded&timeout=30000"
             conn.request("GET", src)
@@ -106,11 +105,7 @@ def HTML_CRAWLER(link):
         except OSError:
             print("OSERROR IN CRAWL HTML, PARSER, NUMBER: ",I)
         if (len(html_content) > 2): break
-    #
-    # except OSError:
-    #     print("OSError from parser!!!")
-    #     sess1 = requests.Session()
-    #     html_content = sess1.get(link, proxies=proxies, verify=False, timeout=10).text
+
 
     soup = BeautifulSoup(html_content, 'html.parser')
     for I in range(2):
@@ -130,12 +125,3 @@ def HTML_CRAWLER(link):
 
     one = get_dict(dirs)
     return {**get_dict(dirs_1), **one}
-    # for k, v in zip(all.keys(),all.values()):
-    #     print(k,": ",v)
-
-
-#
-# link_psak_din = "https://supremedecisions.court.gov.il/Home/Download?path=HebrewVerdicts/20/520/073/e05&fileName=20073520.E05&type=2"
-# link_hasuy = "https://supremedecisions.court.gov.il/Home/Download?path=HebrewVerdicts/21/650/089/e05&fileName=21089650.E05&type=2"
-#
-
