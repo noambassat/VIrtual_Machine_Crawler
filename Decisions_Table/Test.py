@@ -74,7 +74,7 @@ def get_dict(dirs):
 def slicer(text,labels,contents):
     for text in text.split('\n\n'):
         content = []
-        text = cleanTXT(text)
+        text = cleanTXT(text).replace("\n",' ')
         content_ = (text[text.find(":")+1:])
 
         if len(text) == 0: continue
@@ -141,5 +141,5 @@ def HTML_CRAWLER(link):
 # link_hasuy = "https://supremedecisions.court.gov.il/Home/Download?path=HebrewVerdicts/21/650/089/e05&fileName=21089650.E05&type=2"
 #
 
-link = "https://supremedecisions.court.gov.il/Home/Download?path=HebrewVerdicts/10/840/096/s01&fileName=10096840_s01.txt&type=2"
+link = "https://supremedecisions.court.gov.il/Home/Download?path=HebrewVerdicts/15/650/087/v04&fileName=15087650_v04.txt&type=2"
 print(HTML_CRAWLER(link))

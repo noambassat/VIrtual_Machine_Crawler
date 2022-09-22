@@ -74,7 +74,7 @@ def get_dict(dirs):
 def slicer(text,labels,contents):
     for text in text.split('\n\n'):
         content = []
-        text = cleanTXT(text)
+        text = cleanTXT(text).replace("\n",' ')
         content_ = (text[text.find(":")+1:])
 
         if len(text) == 0: continue
