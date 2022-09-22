@@ -169,7 +169,7 @@ while (YEAR < 2023):
                         CASE = URLS[i]
                         print("UnexpectedAlertPresentException, continue")
                         continue
-                    json_name = start + "__" + str(i)
+                    json_name = str(start) + "__" + str(i)
                     writeToJsonFile(filePath, json_name, data)  # Write to Json file
                     print("--done saving to json--")
                     print("Time until now current case (Done downloading current file) is: ",

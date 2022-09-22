@@ -84,7 +84,7 @@ def crawl_HTML( data, link, Type):
 
         conn = http.client.HTTPSConnection("api.webscrapingapi.com")
         src = "/v1?url=" + (urllib.parse.quote(link,
-                                               safe="")) + "&api_key=qWLe3iMqS89nggeKenmcQHoI5o34uZuR&device=desktop&proxy_type=datacenter&render_js=1&wait_until=domcontentloaded&timeout=30000"
+                                               safe="")) + "&api_key=4AcAfWEcuu9LzMeCiM4brs5XaBhGrKFT&device=desktop&proxy_type=datacenter&render_js=1&wait_until=domcontentloaded&timeout=30000"
         conn.request("GET", src)
         res = conn.getresponse()
         data = res.read()
@@ -159,7 +159,7 @@ def CrawlTopWindow(CASE, LINK, Type, dict, case_name_num):
     for I in range(3):
         try:
             conn = http.client.HTTPSConnection("api.webscrapingapi.com")
-            src = "/v1?url=" + (urllib.parse.quote(src, safe="")) + "&api_key=qWLe3iMqS89nggeKenmcQHoI5o34uZuR&device=desktop&proxy_type=datacenter&render_js=1&wait_until=domcontentloaded&timeout=30000"
+            src = "/v1?url=" + (urllib.parse.quote(src, safe="")) + "&api_key=4AcAfWEcuu9LzMeCiM4brs5XaBhGrKFT&device=desktop&proxy_type=datacenter&render_js=1&wait_until=domcontentloaded&timeout=30000"
 
             conn.request("GET", src)
             res = conn.getresponse()
@@ -243,7 +243,7 @@ def CrawlTopWindow(CASE, LINK, Type, dict, case_name_num):
         all_data['מספר תיק'] = case_name_num[case_name_num.find(" ") + 1:]
         all_data['ראשי תיבות תיק'] = case_name_num[:case_name_num.find(" ")]
         all_data['שנת תיק'] = '20' + case_name_num[case_name_num.find("/") + 1:]
-        all_data['תאריך יצוא התיק'] = datetime.datetime.now().date()
+        all_data['תאריך יצוא התיק'] = str(datetime.datetime.now().date())
         curr_year = str(datetime.date.today().year)[2:]
         if (int(case_name_num[case_name_num.find("/") + 1:]) > int(curr_year)): all_data[
             'שנת תיק'] = '19' + case_name_num[
