@@ -74,13 +74,15 @@ def get_dict(dirs):
 def slicer(text,labels,contents):
     for text in text.split('\n\n'):
         content = []
-        text = cleanTXT(text).replace('\n ', ' ')
+        text = cleanTXT(text)
+        content_ = (text[text.find(":")+1:])
+
         if len(text) == 0: continue
         if(text.find(":")!=-1):
             labels.append(cleanTXT(text[:text.find(":")]))
-            continue
             # continue
-        for info in ((text.replace(";",","))[text.find(":")+1:]).split(','):
+            # continue
+        for info in ((content_.replace(";",",").replace("\n",","))[content_.find(":")+1:]).split(','):
             info = re.sub(r'(\d)+\. ','', info)
             info = cleanTXT(info.replace('-',' '))
             if(len(info)!=0): content.append(cleanTXT(info))
@@ -91,12 +93,7 @@ def slicer(text,labels,contents):
 
 
 def HTML_CRAWLER(link):
-    # proxies = {"http": "http://5.79.66.2:13081", "https": "https://5.79.66.2:13081"}
-    #
-    # retry = Retry(connect=3, backoff_factor=1)
-    # adapter = HTTPAdapter(max_retries=retry)
-    # sess.mount('http://', adapter)
-    # sess.mount('https://', adapter)
+
     for I in range(3):
         try:
             print(link)
@@ -105,8 +102,6 @@ def HTML_CRAWLER(link):
             conn.request("GET", src)
             res = conn.getresponse()
             data = res.read()
-            print((urllib.parse.quote(link, safe="")))
-            print(src)
             html_content = (data.decode("utf-8"))
         except OSError:
             print("OSERROR IN CRAWL HTML, PARSER, NUMBER: ",I)
@@ -118,25 +113,20 @@ def HTML_CRAWLER(link):
     #     html_content = sess1.get(link, proxies=proxies, verify=False, timeout=10).text
 
     soup = BeautifulSoup(html_content, 'html.parser')
-    try:
-
-        soup = soup.find('body').find("div",{"class":"WordSection1"})
-        dirs = soup.findAll("div", {"align": "right"})
-        dirs_1 = soup.findAll('p', {"class": "Ruller3"})
-
-    except AttributeError:
-
+    for I in range(2):
         try:
 
-            soup = BeautifulSoup(html_content, 'html.parser')
-            soup = soup.find('body').find("div", {"class": "Section1"})
-            dirs = soup.findAll("div", {"align": "right"}) # list of the labels
+            dirs = soup.findAll("div", {"align": "right"})
             dirs_1 = soup.findAll('p', {"class": "Ruller3"})
 
-        except AttributeError:
 
-            print("Attribute Error during parsing in: ")
-            print(link)
+        except AttributeError:
+            print("AttributeError in parser")
+        if(len(dirs)>1): break
+    try:
+        soup = soup.find('body').find("div", {"class": "WordSection1"})
+    except AttributeError:
+        pass
 
     one = get_dict(dirs)
     return {**get_dict(dirs_1), **one}
@@ -148,3 +138,4 @@ def HTML_CRAWLER(link):
 # link_psak_din = "https://supremedecisions.court.gov.il/Home/Download?path=HebrewVerdicts/20/520/073/e05&fileName=20073520.E05&type=2"
 # link_hasuy = "https://supremedecisions.court.gov.il/Home/Download?path=HebrewVerdicts/21/650/089/e05&fileName=21089650.E05&type=2"
 #
+

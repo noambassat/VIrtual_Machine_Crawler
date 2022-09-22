@@ -63,6 +63,7 @@ while (YEAR < 2023):
             src = get_src(start, end)  # Current date link
 
             try:
+
                 driver.get(src)
             except InvalidSessionIdException:
                 print("Couldn't get src:\n", src)
