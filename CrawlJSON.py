@@ -81,11 +81,10 @@ def crawl_HTML( data, link, Type):
     # proxies = {"http": "http://5.79.66.2:13081", "https": "https://5.79.66.2:13081"}
 
     try:
-        src = "/v1?url=" + (urllib.parse.quote(link,
-                                               safe="")) + "&api_key=LO1P2fbVVQD1KFq436QwVW58o7iD05IQ&device=desktop&proxy_type=datacenter&render_js=1&wait_until=domcontentloaded&timeout=30000"
 
         conn = http.client.HTTPSConnection("api.webscrapingapi.com")
-
+        src = "/v1?url=" + (urllib.parse.quote(link,
+                                               safe="")) + "&api_key=qWLe3iMqS89nggeKenmcQHoI5o34uZuR&device=desktop&proxy_type=datacenter&render_js=1&wait_until=domcontentloaded&timeout=30000"
         conn.request("GET", src)
         res = conn.getresponse()
         data = res.read()
@@ -159,16 +158,15 @@ def CrawlTopWindow(CASE, LINK, Type, dict, case_name_num):
     # sess.mount('https://', adapter)
     for I in range(3):
         try:
-            src = "/v1?url=" + (urllib.parse.quote(src,
-                                                   safe="")) + "&api_key=LO1P2fbVVQD1KFq436QwVW58o7iD05IQ&device=desktop&proxy_type=datacenter&render_js=1&wait_until=domcontentloaded&timeout=30000"
-
             conn = http.client.HTTPSConnection("api.webscrapingapi.com")
+            src = "/v1?url=" + (urllib.parse.quote(src, safe="")) + "&api_key=qWLe3iMqS89nggeKenmcQHoI5o34uZuR&device=desktop&proxy_type=datacenter&render_js=1&wait_until=domcontentloaded&timeout=30000"
 
             conn.request("GET", src)
             res = conn.getresponse()
             data = res.read()
 
             html_content = (data.decode("utf-8"))
+
             # html_content = sess.get(src, proxies=proxies, verify=False, timeout=15).text
         except OSError:
             print("OSERROR IN CRAWL TOP WINDOW, NUMBER: ", I)

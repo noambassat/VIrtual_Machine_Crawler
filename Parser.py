@@ -99,19 +99,18 @@ def HTML_CRAWLER(link):
     # sess.mount('https://', adapter)
     for I in range(3):
         try:
-            link = "/v1?url=" + (urllib.parse.quote(link,
-                                                   safe="")) + "&api_key=LO1P2fbVVQD1KFq436QwVW58o7iD05IQ&device=desktop&proxy_type=datacenter&render_js=1&wait_until=domcontentloaded&timeout=30000"
-
+            print(link)
             conn = http.client.HTTPSConnection("api.webscrapingapi.com")
-
-            conn.request("GET", link)
+            src = "/v1?url=" + (urllib.parse.quote(link, safe="")) + "&api_key=qWLe3iMqS89nggeKenmcQHoI5o34uZuR&device=desktop&proxy_type=datacenter&render_js=1&wait_until=domcontentloaded&timeout=30000"
+            conn.request("GET", src)
             res = conn.getresponse()
             data = res.read()
-
+            print((urllib.parse.quote(link, safe="")))
+            print(src)
             html_content = (data.decode("utf-8"))
         except OSError:
             print("OSERROR IN CRAWL HTML, PARSER, NUMBER: ",I)
-        if (len(html_content) >= 10): break
+        if (len(html_content) > 2): break
     #
     # except OSError:
     #     print("OSError from parser!!!")
@@ -119,7 +118,6 @@ def HTML_CRAWLER(link):
     #     html_content = sess1.get(link, proxies=proxies, verify=False, timeout=10).text
 
     soup = BeautifulSoup(html_content, 'html.parser')
-
     try:
 
         soup = soup.find('body').find("div",{"class":"WordSection1"})
