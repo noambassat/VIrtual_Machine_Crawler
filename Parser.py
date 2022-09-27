@@ -80,7 +80,8 @@ def slicer(text,labels,contents):
         if len(text) == 0: continue
         if(text.find(":")!=-1):
             labels.append(cleanTXT(text[:text.find(":")]))
-
+            # continue
+            # continue
         for info in ((content_.replace(";",",").replace("\n",","))[content_.find(":")+1:]).split(','):
             info = re.sub(r'(\d)+\. ','', info)
             info = cleanTXT(info.replace('-',' '))
