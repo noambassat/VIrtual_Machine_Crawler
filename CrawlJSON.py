@@ -147,7 +147,6 @@ def CrawlTopWindow(CASE, LINK, Type, dict, case_name_num):
 
     src = "https://elyon2.court.gov.il/Scripts9/mgrqispi93.dll?Appname=eScourt&Prgname=GetFileDetails_for_new_site&Arguments=-N" \
           + YEAR + "-00" + CASE_NUM + "-0"
-
     for I in range(3):
         try:
             conn = http.client.HTTPSConnection("api.webscrapingapi.com")
@@ -161,7 +160,13 @@ def CrawlTopWindow(CASE, LINK, Type, dict, case_name_num):
 
             # html_content = sess.get(src, proxies=proxies, verify=False, timeout=15).text
         except OSError:
+
             print("OSERROR IN CRAWL TOP WINDOW, NUMBER: ", I)
+        except requests.exceptions.RequestException:
+            src = "https://elyon2.court.gov.il/Scripts9/mgrqispi93.dll?Appname=eScourt&Prgname=GetFileDetails_for_new_site&Arguments=-N" \
+                  + YEAR + "-0000" + CASE_NUM + "-0"
+            I = 1
+            continue
         if (len(html_content) >= 10): break
 
     soup = BeautifulSoup(html_content, 'html.parser')
