@@ -84,7 +84,7 @@ def crawl_HTML( data, link, Type):
 
         conn = http.client.HTTPSConnection("api.webscrapingapi.com")
         src = "/v1?url=" + (urllib.parse.quote(link,
-                                               safe="")) + "&api_key=4AcAfWEcuu9LzMeCiM4brs5XaBhGrKFT&device=desktop&proxy_type=datacenter&render_js=1&wait_until=domcontentloaded&timeout=30000"
+                                               safe="")) + "&api_key=UNVeJ3Li18J7vh36TLDJxZlVRLJBdyvQ&device=desktop&proxy_type=datacenter&render_js=1&wait_until=domcontentloaded&timeout=30000"
         conn.request("GET", src)
         res = conn.getresponse()
         data = res.read()
@@ -147,27 +147,29 @@ def CrawlTopWindow(CASE, LINK, Type, dict, case_name_num):
 
     src = "https://elyon2.court.gov.il/Scripts9/mgrqispi93.dll?Appname=eScourt&Prgname=GetFileDetails_for_new_site&Arguments=-N" \
           + YEAR + "-00" + CASE_NUM + "-0"
-    for I in range(3):
-        try:
-            conn = http.client.HTTPSConnection("api.webscrapingapi.com")
-            src = "/v1?url=" + (urllib.parse.quote(src, safe="")) + "&api_key=4AcAfWEcuu9LzMeCiM4brs5XaBhGrKFT&device=desktop&proxy_type=datacenter&render_js=1&wait_until=domcontentloaded&timeout=30000"
+    try:
+        conn = http.client.HTTPSConnection("api.webscrapingapi.com")
+        src = "/v1?url=" + (urllib.parse.quote(src, safe="")) + "&api_key=UNVeJ3Li18J7vh36TLDJxZlVRLJBdyvQ&device=desktop&proxy_type=datacenter&render_js=1&wait_until=domcontentloaded&timeout=30000"
 
-            conn.request("GET", src)
-            res = conn.getresponse()
-            data = res.read()
+        conn.request("GET", src)
+        res = conn.getresponse()
+        data = res.read()
 
-            html_content = (data.decode("utf-8"))
+        html_content = (data.decode("utf-8"))
 
-            # html_content = sess.get(src, proxies=proxies, verify=False, timeout=15).text
-        except OSError:
+        # html_content = sess.get(src, proxies=proxies, verify=False, timeout=15).text
+    except OSError as err:
 
-            print("OSERROR IN CRAWL TOP WINDOW, NUMBER: ", I)
-        except requests.exceptions.RequestException:
-            src = "https://elyon2.court.gov.il/Scripts9/mgrqispi93.dll?Appname=eScourt&Prgname=GetFileDetails_for_new_site&Arguments=-N" \
-                  + YEAR + "-0000" + CASE_NUM + "-0"
-            I = 1
-            continue
-        if (len(html_content) >= 10): break
+        print("OS ERROR IN CRAWL TOP WINDOW!")
+        print(err)
+    except requests.exceptions.RequestException:
+        print('didnt get the src of: ', src)
+        src = "https://elyon2.court.gov.il/Scripts9/mgrqispi93.dll?Appname=eScourt&Prgname=GetFileDetails_for_new_site&Arguments=-N" \
+              + YEAR + "-0000" + CASE_NUM + "-0"
+
+        print("trying", src, ' instead')
+    print("GOT HERE!")
+    if(len(html_content)<1): print("the len is lower than 1!!!!!!", html_content)
 
     soup = BeautifulSoup(html_content, 'html.parser')
 

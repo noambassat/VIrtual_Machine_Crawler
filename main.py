@@ -131,21 +131,19 @@ try:
 
                     print("The len of decisions table: ", len(dec_df))
                     ###### PROBLAM IN HERE
-                    for I in range(3):
+                    try:
+                        #
+                        data = CrawlTopWindow(CASE, LINK, conclusion, dict,
+                                              df[start][i])  # Gets the upper window
+                    # print("check type the len: ",type(data))
 
-                        try:
-                            #
-                            data = CrawlTopWindow(CASE, LINK, conclusion, dict,
-                                                  df[start][i])  # Gets the upper window
-                        # print("check type the len: ",type(data))
+                    except OSError as error:
+                        print("OS Error, on CrawlTopWindow, error num:", I + 1)
+                        print(error)
+                        data = CrawlTopWindow(CASE, LINK, conclusion, dict,
+                                              df[start][i])  # Gets the upper window
 
-                        except OSError as error:
-                            print("OS Error, on CrawlTopWindow, error num:", I + 1)
-                            print(error)
-                            data = CrawlTopWindow(CASE, LINK, conclusion, dict,
-                                                  df[start][i])  # Gets the upper window
-
-                        if (len(data) > 10): break
+                    if (len(data) < 2): print("MAIN GOT LEN LESS THAN 2!!!!!!!")
 
                     #######
                     data['פרטי תיק']['תאריך יצוא הקובץ'] = str(datetime.datetime.now().date())
