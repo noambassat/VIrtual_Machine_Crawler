@@ -42,7 +42,7 @@ def get_dict(dirs):
         text = s.text
         if(len(text)==0 or text.find(":")==-1):continue
 
-        if (text.find("בשם ה") != -1 and text.find("להצטרף")==-1):
+        if (text.find("בשם") != -1 and text.find("להצטרף")==-1):
             labels,contents = slicer(text, labels,contents)
             continue  ################################################
 
@@ -71,14 +71,15 @@ def get_dict(dirs):
     return all
 
 def slicer(text,labels,contents):
-    for text in text.split('\n\n'):
-        content = []
-        text = cleanTXT(text).replace("\n",' ')
-        content_ = (text[text.find(":")+1:])
 
-        if len(text) == 0: continue
-        if(text.find(":")!=-1):
-            labels.append(cleanTXT(text[:text.find(":")]))
+    for txt in text.split('\n\n'):
+        content = []
+        txt = cleanTXT(txt).replace("\n",' ')
+        content_ = (txt[txt.find(":")+1:])
+
+        if len(txt) == 0: continue
+        if(txt.find(":")!=-1):
+            labels.append(cleanTXT(txt[:txt.find(":")]))
             # continue
             # continue
         for info in ((content_.replace(";",",").replace("\n",","))[content_.find(":")+1:]).split(','):
@@ -86,7 +87,13 @@ def slicer(text,labels,contents):
             info = cleanTXT(info.replace('-',' '))
             if(len(info)!=0): content.append(cleanTXT(info))
         if(len(content)!=0): contents.append(content)
-        else: contents.append("אין מידע")
+        else:
+            if(len(labels)!=0):
+                content_ = (text[text.find(":") + 1:])
+                contents.append([content_])
+                if(len(contents)==0):
+                    print("COULDNT GET THE CONTENT OF ", labels, " in the parser")
+                    contents.append("אין מידע")
     return labels,contents
 
 
