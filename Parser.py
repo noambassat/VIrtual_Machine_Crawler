@@ -68,7 +68,6 @@ def get_dict(dirs):
             if(labels[n].find('פני')!=-1): all["מספר השופטים"] = len(contents[n])
         except IndexError:
             pass
-
     return all
 
 def slicer(text,labels,contents):
@@ -93,18 +92,16 @@ def slicer(text,labels,contents):
 
 
 def HTML_CRAWLER(link):
-
-
     try:
         conn = http.client.HTTPSConnection("api.webscrapingapi.com")
-        src = "/v1?url=" + (urllib.parse.quote(link, safe="")) + "&api_key=UNVeJ3Li18J7vh36TLDJxZlVRLJBdyvQ&device=desktop&proxy_type=datacenter&render_js=0&wait_until=domcontentloaded&timeout=30000"
+        src = "/v1?url=" + (urllib.parse.quote(link, safe="")) + "&api_key=UNVeJ3Li18J7vh36TLDJxZlVRLJBdyvQ&device=desktop&proxy_type=datacenter&render_js=1&wait_until=domcontentloaded&timeout=30000"
         conn.request("GET", src)
         res = conn.getresponse()
         data = res.read()
         html_content = (data.decode("utf-8"))
     except OSError:
-        print("OSERROR IN CRAWL HTML, PARSER, NUMBER: ",I)
-    if (len(html_content)<1): print("HTML CRAWEL GOT LEN LOWER THAN 1!!!", html_content)
+        print("OSERROR IN CRAWL HTML")
+    if (len(html_content)<5): print("HTML CRAWEL GOT LEN LOWER THAN 5!!!", html_content)
 
 
     soup = BeautifulSoup(html_content, 'html.parser')
@@ -113,7 +110,6 @@ def HTML_CRAWLER(link):
 
             dirs = soup.findAll("div", {"align": "right"})
             dirs_1 = soup.findAll('p', {"class": "Ruller3"})
-
 
         except AttributeError:
             print("AttributeError in parser")

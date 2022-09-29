@@ -143,7 +143,8 @@ while (YEAR < 2023):
                             data = CrawlTopWindow(CASE, LINK, conclusion, dict,
                                                   df[start][i])  # Gets the upper window
                         # print("check type the len: ",type(data))
-
+                        except AttributeError as err:
+                            print("ATTTTT ARRRORRR!!!", err)
                         except OSError as error:
                             print("OS Error, on CrawlTopWindow, error num:", I + 1)
                             print(error)
@@ -153,7 +154,7 @@ while (YEAR < 2023):
                         if (len(data) <2): print("MAIN GOT LEN LESS THAN 2!!!!!!!")
 
                         #######
-                        data['פרטי תיק']['תאריך יצוא הקובץ'] = str(datetime.datetime.now().date())
+                        data['פרטי תיק']['תאריך יצוא הקובץ'] = str(datetime.now().date())
                         print("Time until now current case (CrawlTopWindow) is: ", datetime.now() - START_CURR_TIME)
 
                         if data == 0:
@@ -186,11 +187,11 @@ while (YEAR < 2023):
 
                 continue
 
-            except AttributeError:
-
-                print("AttributeError")
-
-                continue
+            # except AttributeError:
+            #
+            #     print("AttributeError")
+            #
+            #     continue
 
             except UnboundLocalError:
 

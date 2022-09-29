@@ -146,7 +146,7 @@ try:
                     if (len(data) < 2): print("MAIN GOT LEN LESS THAN 2!!!!!!!")
 
                     #######
-                    data['פרטי תיק']['תאריך יצוא הקובץ'] = str(datetime.datetime.now().date())
+                    data['פרטי תיק']['תאריך יצוא הקובץ'] = str(datetime.now().date())
                     print("Time until now current case (CrawlTopWindow) is: ", datetime.now() - START_CURR_TIME)
 
                     if data == 0:

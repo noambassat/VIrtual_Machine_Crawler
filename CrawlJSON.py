@@ -168,7 +168,6 @@ def CrawlTopWindow(CASE, LINK, Type, dict, case_name_num):
               + YEAR + "-0000" + CASE_NUM + "-0"
 
         print("trying", src, ' instead')
-    print("GOT HERE!")
     if(len(html_content)<1): print("the len is lower than 1!!!!!!", html_content)
 
     soup = BeautifulSoup(html_content, 'html.parser')
