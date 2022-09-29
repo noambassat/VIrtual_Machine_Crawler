@@ -141,20 +141,7 @@ def add_counters(data):
 
 
 def CrawlTopWindow(CASE, LINK, Type, dict, case_name_num):
-    print(case_name_num)
-    print(CASE)
-    print(LINK)
-    # print(case_name_num)
-    # print(CASE)
-    # print(LINK)
-    # print(CASE[67:67 + 4])
-    # print(CASE[67 + 4])
-    # print(CASE[67 + 5])
-    # print(CASE[62:66])
-    #
-    # print(case_name_num[case_name_num.find(" ") + 1:])
-    # print(case_name_num[:case_name_num.find(" ")])
-    # print(case_name_num[case_name_num.find("/") + 1:])
+
     hidden_content = 0
     for i in range(7):
         if (CASE[67 +i]=="/"): break
@@ -164,12 +151,10 @@ def CrawlTopWindow(CASE, LINK, Type, dict, case_name_num):
     add_case =  CASE_NUM
     while(len(add_case)!=6): add_case = "0" + add_case
     add_case = "-" + add_case
-    print(add_case)
 
     src = "https://elyon2.court.gov.il/Scripts9/mgrqispi93.dll?Appname=eScourt&Prgname=GetFileDetails_for_new_site&Arguments=-N" \
           + YEAR + add_case + "-0"
-    if(src!="https://elyon2.court.gov.il/Scripts9/mgrqispi93.dll?Appname=eScourt&Prgname=GetFileDetails_for_new_site&Arguments=-N" \
-          + YEAR + "-00" + CASE_NUM + "-0"): print("!!!!!! different than usual src!!!!!!!")
+
     try:
         conn = http.client.HTTPSConnection("api.webscrapingapi.com")
         src = "/v1?url=" + (urllib.parse.quote(src, safe="")) + "&api_key=UNVeJ3Li18J7vh36TLDJxZlVRLJBdyvQ&device=desktop&proxy_type=datacenter&render_js=1&wait_until=domcontentloaded&timeout=30000"

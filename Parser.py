@@ -86,15 +86,21 @@ def slicer(text,labels,contents):
             info = re.sub(r'(\d)+\. ','', info)
             info = cleanTXT(info.replace('-',' '))
             if(len(info)!=0): content.append(cleanTXT(info))
+
         if(len(content)!=0): contents.append(content)
         else:
             if(len(labels)!=0):
-                content_ = (text[text.find(":") + 1:])
-                contents.append([content_])
+                content_ = (text[text.find(":") + 1:]).replace('-',' ')
                 if(content_.find(";")!=-1):
-                    contents.append(content_.split(';'))
+                    for con in content_.split(';'): content.append(con)
+                    contents.append(content)
                 if (content_.find(",") != -1):
-                    contents.append(content_.split(','))
+                    for con in content_.split(','): content.append(con)
+                    contents.append(content)
+                else:
+                    contents.append([content_])
+
+
                 if(len(contents)==0):
                     print("COULDNT GET THE CONTENT OF ", labels, " in the parser")
                     contents.append("אין מידע")
