@@ -39,8 +39,8 @@ options.add_argument('--proxy-server=%s' % PROXY)
 
 # main_data_frame = pd.read_csv('Cases_Name.csv',encoding = "ISO-8859-8")
 
-Start = "01-01-2010"  #
-End = "02-01-2010"
+Start = "01-01-2018"  #
+End = "02-01-2018"
 
 driver = webdriver.Chrome(exe_path, options=options)
 
@@ -113,6 +113,7 @@ try:
 
             print("Number of cases: ", len(URLS))
             for i, CASE in enumerate(URLS):
+                if(i<64):continue # change_i_for_checkers
                 print("____________________________________")
                 START_CURR_TIME = datetime.now()
                 try:
@@ -147,6 +148,7 @@ try:
 
                     #######
                     data['פרטי תיק']['תאריך יצוא הקובץ'] = str(datetime.now().date())
+
                     print("Time until now current case (CrawlTopWindow) is: ", datetime.now() - START_CURR_TIME)
 
                     if data == 0:
@@ -163,6 +165,7 @@ try:
                     print("UnexpectedAlertPresentException, continue")
                     continue
                 json_name = str(start) + "__" + str(i)
+                data['פרטי תיק']['שם הקובץ'] = json_name
                 writeToJsonFile(filePath, json_name, data)  # Write to Json file
                 print("--done saving to json--")
                 print("Time until now current case (Done downloading current file) is: ",

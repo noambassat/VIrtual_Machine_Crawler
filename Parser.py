@@ -91,6 +91,10 @@ def slicer(text,labels,contents):
             if(len(labels)!=0):
                 content_ = (text[text.find(":") + 1:])
                 contents.append([content_])
+                if(content_.find(";")!=-1):
+                    contents.append(content_.split(';'))
+                if (content_.find(",") != -1):
+                    contents.append(content_.split(','))
                 if(len(contents)==0):
                     print("COULDNT GET THE CONTENT OF ", labels, " in the parser")
                     contents.append("אין מידע")
@@ -102,6 +106,13 @@ def HTML_CRAWLER(link):
     try:
         conn = http.client.HTTPSConnection("api.webscrapingapi.com")
         src = "/v1?url=" + (urllib.parse.quote(link, safe="")) + "&api_key=UNVeJ3Li18J7vh36TLDJxZlVRLJBdyvQ&device=desktop&proxy_type=datacenter&render_js=1&wait_until=domcontentloaded&timeout=30000"
+
+
+
+
+        print("!!!!!!!!!!!!!!!!!!!!request!!!!!!!!!!!!!!!!!!")
+
+
         conn.request("GET", src)
         res = conn.getresponse()
         data = res.read()
