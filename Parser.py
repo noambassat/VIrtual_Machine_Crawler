@@ -45,8 +45,10 @@ def get_dict(dirs):
         if (text.find("בשם") != -1 and text.find("להצטרף")==-1):
             labels,contents = slicer(text, labels,contents)
             continue  ################################################
-
-        labels.append(text[:text.find(":")].replace('\n',' '))
+        elif (text.find("בם") != -1 and text.find("להצטרף") == -1):
+            labels, contents = slicer(text, labels, contents)
+            continue  ################################################
+        labels.append(cleanTXT(text[:text.find(":")].replace('\n',' ')).replace("נגד",""))
 
         info = (text[text.find(":")+1:])
         content = []
@@ -78,7 +80,7 @@ def slicer(text,labels,contents):
 
         if len(txt) == 0: continue
         if(txt.find(":")!=-1):
-            labels.append(cleanTXT(txt[:txt.find(":")]))
+            labels.append(cleanTXT(txt[:txt.find(":")]).replace("נגד",""))
             # continue
         for info in ((content_.replace(";",",").replace("\n",","))[content_.find(":")+1:]).split(','):
             info = re.sub(r'(\d)+\. ','', info)
@@ -86,7 +88,6 @@ def slicer(text,labels,contents):
             if(len(info)!=0): content.append(cleanTXT(info))
         if(len(content)!=0): contents.append(content)
     if(len(labels)>len(contents)):
-        # if(len(labels)>len(contents)):
         content_ = cleanTXT(text[text.find(":") + 1:]).replace('-',' ')
         if(content_.find(";")!=-1):
             for con in content_.split(';'):
@@ -107,7 +108,6 @@ def slicer(text,labels,contents):
         if(len(contents)==0):
             print("COULDNT GET THE CONTENT OF ", labels, " in the parser")
             contents.append("אין מידע")
-    print(labels, "\n", contents)
     return labels,contents
 
 
