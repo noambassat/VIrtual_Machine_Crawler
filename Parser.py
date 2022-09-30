@@ -30,7 +30,7 @@ def cleanTXT(txt):
 
     txt = txt.replace('  ', ' ')
     txt = txt.replace("נ ג ד", "נגד")
-
+    txt = txt.replace("\'", "'")
     if(txt==' ' or txt=='  '): return ''
 
     return txt
@@ -71,7 +71,6 @@ def get_dict(dirs):
     return all
 
 def slicer(text,labels,contents):
-
     for txt in text.split('\n\n'):
         content = []
         txt = cleanTXT(txt).replace("\n",' ')
@@ -81,29 +80,34 @@ def slicer(text,labels,contents):
         if(txt.find(":")!=-1):
             labels.append(cleanTXT(txt[:txt.find(":")]))
             # continue
-            # continue
         for info in ((content_.replace(";",",").replace("\n",","))[content_.find(":")+1:]).split(','):
             info = re.sub(r'(\d)+\. ','', info)
             info = cleanTXT(info.replace('-',' '))
             if(len(info)!=0): content.append(cleanTXT(info))
-
         if(len(content)!=0): contents.append(content)
+    if(len(labels)>len(contents)):
+        # if(len(labels)>len(contents)):
+        content_ = cleanTXT(text[text.find(":") + 1:]).replace('-',' ')
+        if(content_.find(";")!=-1):
+            for con in content_.split(';'):
+                if(len(con)>0):
+                    content.append(con.replace('\n',''))
+            contents.append(content)
+        elif (content_.find(",") != -1):
+            for con in content_.split(','):
+                if(len(con)>0):
+                    content.append(con.replace('\n',''))
+            contents.append(content)
+
         else:
-            if(len(labels)!=0):
-                content_ = (text[text.find(":") + 1:]).replace('-',' ')
-                if(content_.find(";")!=-1):
-                    for con in content_.split(';'): content.append(con)
-                    contents.append(content)
-                if (content_.find(",") != -1):
-                    for con in content_.split(','): content.append(con)
-                    contents.append(content)
-                else:
-                    contents.append([content_])
+            if(len(content_.replace('\n',''))>0):
+                contents.append([content_.replace('\n','')])
 
 
-                if(len(contents)==0):
-                    print("COULDNT GET THE CONTENT OF ", labels, " in the parser")
-                    contents.append("אין מידע")
+        if(len(contents)==0):
+            print("COULDNT GET THE CONTENT OF ", labels, " in the parser")
+            contents.append("אין מידע")
+    print(labels, "\n", contents)
     return labels,contents
 
 
@@ -112,12 +116,6 @@ def HTML_CRAWLER(link):
     try:
         conn = http.client.HTTPSConnection("api.webscrapingapi.com")
         src = "/v1?url=" + (urllib.parse.quote(link, safe="")) + "&api_key=UNVeJ3Li18J7vh36TLDJxZlVRLJBdyvQ&device=desktop&proxy_type=datacenter&render_js=1&wait_until=domcontentloaded&timeout=30000"
-
-
-
-
-        print("!!!!!!!!!!!!!!!!!!!!request!!!!!!!!!!!!!!!!!!")
-
 
         conn.request("GET", src)
         res = conn.getresponse()

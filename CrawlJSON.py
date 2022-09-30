@@ -40,18 +40,7 @@ options.add_argument('--proxy-server=%s' % PROXY)
 
 
 def cleanTXT(text):
-    ####################################function
-    # for i,c in enumerate(txt.split()):
-    #     while c==' ':
-    #         c = txt[i+1:]
-    # try:
-    #     txt = text.encode('cp1252').decode('cp1255',errors='replace')
-    # except UnicodeError:
-    # 	txt = text
-    # try:
-    #     txt= str(txt.encode('UTF-8'))
-    # except AttributeError:
-    #     pass
+
     try:
         txt = text.encode('cp1252').decode('cp1255', errors='replace')
     except UnicodeEncodeError:
@@ -71,6 +60,8 @@ def cleanTXT(text):
     txt = re.sub('<.*>', ' ', txt)
 
     txt = txt.replace("נ ג ד", "נגד")
+    txt = txt.replace("\'", "'")
+
     if (txt == ' ' or txt == '  '): return ''
 
     return txt
