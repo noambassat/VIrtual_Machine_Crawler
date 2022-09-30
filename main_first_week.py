@@ -42,7 +42,9 @@ options.add_argument('--proxy-server=%s' % PROXY)
 Start = "01-01-2010"  #
 End = "07-01-2010"
 YEAR = 2010
+
 driver = webdriver.Chrome(exe_path, options=options)
+
 while (YEAR < 2023):
     try:
 
@@ -51,7 +53,6 @@ while (YEAR < 2023):
         YEAR = int(Start[6:]) + 1
         print(YEAR - 1)
         all_dates = get_dates(Start, End)
-
         for j in range(len(all_dates)):
 
             START_TIME = datetime.now()
@@ -60,7 +61,7 @@ while (YEAR < 2023):
                 end = all_dates[j + 1]
             except IndexError:
                 break
-
+            print(start)
             src = get_src(start, end)  # Current date link
 
             try:
@@ -118,6 +119,7 @@ while (YEAR < 2023):
 
                 print("Number of cases: ", len(URLS))
                 for i, CASE in enumerate(URLS):
+                    if(i%10!=0):continue # jumping for the checkers
                     print("____________________________________")
                     START_CURR_TIME = datetime.now()
                     try:
@@ -136,25 +138,23 @@ while (YEAR < 2023):
 
                         print("The len of decisions table: ", len(dec_df))
                         ###### PROBLAM IN HERE
-
-
                         try:
                             #
                             data = CrawlTopWindow(CASE, LINK, conclusion, dict,
                                                   df[start][i])  # Gets the upper window
                         # print("check type the len: ",type(data))
-                        except AttributeError as err:
-                            print("ATTTTT ARRRORRR!!!", err)
+
                         except OSError as error:
                             print("OS Error, on CrawlTopWindow, error num:", I + 1)
                             print(error)
                             data = CrawlTopWindow(CASE, LINK, conclusion, dict,
                                                   df[start][i])  # Gets the upper window
 
-                        if (len(data) <2): print("MAIN GOT LEN LESS THAN 2!!!!!!!")
+                        if (len(data) < 2): print("MAIN GOT LEN LESS THAN 2!!!!!!!")
 
                         #######
                         data['פרטי תיק']['תאריך יצוא הקובץ'] = str(datetime.now().date())
+
                         print("Time until now current case (CrawlTopWindow) is: ", datetime.now() - START_CURR_TIME)
 
                         if data == 0:
@@ -171,6 +171,7 @@ while (YEAR < 2023):
                         print("UnexpectedAlertPresentException, continue")
                         continue
                     json_name = str(start) + "__" + str(i)
+                    data['פרטי תיק']['שם הקובץ'] = json_name
                     writeToJsonFile(filePath, json_name, data)  # Write to Json file
                     print("--done saving to json--")
                     print("Time until now current case (Done downloading current file) is: ",
@@ -187,11 +188,11 @@ while (YEAR < 2023):
 
                 continue
 
-            # except AttributeError:
-            #
-            #     print("AttributeError")
-            #
-            #     continue
+            except AttributeError:
+
+                print("AttributeError")
+
+                continue
 
             except UnboundLocalError:
 
@@ -210,8 +211,6 @@ while (YEAR < 2023):
     except WebDriverException:
         driver = webdriver.Chrome(exe_path, options=options)
         print("WEB DRIVER EXCEPTION!")
-        YEAR -= 1
-        continue
     END_RUN_TIME = datetime.now()
     print("FINISH, THE TIME IT TOOK: ", END_RUN_TIME - START_RUN_TIME)  ######
 driver.close()

@@ -39,15 +39,23 @@ def get_dict(dirs):
     labels = []
     contents = []
     for s in dirs:
-        text = s.text
+        text = cleanTXT(s.text).replace("נגד","")
         if(len(text)==0 or text.find(":")==-1):continue
+        con = False
+        for k_word in ['בשם','בם','פורמלי','פורמאלי']:
+            if (text.find(k_word) != -1 and text.find("להצטרף")==-1):
+                labels_,contents_ = slicer(text, labels,contents)
+                labels += labels_
+                contents += contents_
+                con=True
+                break
 
-        if (text.find("בשם") != -1 and text.find("להצטרף")==-1):
-            labels,contents = slicer(text, labels,contents)
+        if(con):
+            con ==True
             continue  ################################################
-        elif (text.find("בם") != -1 and text.find("להצטרף") == -1):
-            labels, contents = slicer(text, labels, contents)
-            continue  ################################################
+        # elif (text.find("בם") != -1 and text.find("להצטרף") == -1):
+        #     labels, contents = slicer(text, labels, contents)
+        #     continue  ################################################
         labels.append(cleanTXT(text[:text.find(":")].replace('\n',' ')).replace("נגד",""))
 
         info = (text[text.find(":")+1:])
@@ -110,12 +118,56 @@ def slicer(text,labels,contents):
             contents.append("אין מידע")
     return labels,contents
 
+def two_cases(soup):
+    ################# PROBLEM HERE!!!!!!!
+    ### TRY OUT IN CASE NUMBER 138, 02-01-2016
+    ### 02-01-2016__138
+    print("תיק מאוחד!!!!!!! לבדוק איך מטפלים בו ?")
 
+    full_text = ""
+    for s in soup.findAll("div", {"align": "right"}): full_text+= (s.text)
+    print(repr(k) for k in full_text)
+    print("_________________________")
+    labels = []
+    contents = []
+    print("--------------- first try splitlines()")
+    count_zero = 0
+    for sec in full_text.splitlines():
+        if(len(sec)==0):
+            count_zero+=1
+            continue
+        else:
+            print(count_zero)
+            count_zero = 0
+        print((sec))
+    print("------------------- second try split(double enter)")
+    count_zero = 0
+
+    for sec in full_text.split("\n\n"):
+        if (len(sec) == 0):
+            count_zero += 1
+            continue
+        else:
+            print(count_zero)
+            count_zero = 0
+        print((sec))
+    print("------------------- third try split(xa0)")
+    count_zero = 0
+
+    for sec in full_text.split("\xa0"):
+        if((sec)==0):
+            count_zero+=1
+            continue
+        else:
+            print(count_zero)
+            count_zero = 0
+        print((sec))
 
 def HTML_CRAWLER(link):
+    two_cases_bool = False
     try:
         conn = http.client.HTTPSConnection("api.webscrapingapi.com")
-        src = "/v1?url=" + (urllib.parse.quote(link, safe="")) + "&api_key=UNVeJ3Li18J7vh36TLDJxZlVRLJBdyvQ&device=desktop&proxy_type=datacenter&render_js=1&wait_until=domcontentloaded&timeout=30000"
+        src = "/v1?url=" + (urllib.parse.quote(link, safe="")) + "&api_key=ehB1IjRGfUcxZuSWAWNW9JtFl2XnEX2Y&device=desktop&proxy_type=datacenter&render_js=1&wait_until=domcontentloaded&timeout=30000"
 
         conn.request("GET", src)
         res = conn.getresponse()
@@ -129,8 +181,13 @@ def HTML_CRAWLER(link):
     soup = BeautifulSoup(html_content, 'html.parser')
     for I in range(2):
         try:
-
+            if (len(soup.findAll('p', {"class": "FileNumber"})) > 1):
+                print(link)
+                # two_cases(soup)
+                two_cases_bool = True
+                #return two_cases(soup)
             dirs = soup.findAll("div", {"align": "right"})
+
             dirs_1 = soup.findAll('p', {"class": "Ruller3"})
 
         except AttributeError:
@@ -142,4 +199,5 @@ def HTML_CRAWLER(link):
         pass
 
     one = get_dict(dirs)
+    one["מסמך מאוחד"] = two_cases_bool
     return {**get_dict(dirs_1), **one}

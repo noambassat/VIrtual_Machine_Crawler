@@ -113,7 +113,7 @@ try:
 
             print("Number of cases: ", len(URLS))
             for i, CASE in enumerate(URLS):
-                if(i<138):continue # change_i_for_checkers
+                if(i<89):continue # change_i_for_checkers
                 print("____________________________________")
                 START_CURR_TIME = datetime.now()
                 try:
