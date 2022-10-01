@@ -80,21 +80,34 @@ def get_dict(dirs):
             pass
     return all
 
+
+def get_deviders(string):
+    # NEW FUNCTION
+    # when there is a row like "עו"ד מיכל עו"ד גלעד" it doesnt catch this as an array. this function adds , between the titles in order to be able to split them in the next loop
+    if (string.find( ' עו"ד ') != -1): string = string.replace("\n", " ").replace(' עו"ד ', ',ע"וד ')
+    dividers = [";",'\n']
+    for div in dividers: string = string.replace(div, ",")
+    return string
+
 def slicer(text,labels,contents):
     for txt in text.split('\n\n'):
         content = []
         txt = cleanTXT(txt).replace("\n",' ')
-        content_ = (txt[txt.find(":")+1:])
+        string = (txt[txt.find(":")+1:])
+        content_ = get_deviders(string)
 
         if len(txt) == 0: continue
         if(txt.find(":")!=-1):
             labels.append(cleanTXT(txt[:txt.find(":")]).replace("נגד",""))
             # continue
-        for info in ((content_.replace(";",",").replace("\n",","))[content_.find(":")+1:]).split(','):
+
+        for info in (content_[content_.find(":")+1:]).split(','):
             info = re.sub(r'(\d)+\. ','', info)
             info = cleanTXT(info.replace('-',' '))
             if(len(info)!=0): content.append(cleanTXT(info))
         if(len(content)!=0): contents.append(content)
+
+
     if(len(labels)>len(contents)):
         content_ = cleanTXT(text[text.find(":") + 1:]).replace('-',' ')
         if(content_.find(";")!=-1):
@@ -167,7 +180,7 @@ def HTML_CRAWLER(link):
     two_cases_bool = False
     try:
         conn = http.client.HTTPSConnection("api.webscrapingapi.com")
-        src = "/v1?url=" + (urllib.parse.quote(link, safe="")) + "&api_key=ehB1IjRGfUcxZuSWAWNW9JtFl2XnEX2Y&device=desktop&proxy_type=datacenter&render_js=1&wait_until=domcontentloaded&timeout=30000"
+        src = "/v1?url=" + (urllib.parse.quote(link, safe="")) + "&api_key=5AfvZlhzw3Uck16NLKj6LcbIg3ryjbpm&device=desktop&proxy_type=datacenter&render_js=1&wait_until=domcontentloaded&timeout=30000"
 
         conn.request("GET", src)
         res = conn.getresponse()

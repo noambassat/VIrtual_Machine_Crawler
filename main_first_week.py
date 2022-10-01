@@ -39,8 +39,8 @@ options.add_argument('--proxy-server=%s' % PROXY)
 
 # main_data_frame = pd.read_csv('Cases_Name.csv',encoding = "ISO-8859-8")
 
-Start = "01-01-2010"  #
-End = "07-01-2010"
+Start = "10-01-2010"  #
+End = "17-01-2010"
 YEAR = 2010
 
 driver = webdriver.Chrome(exe_path, options=options)
