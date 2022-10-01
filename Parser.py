@@ -24,12 +24,12 @@ def cleanTXT(txt):
 
     txt = txt.replace(u'\xa0', u' ')
 
-    txt = txt.replace("נ ג ד","נגד")
+    txt = txt.replace("נ ג ד"," נגד ")
     txt = txt.replace('פסק-דין','פסק דין')
     txt = txt.replace('\r',' ')
 
     txt = txt.replace('  ', ' ')
-    txt = txt.replace("נ ג ד", "נגד")
+    txt = txt.replace("נ ג ד", " נגד ")
     txt = txt.replace("\'", "'")
     if(txt==' ' or txt=='  '): return ''
 
@@ -39,7 +39,7 @@ def get_dict(dirs):
     labels = []
     contents = []
     for s in dirs:
-        text = cleanTXT(s.text).replace("נגד","")
+        text = cleanTXT(s.text).replace(" נגד ","")
         if(len(text)==0 or text.find(":")==-1):continue
         con = False
         for k_word in ['בשם','בם','פורמלי','פורמאלי']:
@@ -56,7 +56,7 @@ def get_dict(dirs):
         # elif (text.find("בם") != -1 and text.find("להצטרף") == -1):
         #     labels, contents = slicer(text, labels, contents)
         #     continue  ################################################
-        labels.append(cleanTXT(text[:text.find(":")].replace('\n',' ')).replace("נגד",""))
+        labels.append(cleanTXT(text[:text.find(":")].replace('\n',' ')).replace(" נגד ",""))
 
         info = (text[text.find(":")+1:])
         content = []
@@ -84,7 +84,9 @@ def get_dict(dirs):
 def get_deviders(string):
     # NEW FUNCTION
     # when there is a row like "עו"ד מיכל עו"ד גלעד" it doesnt catch this as an array. this function adds , between the titles in order to be able to split them in the next loop
-    if (string.find( ' עו"ד ') != -1): string = string.replace("\n", " ").replace(' עו"ד ', ',ע"וד ')
+    if (string.find( ' ועו"ד ') != -1): string = string.replace("\n", " ").replace(' ועו"ד ', ',ע"וד ')
+
+    elif (string.find( ' עו"ד ') != -1): string = string.replace("\n", " ").replace(' עו"ד ', ',ע"וד ')
     dividers = [";",'\n']
     for div in dividers: string = string.replace(div, ",")
     return string
@@ -98,7 +100,7 @@ def slicer(text,labels,contents):
 
         if len(txt) == 0: continue
         if(txt.find(":")!=-1):
-            labels.append(cleanTXT(txt[:txt.find(":")]).replace("נגד",""))
+            labels.append(cleanTXT(txt[:txt.find(":")]).replace(" נגד ",""))
             # continue
 
         for info in (content_[content_.find(":")+1:]).split(','):
