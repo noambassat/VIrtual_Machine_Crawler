@@ -84,9 +84,9 @@ def get_dict(dirs):
 def get_deviders(string):
     # NEW FUNCTION
     # when there is a row like "עו"ד מיכל עו"ד גלעד" it doesnt catch this as an array. this function adds , between the titles in order to be able to split them in the next loop
-    if (string.find( ' ועו"ד ') != -1): string = string.replace("\n", " ").replace(' ועו"ד ', ',ע"וד ')
+    if (string.find( ' ועו"ד ') != -1): string = string.replace("\n", " ").replace(' ועו"ד ', ',עו"ד ')
 
-    elif (string.find( ' עו"ד ') != -1): string = string.replace("\n", " ").replace(' עו"ד ', ',ע"וד ')
+    elif (string.find( ' עו"ד ') != -1 and string.find("' עו") == -1): string = string.replace("\n", " ").replace(' עו"ד ', ',עו"ד ')
     dividers = [";",'\n']
     for div in dividers: string = string.replace(div, ",")
     return string
@@ -182,7 +182,7 @@ def HTML_CRAWLER(link):
     two_cases_bool = False
     try:
         conn = http.client.HTTPSConnection("api.webscrapingapi.com")
-        src = "/v1?url=" + (urllib.parse.quote(link, safe="")) + "&api_key=5AfvZlhzw3Uck16NLKj6LcbIg3ryjbpm&device=desktop&proxy_type=datacenter&render_js=1&wait_until=domcontentloaded&timeout=30000"
+        src = "/v1?url=" + (urllib.parse.quote(link, safe="")) + "&api_key=EOJAUMGk5YrtY2iszMgaWkj6A9MDszbV&device=desktop&proxy_type=datacenter&render_js=1&wait_until=domcontentloaded&timeout=30000"
 
         conn.request("GET", src)
         res = conn.getresponse()
@@ -214,5 +214,7 @@ def HTML_CRAWLER(link):
         pass
 
     one = get_dict(dirs)
+    one["כל קוד הטמל"] = str(soup)
     one["מסמך מאוחד"] = two_cases_bool
+
     return {**get_dict(dirs_1), **one}

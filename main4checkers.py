@@ -39,19 +39,19 @@ options.add_argument('--proxy-server=%s' % PROXY)
 
 # main_data_frame = pd.read_csv('Cases_Name.csv',encoding = "ISO-8859-8")
 
-Start = "10-01-2010"  #
-End = "17-01-2010"
-YEAR = 2010
+Start = "01-01-2022"  #
+End = "07-01-2022"
+YEAR = 2022
 
 driver = webdriver.Chrome(exe_path, options=options)
 
-while (YEAR < 2023):
+while (YEAR > 2009):
     try:
 
         Start = Start[:6] + str(YEAR)
         End = End[:6] + str(YEAR)
-        YEAR = int(Start[6:]) + 1
-        print(YEAR - 1)
+        YEAR = int(Start[6:]) - 1
+        print(YEAR + 1)
         all_dates = get_dates(Start, End)
         for j in range(len(all_dates)):
 
@@ -119,7 +119,7 @@ while (YEAR < 2023):
 
                 print("Number of cases: ", len(URLS))
                 for i, CASE in enumerate(URLS):
-                    if(i%10!=0):continue # jumping for the checkers
+                    if(i%25!=0):continue # jumping for the checkers
                     print("____________________________________")
                     START_CURR_TIME = datetime.now()
                     try:
