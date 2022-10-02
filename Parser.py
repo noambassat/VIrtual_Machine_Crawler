@@ -208,10 +208,10 @@ def HTML_CRAWLER(link):
         except AttributeError:
             print("AttributeError in parser")
         if(len(dirs)>1): break
-    try:
-        soup = soup.find('body').find("div", {"class": "WordSection1"})
-    except AttributeError:
-        pass
+    # try:
+    #     soup = soup.find('body').find("div", {"class": "WordSection1"}) ###?????###
+    # except AttributeError:
+    #     pass
 
     one = get_dict(dirs)
     one["כל קוד הטמל"] = str(soup)
