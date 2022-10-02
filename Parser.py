@@ -42,17 +42,13 @@ def get_dict(dirs):
         text = cleanTXT(s.text).replace(" נגד ","")
         if(len(text)==0 or text.find(":")==-1):continue
         con = False
-        for k_word in ['בשם','בם','פורמלי','פורמאלי']:
+        for k_word in ['בשם','בם']:
             if (text.find(k_word) != -1 and text.find("להצטרף")==-1):
-                labels_,contents_ = slicer(text, labels,contents)
-                labels += labels_
-                contents += contents_
+                labels,contents = slicer(text, labels,contents)
                 con=True
                 break
 
-        if(con):
-            con ==True
-            continue  ################################################
+        if(con): continue  ################################################
         # elif (text.find("בם") != -1 and text.find("להצטרף") == -1):
         #     labels, contents = slicer(text, labels, contents)
         #     continue  ################################################
@@ -72,12 +68,25 @@ def get_dict(dirs):
 
         # NEXT SESSION
     all = {}
+    jud = 0
     for n in range(len(labels)):
         try:
-            all[labels[n]] =contents[n]
-            if(labels[n].find('פני')!=-1): all["מספר השופטים"] = len(contents[n])
+            print(labels[n],": ", contents[n])
+            if(labels[n].find("לפני")!=-1):
+                labels[n] = "לפני"
+                jud = len(contents[n])
+            all[labels[n]] = contents[n]
+            # print(labels[n],": ", contents[n])
+
+
+
+
+        # except TypeError as err:
+
         except IndexError:
             pass
+    all["מספר השופטים"] = jud
+    print(all.keys())
     return all
 
 
@@ -182,7 +191,7 @@ def HTML_CRAWLER(link):
     two_cases_bool = False
     try:
         conn = http.client.HTTPSConnection("api.webscrapingapi.com")
-        src = "/v1?url=" + (urllib.parse.quote(link, safe="")) + "&api_key=EOJAUMGk5YrtY2iszMgaWkj6A9MDszbV&device=desktop&proxy_type=datacenter&render_js=1&wait_until=domcontentloaded&timeout=30000"
+        src = "/v1?url=" + (urllib.parse.quote(link, safe="")) + "&api_key=UNVeJ3Li18J7vh36TLDJxZlVRLJBdyvQ&device=desktop&proxy_type=datacenter&render_js=1&wait_until=domcontentloaded&timeout=30000"
 
         conn.request("GET", src)
         res = conn.getresponse()

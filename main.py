@@ -39,8 +39,8 @@ options.add_argument('--proxy-server=%s' % PROXY)
 
 # main_data_frame = pd.read_csv('Cases_Name.csv',encoding = "ISO-8859-8")
 
-Start = "01-01-2015"  #
-End = "01-10-2022"
+Start = "01-01-2017"  #
+End = "02-01-2017"
 
 driver = webdriver.Chrome(exe_path, options=options)
 
@@ -85,15 +85,21 @@ try:
 
         # At least 2 secs must be waiting in order to load the webpage
         delay = 5  # seconds
-        try:
-            myElem = WebDriverWait(driver, delay).until(EC.presence_of_element_located((By.ID, 'row_0')))
-        except TimeoutException:
-            print("Loading took too much time")
-            print("Trying once again ...")
+        cont = 0
+        while 0 <= cont < 4:
+
             try:
                 myElem = WebDriverWait(driver, delay).until(EC.presence_of_element_located((By.ID, 'row_0')))
             except TimeoutException:
-                print("Loading took too much time! ID in the code not working!")
+                if cont == 4:
+                    print("Loading took too much time! ID in the code not working!")
+                    break
+                print("Loading took too much time")
+                print("error number ", cont+1)
+                print("Trying once again ...")
+                cont += 1
+                continue
+            cont = -1
 
         print("Time until now (get webdriver) is: ", datetime.now() - START_TIME)
         try:
@@ -113,7 +119,8 @@ try:
 
             print("Number of cases: ", len(URLS))
             for i, CASE in enumerate(URLS):
-                if(i!=80):continue # change_i_for_checkers
+                if(i%250!=0):continue # change_i_for_checkers
+                print(CASE)
                 print("____________________________________")
                 START_CURR_TIME = datetime.now()
                 try:
