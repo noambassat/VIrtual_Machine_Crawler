@@ -40,7 +40,7 @@ options.add_argument('--proxy-server=%s' % PROXY)
 # main_data_frame = pd.read_csv('Cases_Name.csv',encoding = "ISO-8859-8")
 
 Start = "01-01-2017"  #
-End = "17-10-2022"
+End = "02-01-2017"
 
 driver = webdriver.Chrome(exe_path, options=options)
 
@@ -119,7 +119,7 @@ try:
 
             print("Number of cases: ", len(URLS))
             for i, CASE in enumerate(URLS):
-                # if(i%250!=0):continue # change_i_for_checkers
+                if(i%250!=0):continue # change_i_for_checkers
                 print(CASE)
                 print("____________________________________")
                 START_CURR_TIME = datetime.now()

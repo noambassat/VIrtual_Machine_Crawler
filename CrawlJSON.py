@@ -75,7 +75,7 @@ def crawl_HTML( data, link, Type):
 
         conn = http.client.HTTPSConnection("api.webscrapingapi.com")
         src = "/v1?url=" + (urllib.parse.quote(link,
-                                               safe="")) + "&api_key=UNVeJ3Li18J7vh36TLDJxZlVRLJBdyvQ&device=desktop&proxy_type=datacenter&render_js=1&wait_until=domcontentloaded&timeout=30000"
+                                               safe="")) + "&api_key=4AcAfWEcuu9LzMeCiM4brs5XaBhGrKFT&device=desktop&proxy_type=datacenter&render_js=1&wait_until=domcontentloaded&timeout=30000"
 
         conn.request("GET", src)
         res = conn.getresponse()
@@ -148,7 +148,7 @@ def CrawlTopWindow(CASE, LINK, Type, dict, case_name_num):
 
     try:
         conn = http.client.HTTPSConnection("api.webscrapingapi.com")
-        src = "/v1?url=" + (urllib.parse.quote(src, safe="")) + "&api_key=UNVeJ3Li18J7vh36TLDJxZlVRLJBdyvQ&device=desktop&proxy_type=datacenter&render_js=1&wait_until=domcontentloaded&timeout=30000"
+        src = "/v1?url=" + (urllib.parse.quote(src, safe="")) + "&api_key=4AcAfWEcuu9LzMeCiM4brs5XaBhGrKFT&device=desktop&proxy_type=datacenter&render_js=1&wait_until=domcontentloaded&timeout=30000"
         conn.request("GET", src)
         res = conn.getresponse()
         data = res.read()

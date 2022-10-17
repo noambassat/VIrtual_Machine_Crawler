@@ -71,10 +71,11 @@ def get_dict(dirs):
     jud = 0
     for n in range(len(labels)):
         try:
-            print(labels[n],": ", contents[n])
+            # print(labels[n],": ", contents[n])
             if(labels[n].find("לפני")!=-1):
                 labels[n] = "לפני"
                 jud = len(contents[n])
+            if(labels[n].find("ערעור על פסק")!=-1): continue
             all[labels[n]] = contents[n]
             # print(labels[n],": ", contents[n])
 
@@ -86,7 +87,7 @@ def get_dict(dirs):
         except IndexError:
             pass
     all["מספר השופטים"] = jud
-    print(all.keys())
+    # print(all.keys())
     return all
 
 
@@ -191,7 +192,7 @@ def HTML_CRAWLER(link):
     two_cases_bool = False
     try:
         conn = http.client.HTTPSConnection("api.webscrapingapi.com")
-        src = "/v1?url=" + (urllib.parse.quote(link, safe="")) + "&api_key=UNVeJ3Li18J7vh36TLDJxZlVRLJBdyvQ&device=desktop&proxy_type=datacenter&render_js=1&wait_until=domcontentloaded&timeout=30000"
+        src = "/v1?url=" + (urllib.parse.quote(link, safe="")) + "&api_key=4AcAfWEcuu9LzMeCiM4brs5XaBhGrKFT&device=desktop&proxy_type=datacenter&render_js=1&wait_until=domcontentloaded&timeout=30000"
 
         conn.request("GET", src)
         res = conn.getresponse()
