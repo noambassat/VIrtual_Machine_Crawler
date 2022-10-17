@@ -39,16 +39,16 @@ options.add_argument('--proxy-server=%s' % PROXY)
 
 # main_data_frame = pd.read_csv('Cases_Name.csv',encoding = "ISO-8859-8")
 
-Start = "01-01-2017"  #
+Start = "02-01-2010"  #
 End = "17-10-2022"
 
 driver = webdriver.Chrome(exe_path, options=options)
 
-try:
-    all_dates = get_dates(Start, End)
 
-    for j in range(len(all_dates)):
+all_dates = get_dates(Start, End)
 
+for j in range(len(all_dates)):
+    try:
         START_TIME = datetime.now()
         try:
             start = all_dates[j]
@@ -95,11 +95,11 @@ try:
                     print("Loading took too much time! ID in the code not working!")
                     break
                 print("Loading took too much time")
-                print("error number ", cont+1)
+                print("error number ", cont + 1)
                 print("Trying once again ...")
                 cont += 1
                 continue
-            cont = -1
+            cont = -1 # no errors - break out from while loop
 
         print("Time until now (get webdriver) is: ", datetime.now() - START_TIME)
         try:
@@ -119,7 +119,9 @@ try:
 
             print("Number of cases: ", len(URLS))
             for i, CASE in enumerate(URLS):
+                if(start==  "02-01-2010"  and i<73): continue
                 # if(i%250!=0):continue # change_i_for_checkers
+
                 print(CASE)
                 print("____________________________________")
                 START_CURR_TIME = datetime.now()
@@ -209,9 +211,11 @@ try:
             print("requests.exceptions.ConnectTimeout")
             pass
         print("*** FINISH, THE TIME IT TOOK: ", datetime.now() - START_TIME, " ***")  ######
-except WebDriverException:
-    driver = webdriver.Chrome(exe_path, options=options)
-    print("WEB DRIVER EXCEPTION!")
+    except WebDriverException:
+        driver = webdriver.Chrome(exe_path, options=options)
+        print("WEB DRIVER EXCEPTION!")
+        continue
+
 END_RUN_TIME = datetime.now()
 print("FINISH, THE TIME IT TOOK: ", END_RUN_TIME - START_RUN_TIME)  ######
 driver.close()
