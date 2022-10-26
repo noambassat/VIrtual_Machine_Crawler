@@ -6,9 +6,10 @@ from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.common.by import By
 from selenium.common.exceptions import TimeoutException
+
 import warnings
 from CrawlUrls import get_src, Get_Cases_Names, Get_Number_Of_Cases, scroll_down, Get_URLS
-from CrawlJSON import CrawlTopWindow, Crawl_Decisions, run
+from CrawlJSON import CrawlTopWindow, Crawl_Decisions
 from Save_As_Json import writeToJsonFile
 from Dates_Calculator import get_dates
 from selenium.common.exceptions import WebDriverException, InvalidSessionIdException, NoSuchElementException, \
@@ -22,9 +23,9 @@ warnings.simplefilter(action='ignore', category=(FutureWarning, DeprecationWarni
 START_RUN_TIME = datetime.now()
 
 # PATH = open('C:/Users/Noam/Desktop/Courts Project/Paths.txt', 'r')
-filePath = '/home/ubuntu/PycharmProjects/pythonProject5/Json_Files/'
+filePath = '/home/ubuntu/PycharmProjects/pythonProject5/Json_Files_1/'
 # exe_path = '/home/ubuntu/pythonProject5/chromedriver'
-DT_path = '/home/ubuntu/PycharmProjects/pythonProject5/DataFrames/'
+DT_path = '/home/ubuntu/PycharmProjects/pythonProject5/DataFrames_1/'
 exe_path = '/home/ubuntu/PycharmProjects/pythonProject5/chromedriver'
 options = Options()
 
@@ -38,15 +39,14 @@ options.add_argument('--proxy-server=%s' % PROXY)
 
 # main_data_frame = pd.read_csv('Cases_Name.csv',encoding = "ISO-8859-8")
 
-Start = "25-05-2010"  #
+Start = "04-04-2017"  #
 End = "17-10-2022"
 
 driver = webdriver.Chrome(exe_path, options=options)
 
 
 all_dates = get_dates(Start, End)
-dec_path = r'Decisions_Table/Decisions_Table.csv'
-run(dec_path)
+
 for j in range(len(all_dates)):
     try:
         START_TIME = datetime.now()
@@ -119,7 +119,7 @@ for j in range(len(all_dates)):
 
             print("Number of cases: ", len(URLS))
             for i, CASE in enumerate(URLS):
-                if(start==  "25-05-2010"  and i<98): continue
+                if(start==  "04-04-2017"  and i<136): continue
                 # if(i%250!=0):continue # change_i_for_checkers
 
                 print(CASE)
@@ -136,7 +136,6 @@ for j in range(len(all_dates)):
                         if (len(dec_df) > 0): break
                     if (len(dec_df) == 0):
                         print("0 DEC!!!\n", CASE)
-                        driver.get(src)
                         continue
                     print("Time until now current case (Crawl_Decisions) is: ", datetime.now() - START_CURR_TIME)
 

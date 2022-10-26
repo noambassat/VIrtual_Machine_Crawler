@@ -29,7 +29,6 @@ filePath = '/home/ubuntu/PycharmProjects/pythonProject5/Json_Files/'
 DT_path = '/home/ubuntu/PycharmProjects/pythonProject5/DataFrames/'
 exe_path = '/home/ubuntu/PycharmProjects/pythonProject5/chromedriver'
 
-main_df = pd.read_csv(dec_path, index_col=0, dtype='unicode', low_memory=False)
 options = Options()
 # options.add_argument('--disable-gpu')
 # options.add_argument('--headless')
@@ -325,9 +324,18 @@ def Crawl_Decisions(driver, CASE):
     for row in (case_dec.values()):
         df = df.append(row, ignore_index=True)
     df.drop_duplicates(inplace=True)
-    main_df = pd.read_csv(r'Decisions_Table/Decisions_Table.csv', index_col=0, dtype='unicode', low_memory=False)
-    main_df = main_df.append(df)
-    main_df = main_df.reindex()
+    try:
+        main_df = pd.read_csv(r'Decisions_Table/Decisions_Table.csv', index_col=0, dtype='unicode', low_memory=False, error_bad_lines=False)
+        main_df = main_df.append(df)
+        main_df = main_df.reindex()
+    except pd.errors.EmptyDataError as err:
+        main_df = df.copy()
+    except UnicodeDecodeError:
+        main_df = df.copy()
+    except IndexError:
+        main_df = df.copy()
+
     main_df.to_csv('Decisions_Table/Decisions_Table.csv')
+
     LINK, Type = Get_LINK(df, CASE)
     return df, LINK, Type, case_dec

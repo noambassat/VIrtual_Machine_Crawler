@@ -1,8 +1,9 @@
 from bs4 import BeautifulSoup
 import datetime
-
+# קישור להורדה יומית של תיקים - כרגע לפי תאריך החלטה אחרונה ולא לפי תאריך פתיחת התיק
 def get_src(start_date, end_date): return 'https://supremedecisions.court.gov.il/Verdicts/Results/1/null/null/null/2/null/' + start_date.replace('/','-') + '/' + end_date.replace('/','-') + '/null'
-
+# src="https://supremedecisions.court.gov.il/Verdicts/CaseDtResults/1/null/null/null/1/1/null/null"
+# src="https://supremedecisions.court.gov.il/Verdicts/Results/1/null/null/null/1/1/null/null/null"
 def Get_Number_Of_Cases(driver):
     soup = BeautifulSoup(driver.page_source, 'html.parser')
     txt = soup.find('p', {'class': 'ng-binding'}).text
