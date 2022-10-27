@@ -45,7 +45,7 @@ driver = webdriver.Chrome(exe_path, options=options)
 
 
 all_dates = get_dates(Start, End)
-dec_path = r'Decisions_Table/Decisions_Table.csv'
+dec_path = r'../Decisions_Table/Decisions_Table.csv'
 run(dec_path)
 for j in range(len(all_dates)):
     try:
