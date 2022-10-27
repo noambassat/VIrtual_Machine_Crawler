@@ -178,6 +178,8 @@ def CrawlTopWindow(CASE, LINK, Type, dict):
     if ((soup.find("head").title.text).find("חסוי") != -1):
         all_data = {}
         hidden_content = 1
+        case_name_num = soup.find("h2",{"class":"ng-binding"})
+        print(soup.find("h2",{"class":"ng-binding"}).text)
     if not hidden_content:
         LABELS = []
         for a in soup.findAll("div", {"class": "item"}):
