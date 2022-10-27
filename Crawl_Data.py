@@ -28,8 +28,8 @@ disable_warnings(InsecureRequestWarning)
 global API_KEY,filePath,DT_path, exe_path
 API_KEY = "UNVeJ3Li18J7vh36TLDJxZlVRLJBdyvQ"
 # Paths
-filePath = '/home/ubuntu/PycharmProjects/pythonProject5/Json_Files/'
-DT_path = '/home/ubuntu/PycharmProjects/pythonProject5/DataFrames/'
+filePath = '/home/ubuntu/PycharmProjects/pythonProject5/NewMain/Json_Files/'
+DT_path = '/home/ubuntu/PycharmProjects/pythonProject5/NewMain/DataFrames/'
 exe_path = '/home/ubuntu/PycharmProjects/pythonProject5/chromedriver'
 
 
@@ -189,10 +189,9 @@ def CrawlTopWindow(CASE, LINK, Type, dict):
         first_data = {}
         for i in range(len(labels)):
             first_data[cleanTXT(labels[i].text)] = cleanTXT(details[i].text)
-            print(cleanTXT(details[i].text))
+
             if(i==0):case_name_num = cleanTXT(details[i].text)
-            print(i)
-            print("_________________")
+
         try:
             all_data[LABELS[0]] = first_data
         except IndexError:

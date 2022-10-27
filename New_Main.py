@@ -27,8 +27,8 @@ global filePath,DT_path, exe_path
 
 
 # Paths
-filePath = '/home/ubuntu/PycharmProjects/pythonProject5/Json_Files/'
-DT_path = '/home/ubuntu/PycharmProjects/pythonProject5/DataFrames/'
+filePath = '/home/ubuntu/PycharmProjects/pythonProject5/NewMain/Json_Files/'
+DT_path = '/home/ubuntu/PycharmProjects/pythonProject5/NewMain/DataFrames/'
 exe_path = '/home/ubuntu/PycharmProjects/pythonProject5/chromedriver'
 
 
@@ -66,7 +66,7 @@ for year in Years_and_Nums.keys(): # CURR -> 2011 ONLY
     while(counter<Years_and_Nums[year] and STOP < 5): # While the crawler didn't reach the case's limit number yet. 5 is the max errors that can be thrown.
         curr_case = {"Case number": "%d %d" % (counter, year)}
 
-        Case_Link = Crawl_Data.get_url(year, 9775)
+        Case_Link = Crawl_Data.get_url(year, counter)
         try:
             driver.get(Case_Link)
         except WebDriverException as wde:
@@ -77,13 +77,14 @@ for year in Years_and_Nums.keys(): # CURR -> 2011 ONLY
         ####
         WebDriverWait(driver,3)
         soup = BeautifulSoup(driver.page_source, 'html.parser')
-        try:
-            if((soup.find("div", {"class": "col-md-11"}).text).find(" 0 מסמכים לפרמטרים")!=-1):
-                STOP += 1
-                print("STOP ++")
-                continue
-        except AttributeError:
-            pass
+        if(counter>Years_and_Nums[year]):
+            try:
+                if((soup.find("div", {"class": "col-md-11"}).text).find(" 0 מסמכים לפרמטרים")!=-1):
+                    STOP += 1
+                    print("STOP ++")
+                    continue
+            except AttributeError:
+                pass
 
 
 
@@ -126,7 +127,6 @@ for year in Years_and_Nums.keys(): # CURR -> 2011 ONLY
                 #
                 data = Crawl_Data.CrawlTopWindow(Case_Link, LINK, conclusion, dict)  # Gets the upper window
             # print("check type the len: ",type(data))
-
             except OSError as error:
                 print("OS Error, on CrawlTopWindow, error num:", I + 1)
                 print(error)
@@ -162,7 +162,7 @@ for year in Years_and_Nums.keys(): # CURR -> 2011 ONLY
         counter += 1
         Logs_list.append(curr_case)
 
-        if counter == 2: break #############################################
+        if counter == 3: break #############################################
 
     # except UnexpectedAlertPresentException:
     #
