@@ -18,7 +18,6 @@ import requests
 
 # !/usr/bin/env python3 # -*- coding: utf-8 -*-
 
-warnings.simplefilter(action='ignore', category=(FutureWarning, DeprecationWarning))
 START_RUN_TIME = datetime.now()
 
 # PATH = open('C:/Users/Noam/Desktop/Courts Project/Paths.txt', 'r')
@@ -31,6 +30,7 @@ options = Options()
 # Hide window
 # options.add_argument('--disable-gpu')
 # options.add_argument('--headless')
+warnings.simplefilter(action='ignore', category=(FutureWarning, DeprecationWarning))
 
 # PROXY
 PROXY = "5.79.66.2:13081"
