@@ -11,6 +11,7 @@ import warnings
 from selenium.common.exceptions import WebDriverException, InvalidSessionIdException, NoSuchElementException, \
     UnexpectedAlertPresentException
 from selenium.webdriver.chrome.options import Options
+from selenium.common.exceptions import UnexpectedAlertPresentException
 import Save_As_Json
 
 # !/usr/bin/env python3 # -*- coding: utf-8 -*-
@@ -66,29 +67,43 @@ Years_and_Nums = {2011:9775} # { year_num : num_of_cases }
 driver = webdriver.Chrome(exe_path, options=options)
 
 for year in Years_and_Nums.keys(): # CURR -> 2011 ONLY
-    counter, STOP = 3,0  # The Continuous number of each year
+    counter, STOP = 1,0  # The Continuous number of each year
     while(counter<Years_and_Nums[year] and STOP < 5): # While the crawler didn't reach the case's limit number yet. 5 is the max errors that can be thrown.
         try:
             df.to_csv('Logs_DF.csv', mode='a', index=False, header=False)
         except UnboundLocalError:
             pass
+        except NameError:
+            pass
 
-        curr_case = {"מספר הליך": "%d/%d" % (counter, year)}
+
         Case_Link = Crawl_Data.get_url(year, counter)
-        curr_case["קישור לתיק"] = Case_Link
+        curr_case = {"מספר הליך": "%d/%d" % (counter, year),"קישור לתיק": Case_Link,"קישור נפתח":False,"תיק נמצא":False,\
+                     "ניסיון להורדת ההחלטות":False,"הצלחה בהורדת ההחלטות": False, "סוג מסמך": "", "ניסיון להורדת מטא-דאטה": False,"הצלחה בהורדת מטא-דאטה":False}
 
-        ########################## רשימת השגיאה - להכניס גם לטבלת הלוג
-        try:
-            driver.get(Case_Link)
-        except WebDriverException as wde:
-            print(str(wde),"\n",Case_Link)
+        #########################
+        for i in range(3):
+            try:
+                driver.get(Case_Link)
+            except WebDriverException as wde:
+                print(str(wde),"\n",Case_Link)
+                curr_case["קישור נפתח"] = False
+                continue
+            break
+        curr_case["קישור נפתח"] = True
 
         ##########################
 
         ####
         WebDriverWait(driver,3)
-        soup = BeautifulSoup(driver.page_source, 'html.parser')
-
+        for i in range(2):
+            try:
+                soup = BeautifulSoup(driver.page_source, 'html.parser')
+            except UnexpectedAlertPresentException:
+                soup = BeautifulSoup(driver.page_source, 'html.parser')
+                curr_case["קישור נפתח"] = False
+                continue
+            break
 
         try:
             if((soup.find("div", {"class": "col-md-11"}).text).find(" 0 מסמכים לפרמטרים")!=-1):
@@ -145,9 +160,15 @@ for year in Years_and_Nums.keys(): # CURR -> 2011 ONLY
             print("The len of decisions table: ", len(dec_df))
 
             try:
-                #
+
                 curr_case["ניסיון להורדת מטא-דאטה"] = True
-                data = Crawl_Data.CrawlTopWindow(Case_Link, LINK, conclusion, dict)  # Gets the upper window
+                name_on_page = soup.find("h2",{"class":"ng-binding"}).text
+                case_full_name = ""
+                for i,word in enumerate(name_on_page.split(" ")):
+                    if(i>1): break
+                    case_full_name += word + " "
+                print(case_full_name)
+                data = Crawl_Data.CrawlTopWindow(Case_Link, LINK, conclusion, dict,case_full_name)  # Gets the upper window
             # print("check type the len: ",type(data))
 
             except OSError as error:
@@ -160,6 +181,7 @@ for year in Years_and_Nums.keys(): # CURR -> 2011 ONLY
                     print(error)
                     curr_case["הצלחה בהורדת מטא-דאטה"] = False
                     data = 0
+
             try:
                 if (len(data) < 2):
                     print("MAIN GOT LEN LESS THAN 2!!!!!!!")
@@ -188,7 +210,6 @@ for year in Years_and_Nums.keys(): # CURR -> 2011 ONLY
 
         except UnexpectedAlertPresentException:
 
-            counter -= 1
             print("UnexpectedAlertPresentException, continue")
             curr_case["הצלחה בהורדת מטא-דאטה"] = False
             continue
@@ -206,13 +227,14 @@ for year in Years_and_Nums.keys(): # CURR -> 2011 ONLY
 
         Logs_list.append(curr_case)
 
-
     # Full_Log_Dict[year] = {"................."}
-df.to_csv('Full_Logs_DF.csv', mode='a', index=False, header=False)
+df.to_csv('Logs_DF.csv', mode='a', index=False, header=False)
 
 
-# Logs_DF = pd.DataFrame(columns=Logs_list[0].keys())
-# Logs_DF.to_csv("Full_Logs_DF.csv")
+
+
+Logs_DF = pd.DataFrame(columns=Logs_list[0].keys())
+Logs_DF.to_csv("Full_Logs_DF.csv")
 
 
 

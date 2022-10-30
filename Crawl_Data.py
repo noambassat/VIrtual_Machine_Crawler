@@ -26,7 +26,7 @@ disable_warnings(InsecureRequestWarning)
 
 
 global API_KEY,filePath,DT_path, exe_path
-API_KEY = "UNVeJ3Li18J7vh36TLDJxZlVRLJBdyvQ"
+API_KEY = "4AcAfWEcuu9LzMeCiM4brs5XaBhGrKFT"
 # Paths
 filePath = '/home/ubuntu/PycharmProjects/pythonProject5/NewMain/Json_Files/'
 DT_path = '/home/ubuntu/PycharmProjects/pythonProject5/NewMain/DataFrames/'
@@ -142,7 +142,7 @@ def add_counters(data):
     return temp_data
 
 
-def CrawlTopWindow(CASE, LINK, Type, dict):
+def CrawlTopWindow(CASE, LINK, Type, dict,case_name_num):
 
     hidden_content = 0
     for i in range(7):
@@ -171,15 +171,15 @@ def CrawlTopWindow(CASE, LINK, Type, dict):
         print("OS ERROR IN CRAWL TOP WINDOW!")
         print(err)
 
-    if(len(html_content)<1): print("the len is lower than 1!!!!!!", html_content)
+    if(len(html_content)<1): print("the len is lower than !!!!!", html_content)
 
     soup = BeautifulSoup(html_content, 'html.parser')
 
     if ((soup.find("head").title.text).find("חסוי") != -1):
         all_data = {}
         hidden_content = 1
-        case_name_num = soup.find("h2",{"class":"ng-binding"})
-        print(soup.find("h2",{"class":"ng-binding"}).text)
+
+
     if not hidden_content:
         LABELS = []
         for a in soup.findAll("div", {"class": "item"}):
@@ -192,7 +192,7 @@ def CrawlTopWindow(CASE, LINK, Type, dict):
         for i in range(len(labels)):
             first_data[cleanTXT(labels[i].text)] = cleanTXT(details[i].text)
 
-            if(i==0):case_name_num = cleanTXT(details[i].text)
+            # if(i==0):case_name_num = cleanTXT(details[i].text)
 
         try:
             all_data[LABELS[0]] = first_data
