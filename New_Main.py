@@ -189,7 +189,7 @@ for year in Years_and_Nums.keys(): # CURR -> 2011 ONLY
 
             try:
                 if (len(data) < 2):
-                    print("MAIN GOT LEN LESS THAN 2!!!!!!!")
+                    print("MAIN GOT LEN LESS THAN !!!!!!!")
                     curr_case["הצלחה בהורדת מטא-דאטה"] = False
                     continue
             except:
@@ -233,9 +233,6 @@ for year in Years_and_Nums.keys(): # CURR -> 2011 ONLY
         Logs_list.append(curr_case)
     # Full_Log_Dict[year] = {"................."}
 df.to_csv('Logs_DF.csv', mode='a', index=False, header=False)
-
-
-
 
 # Logs_DF = pd.DataFrame(columns=Logs_list[0].keys())
 # Logs_DF.to_csv("Full_Logs_DF.csv")
