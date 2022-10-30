@@ -55,7 +55,7 @@ Years_and_Nums = {2011:9775} # { year_num : num_of_cases }
 driver = webdriver.Chrome(exe_path, options=options)
 
 for year in Years_and_Nums.keys(): # CURR -> 2011 ONLY
-    counter, STOP = 1,0  # The Continuous number of each year
+    counter, STOP = 391,0  # The Continuous number of each year
     while(counter<Years_and_Nums[year] and STOP < 5): # While the crawler didn't reach the case's limit number yet. 5 is the max errors that can be thrown.
         try:
             df.to_csv('Logs_DF.csv', mode='a', index=False, header=False)
@@ -147,7 +147,10 @@ for year in Years_and_Nums.keys(): # CURR -> 2011 ONLY
 
             if (len(dec_df) == 0):
                 print("0 DEC!!!\n", Case_Link)
-                driver.get(Case_Link)
+                try:
+                    driver.get(Case_Link)
+                except WebDriverException:
+                    print("WebDriverException")
                 curr_case["הצלחה בהורדת ההחלטות"] = False
                 continue
 
