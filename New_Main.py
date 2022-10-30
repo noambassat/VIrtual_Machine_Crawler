@@ -17,18 +17,6 @@ import Save_As_Json
 # !/usr/bin/env python3 # -*- coding: utf-8 -*-
 
 
-"""
-יהונתן - 
-איך לייצר  משתנים גלובליים לכל התוכנה?2. 
-איך אפשר לערוך קבצי CSV 3.
-בUBUNTU ???
-4. מספר התיק נלקח מהמטא דאטה. במידה והתיק חסוי   -  צריך לקחת מהכותרת העליונה 
-"""
-
-
-
-
-
 #VARIABLES
 
 global filePath,DT_path, exe_path
