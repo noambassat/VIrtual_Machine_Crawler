@@ -88,7 +88,6 @@ for year in Years_and_Nums.keys(): # CURR -> 2011 ONLY
             try:
                 soup = BeautifulSoup(driver.page_source, 'html.parser')
             except UnexpectedAlertPresentException:
-                soup = BeautifulSoup(driver.page_source, 'html.parser')
                 curr_case["קישור נפתח"] = False
                 continue
             break
@@ -214,7 +213,6 @@ for year in Years_and_Nums.keys(): # CURR -> 2011 ONLY
         df = pd.DataFrame(curr_case, index=[0])
 
         Logs_list.append(curr_case)
-
     # Full_Log_Dict[year] = {"................."}
 df.to_csv('Logs_DF.csv', mode='a', index=False, header=False)
 
