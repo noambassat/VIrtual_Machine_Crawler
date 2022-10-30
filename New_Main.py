@@ -70,35 +70,40 @@ for year in Years_and_Nums.keys(): # CURR -> 2011 ONLY
                      "ניסיון להורדת ההחלטות":False,"הצלחה בהורדת ההחלטות": False, "סוג מסמך": "", "ניסיון להורדת מטא-דאטה": False,"הצלחה בהורדת מטא-דאטה":False}
 
         #########################
-        for i in range(3):
-            try:
-                driver.get(Case_Link)
-            except WebDriverException as wde:
-                print(str(wde),"\n",Case_Link)
-                curr_case["קישור נפתח"] = False
-                continue
-            break
+
+        try:
+            driver.get(Case_Link)
+        except WebDriverException as wde:
+            print(str(wde),"\n",Case_Link)
+            curr_case["קישור נפתח"] = False
+            continue
+
+
         curr_case["קישור נפתח"] = True
 
         ##########################
 
         ####
-        WebDriverWait(driver,3)
-        for i in range(2):
-            try:
-                soup = BeautifulSoup(driver.page_source, 'html.parser')
-            except UnexpectedAlertPresentException:
-                curr_case["קישור נפתח"] = False
-                continue
-            break
+        WebDriverWait(driver,4)
+        try:
+            soup = BeautifulSoup(driver.page_source, 'html.parser')
+        except UnexpectedAlertPresentException:
+            print("UnexpectedAlertPresentException!!!")
+            curr_case["קישור נפתח"] = False
+            continue
+
 
         try:
-            if((soup.find("div", {"class": "col-md-11"}).text).find(" 0 מסמכים לפרמטרים")!=-1):
-                if (counter > Years_and_Nums[year]):
+            if (counter > Years_and_Nums[year]):
+                if((soup.find("div", {"class": "col-md-11"}).text).find(" 0 מסמכים לפרמטרים")!=-1):
                     STOP += 1
                     print("STOP ++")
+                if(STOP==0):
+                    driver.close()
+                    driver = webdriver.Chrome(exe_path, options=options)
                 curr_case["תיק נמצא"] = False
-
+                print("Could not find the case!")
+                print("Trying again ...")
                 continue
         except AttributeError:
             pass
@@ -117,6 +122,9 @@ for year in Years_and_Nums.keys(): # CURR -> 2011 ONLY
                 print("Loading took too much time \nerror number ", cont+1, "\nTrying once again ...")
                 cont += 1
                 continue
+            except UnexpectedAlertPresentException:
+                driver.close()
+                driver = webdriver.Chrome(exe_path, options=options)
             cont = -1  # no errors - break out from while loop
 
         print("Time until now (get webdriver) is: ", datetime.now() - START_TIME)
@@ -126,14 +134,17 @@ for year in Years_and_Nums.keys(): # CURR -> 2011 ONLY
         try:
             for I in range(3):
                 try:
-                    dec_df, LINK, conclusion, dict = Crawl_Data.Crawl_Decisions(driver, Case_Link)  # Gets the button window
                     curr_case["ניסיון להורדת ההחלטות"] = True
+                    print("Crawling Decisions ... ")
+                    dec_df, LINK, conclusion, dict = Crawl_Data.Crawl_Decisions(driver, Case_Link)  # Gets the button window
+
                 except OSError as error:
                     print("OS Error, on Crawl_Decisions, error num:", I + 1)
                     curr_case["הצלחה בהורדת ההחלטות"] = False
                     print(error)
                     continue
-                if (len(dec_df) > 0): break
+                break
+
             if (len(dec_df) == 0):
                 print("0 DEC!!!\n", Case_Link)
                 driver.get(Case_Link)
@@ -149,12 +160,19 @@ for year in Years_and_Nums.keys(): # CURR -> 2011 ONLY
             try:
 
                 curr_case["ניסיון להורדת מטא-דאטה"] = True
-                name_on_page = soup.find("h2",{"class":"ng-binding"}).text
-                case_full_name = ""
-                for i,word in enumerate(name_on_page.split(" ")):
-                    if(i>1): break
-                    case_full_name += word + " "
-                print(case_full_name)
+                try:
+                    name_on_page = soup.find("h2",{"class":"ng-binding"}).text
+
+                    case_full_name = ""
+                    for i,word in enumerate(name_on_page.split(" ")):
+                        if (i == 1):
+                            case_full_name += word
+                            break
+                        case_full_name += word + " "
+
+                    print(case_full_name)
+                except AttributeError:
+                    case_full_name = ""
                 data = Crawl_Data.CrawlTopWindow(Case_Link, LINK, conclusion, dict,case_full_name)  # Gets the upper window
             # print("check type the len: ",type(data))
 
@@ -219,8 +237,8 @@ df.to_csv('Logs_DF.csv', mode='a', index=False, header=False)
 
 
 
-Logs_DF = pd.DataFrame(columns=Logs_list[0].keys())
-Logs_DF.to_csv("Full_Logs_DF.csv")
+# Logs_DF = pd.DataFrame(columns=Logs_list[0].keys())
+# Logs_DF.to_csv("Full_Logs_DF.csv")
 
 
 
