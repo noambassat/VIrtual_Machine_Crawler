@@ -174,11 +174,12 @@ def CrawlTopWindow(CASE, LINK, Type, dict,case_name_num):
     if(len(html_content)<1): print("the len is lower than !!!!!", html_content)
 
     soup = BeautifulSoup(html_content, 'html.parser')
-
-    if ((soup.find("head").title.text).find("חסוי") != -1):
-        all_data = {}
-        hidden_content = 1
-
+    try:
+        if ((soup.find("head").title.text).find("חסוי") != -1):
+            all_data = {}
+            hidden_content = 1
+    except AttributeError:
+        pass
 
     if not hidden_content:
         LABELS = []
