@@ -157,7 +157,13 @@ def run(driver, year, range_lst):
             START_CURR_TIME = datetime.now()
 
             try:
+                new_driver_flag = 0
                 for I in range(3):
+                    if(I==3):
+                        driver.quit()
+                        driver = webdriver.Chrome(exe_path, options=options)
+                        driver.get(Case_Link)
+
                     try:
                         curr_case["ניסיון להורדת ההחלטות"] = True
                         print("Crawling Decisions ... ")
@@ -169,6 +175,7 @@ def run(driver, year, range_lst):
                         curr_case["הצלחה בהורדת ההחלטות"] = False
                         print(error)
                         continue
+
                     break
 
                 if (len(dec_df) == 0):
@@ -297,7 +304,7 @@ def get_missing_cases(driver, year, read_df):
 
 
 for year in Years_and_Nums.keys(): # CURR -> 2011 ONLY
-    run(driver, year, range(1,Years_and_Nums[year]+1))
+    run(driver, year, range(9775,Years_and_Nums[year]+1))
 
     ################################################
     read_df = pd.read_csv(log_df)
