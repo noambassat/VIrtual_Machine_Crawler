@@ -55,10 +55,11 @@ Years_and_Nums = {2011:9775} # { year_num : num_of_cases }
 
 driver = webdriver.Chrome(exe_path, options=options)
 
-def run(driver, year):
-    counter, STOP = 9775, 0  # The Continuous number of each year
+def run(driver, year, range_lst):
+    ind, STOP = 0,0  # The Continuous number of each year
     while (STOP < 5):  # While the crawler didn't reach the case's limit number yet. 5 is the max errors that can be thrown.
-
+        if(ind>len(range_lst)): counter +=1
+        else: counter = range_lst[ind]
         try:
             df.to_csv('Logs_DF.csv', mode='a', index=False, header=False)
         except UnboundLocalError:
@@ -147,7 +148,7 @@ def run(driver, year):
                     continue
                 cont = -1  # no errors - break out from while loop
             if (flag != 0):
-                counter += 1
+                ind += 1
                 continue
             print("Time until now (get webdriver) is: ", datetime.now() - START_TIME)
 
@@ -253,7 +254,7 @@ def run(driver, year):
             print("Time until now current case (Done downloading current file) is: ",
                   datetime.now() - START_CURR_TIME)
 
-            counter += 1
+            ind += 1
             df = pd.DataFrame(curr_case, index=[0])
 
             Logs_list.append(curr_case)
@@ -289,17 +290,17 @@ def get_missing_cases(driver, year, read_df):
         if con not in cases_names: missing_cases.add(con)
 
     print(missing_cases)
-    run(driver, year)
+    run(driver, year, missing_cases)
 
 
 
 for year in Years_and_Nums.keys(): # CURR -> 2011 ONLY
-    run(driver, year)
+    run(driver, year, range(1,Years_and_Nums[year]+1))
 
-################################################
-read_df = pd.read_csv(log_df)
-read_df = read_df.drop_duplicates(keep='last')
-missing_cases = get_missing_cases(driver, year, read_df)
+    ################################################
+    read_df = pd.read_csv(log_df)
+    read_df = read_df.drop_duplicates(keep='last')
+    missing_cases = get_missing_cases(driver, year, read_df)
 
 #################################################
 # Logs_DF = pd.DataFrame(columns=Logs_list[0].keys())
