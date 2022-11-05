@@ -51,9 +51,18 @@ START_TIME = datetime.now()
 Log_DF = pd.DataFrame()
 # Full_Log_Dict = {}
 Logs_list = []
-Years_and_Nums = {2011:9775} # { year_num : num_of_cases }
+Years_and_Nums = {2011: 9775, 2012: 9492, 2013: 8916, 2014: 9032} # { year_num : num_of_cases }
 
 driver = webdriver.Chrome(exe_path, options=options)
+def readANDsave_df():
+    read_df = pd.read_csv(log_df)
+
+    read_df.drop_duplicates(subset=['מספר הליך'], keep='last',inplace=True)
+    read_df.to_csv(log_df, index=False)
+
+    read_df['סכימת שגיאות'] = 6 -(read_df[['קישור נפתח', 'תיק נמצא', 'ניסיון להורדת ההחלטות', 'הצלחה בהורדת ההחלטות', 'ניסיון להורדת מטא-דאטה', 'הצלחה בהורדת מטא-דאטה']].sum(axis=1))
+    return read_df
+
 
 def run(driver, year, range_lst):
     ind, STOP = 0,0  # The Continuous number of each year
@@ -63,7 +72,7 @@ def run(driver, year, range_lst):
         except IndexError:
             counter += 1
         try:
-            df.to_csv('Logs_DF.csv', mode='a', index=False, header=False)
+            df.to_csv(log_df, mode='a', index=False, header=False)
         except UnboundLocalError:
             pass
         except NameError:
@@ -274,42 +283,54 @@ def run(driver, year, range_lst):
             continue
 
 
-    df.to_csv('Logs_DF.csv', mode='a', index=False, header=False)
-
-def get_missing_cases(driver, year, read_df):
-    missing_cases = set()
-    cases_names = set()
-    read_df.drop_duplicates(keep='last',inplace=True)
-    read_df['סכימת שגיאות'] = 6 -(read_df[['קישור נפתח', 'תיק נמצא', 'ניסיון להורדת ההחלטות', 'הצלחה בהורדת ההחלטות', 'ניסיון להורדת מטא-דאטה', 'הצלחה בהורדת מטא-דאטה']].sum(axis=1))
-
+    df.to_csv(log_df, mode='a', index=False, header=False)
+def get_lists():
+    missing_cases,cases_names  = set(),set()
+    read_df = readANDsave_df()
     for ind in read_df.index:
-        case_name = read_df['מספר הליך'][ind]
-        case_num = int(case_name[:case_name.find("/")])
-        # print(case_num)
-        if(read_df['סכימת שגיאות'][ind]>5):
-            missing_cases.add(case_num)
+        try:
+            case_name = read_df['מספר הליך'][ind]
+            case_num = int(case_name[:case_name.find("/")])
+            # print(case_num)
+            if(read_df['סכימת שגיאות'][ind]>5):
+                missing_cases.add(case_num)
+                continue
+
+            cases_names.add(case_num)
+        except ValueError:
+            print("Value error on case_name = ", case_name ,"\n case num = ",case_num)
             continue
+    return missing_cases,cases_names
 
-        cases_names.add(case_num)
+def get_missing_cases(driver, year):
+        for I in range(3):
+            print("Crawling missing cases of year: ", year)
+            missing_cases, cases_names = get_lists()
+            print("the were found ", len(missing_cases), " missing cases!")
+            for con in range(1,len(cases_names)):
+                if con not in cases_names: missing_cases.add(con)
 
-    print(len(cases_names))
-    print("last = ",cases_names.pop())
-    print("length = ", len(cases_names))
-    for con in range(1,len(cases_names)):
-        if con not in cases_names: missing_cases.add(con)
+            print(missing_cases)
+            if(len(missing_cases)==0): break
+            run(driver, year, list(missing_cases))
+            missing_cases, cases_names = get_lists()
+            print("After running the missed cases again, there were left ", len(missing_cases))
+            print(missing_cases)
+            print("Done crawling missing cases for round ", I)
+            print("The were left ",len(missing_cases), " cases")
+        return missing_cases
 
-    print(missing_cases)
-    run(driver, year, list(missing_cases))
-
-
-
+already_crawled = [2011]
 for year in Years_and_Nums.keys(): # CURR -> 2011 ONLY
-    run(driver, year, range(9775,Years_and_Nums[year]+1))
+    if(year in already_crawled):
+        missing_cases = get_missing_cases(driver, year)
+        continue
+    readANDsave_df()
+    run(driver, year, range(1,Years_and_Nums[year]+1)) #################
 
     ################################################
-    read_df = pd.read_csv(log_df)
-    read_df = read_df.drop_duplicates(keep='last')
-    missing_cases = get_missing_cases(driver, year, read_df)
+    missing_cases = get_missing_cases(driver, year)
+    already_crawled.append(year)
 
 #################################################
 # Logs_DF = pd.DataFrame(columns=Logs_list[0].keys())
