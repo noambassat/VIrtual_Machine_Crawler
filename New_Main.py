@@ -54,13 +54,19 @@ Logs_list = []
 Years_and_Nums = {2011: 9775, 2012: 9492, 2013: 8916, 2014: 9032} # { year_num : num_of_cases }
 
 driver = webdriver.Chrome(exe_path, options=options)
-def readANDsave_df():
+def readANDsave_df(year):
     read_df = pd.read_csv(log_df)
 
     read_df.drop_duplicates(subset=['מספר הליך'], keep='last',inplace=True)
-    read_df.to_csv(log_df, index=False)
+
 
     read_df['סכימת שגיאות'] = 6 -(read_df[['קישור נפתח', 'תיק נמצא', 'ניסיון להורדת ההחלטות', 'הצלחה בהורדת ההחלטות', 'ניסיון להורדת מטא-דאטה', 'הצלחה בהורדת מטא-דאטה']].sum(axis=1))
+    # print(int(read_df.iloc[-1, 0][:read_df.iloc[-1, 0].find("/")]))
+    # if(int(read_df.iloc[-1, 0][:read_df.iloc[-1, 0].find("/")])>Years_and_Nums[year] and int(read_df.iloc[-1,-1])>5):
+    #     print("deleting ",read_df.iloc[-1, 0])
+    #     read_df = read_df.drop(read_df.index[-1],inplace=True)
+    read_df.to_csv(log_df, index=False)
+
     return read_df
 
 
@@ -106,6 +112,8 @@ def run(driver, year, range_lst):
                 print("UnexpectedAlertPresentException!!!")
                 curr_case["קישור נפתח"] = False
                 continue
+            curr_case["קישור נפתח"] = True
+
 
             try:
                 if (counter > Years_and_Nums[year]):
@@ -116,7 +124,7 @@ def run(driver, year, range_lst):
                         driver.quit()
                         driver = webdriver.Chrome(exe_path, options=options)
                     curr_case["תיק נמצא"] = False
-                    print("Could not find the case!")
+                    print("Could not find the case! case number ", counter)
                     print("Trying again ...")
                     continue
             except AttributeError:
@@ -140,6 +148,15 @@ def run(driver, year, range_lst):
                 try:
                     myElem = WebDriverWait(driver, 5).until(EC.presence_of_element_located((By.ID, 'row_0')))
                 except TimeoutException:
+
+                    try:
+                        if ((soup.find("div", {"class": "col-md-11"}).text).find(" 0 מסמכים לפרמטרים") != -1):
+                            curr_case["תיק נמצא"] = False
+                            print("Couldn't find the case: ", counter)
+                            flag = 1
+                            break
+                    except AttributeError:
+                        pass
                     if cont == 4:
                         print("Loading took too much time! ID in the code not working!")
                         curr_case["תיק נמצא"] = False
@@ -157,6 +174,7 @@ def run(driver, year, range_lst):
                     curr_case["תיק נמצא"] = False
                     cont += 1
                     continue
+
                 cont = -1  # no errors - break out from while loop
             if (flag != 0):
                 ind += 1
@@ -286,7 +304,7 @@ def run(driver, year, range_lst):
     df.to_csv(log_df, mode='a', index=False, header=False)
 def get_lists():
     missing_cases,cases_names  = set(),set()
-    read_df = readANDsave_df()
+    read_df = readANDsave_df(year)
     for ind in read_df.index:
         try:
             case_name = read_df['מספר הליך'][ind]
@@ -309,10 +327,10 @@ def get_missing_cases(driver, year):
             print("the were found ", len(missing_cases), " missing cases!")
             for con in range(1,len(cases_names)):
                 if con not in cases_names: missing_cases.add(con)
-
+            missing_cases = sorted(missing_cases)
             print(missing_cases)
-            if(len(missing_cases)==0): break
-            run(driver, year, list(missing_cases))
+            if(len(missing_cases)==5): break
+            run(driver, year, missing_cases)
             missing_cases, cases_names = get_lists()
             print("After running the missed cases again, there were left ", len(missing_cases))
             print(missing_cases)
@@ -325,7 +343,7 @@ for year in Years_and_Nums.keys(): # CURR -> 2011 ONLY
     if(year in already_crawled):
         missing_cases = get_missing_cases(driver, year)
         continue
-    readANDsave_df()
+    readANDsave_df(year)
     run(driver, year, range(1,Years_and_Nums[year]+1)) #################
 
     ################################################
