@@ -58,8 +58,10 @@ driver = webdriver.Chrome(exe_path, options=options)
 def run(driver, year, range_lst):
     ind, STOP = 0,0  # The Continuous number of each year
     while (STOP < 5):  # While the crawler didn't reach the case's limit number yet. 5 is the max errors that can be thrown.
-        if(ind>len(range_lst)): counter +=1
-        else: counter = range_lst[ind]
+        try:
+            counter = range_lst[ind]
+        except IndexError:
+            counter += 1
         try:
             df.to_csv('Logs_DF.csv', mode='a', index=False, header=False)
         except UnboundLocalError:
