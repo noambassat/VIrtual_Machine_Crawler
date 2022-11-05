@@ -302,14 +302,17 @@ def run(driver, year, range_lst):
 
 
     df.to_csv(log_df, mode='a', index=False, header=False)
-def get_lists():
+def get_lists(year):
     missing_cases,cases_names  = set(),set()
     read_df = readANDsave_df(year)
     for ind in read_df.index:
         try:
             case_name = read_df['מספר הליך'][ind]
             case_num = int(case_name[:case_name.find("/")])
+            YEAR = int(case_name[case_name.find("/")+1:])
+
             # print(case_num)
+            if(YEAR!=year): continue
             if(read_df['סכימת שגיאות'][ind]>5):
                 missing_cases.add(case_num)
                 continue
@@ -321,22 +324,27 @@ def get_lists():
     return missing_cases,cases_names
 
 def get_missing_cases(driver, year):
-        for I in range(3):
-            print("Crawling missing cases of year: ", year)
-            missing_cases, cases_names = get_lists()
-            print("the were found ", len(missing_cases), " missing cases!")
-            for con in range(1,len(cases_names)):
-                if con not in cases_names: missing_cases.add(con)
-            missing_cases = sorted(missing_cases)
-            print(missing_cases)
-            if(len(missing_cases)==5): break
-            run(driver, year, missing_cases)
-            missing_cases, cases_names = get_lists()
-            print("After running the missed cases again, there were left ", len(missing_cases))
-            print(missing_cases)
-            print("Done crawling missing cases for round ", I)
-            print("The were left ",len(missing_cases), " cases")
-        return missing_cases
+    temp_amount = 250000
+    for I in range(3):
+        print("Crawling missing cases of year: ", year)
+        missing_cases, cases_names = get_lists(year)
+        if(temp_amount==len(missing_cases)):
+            print(f"same amount as before. {len(missing_cases)}.. continue crawling")
+            return missing_cases
+        temp_amount = len(missing_cases)
+        print("there were found ", len(missing_cases), " missing cases!")
+        for con in range(1,len(cases_names)):
+            if con not in cases_names: missing_cases.add(con)
+        missing_cases = sorted(missing_cases)
+        print(missing_cases)
+        if(len(missing_cases)==5): break
+        run(driver, year, missing_cases)
+        missing_cases, cases_names = get_lists(year)
+        print("After running the missed cases again, there were left ", len(missing_cases))
+        print(missing_cases)
+        print("Done crawling missing cases for round ", I)
+        print("The were left ",len(missing_cases), " cases")
+    return missing_cases
 
 already_crawled = [2011]
 for year in Years_and_Nums.keys(): # CURR -> 2011 ONLY
