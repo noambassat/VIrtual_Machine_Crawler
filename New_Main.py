@@ -292,7 +292,7 @@ def get_missing_cases(driver, year, read_df):
         if con not in cases_names: missing_cases.add(con)
 
     print(missing_cases)
-    run(driver, year, missing_cases)
+    run(driver, year, list(missing_cases))
 
 
 
