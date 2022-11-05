@@ -312,7 +312,7 @@ def get_lists(year):
             YEAR = int(case_name[case_name.find("/")+1:])
 
             # print(case_num)
-            if(YEAR!=year): continue
+            if(YEAR!=year): continue ################################# year != year -> בדיקה אחרי כל שנה.
             if(read_df['סכימת שגיאות'][ind]>5):
                 missing_cases.add(case_num)
                 continue
