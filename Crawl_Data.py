@@ -269,8 +269,8 @@ def CrawlTopWindow(CASE, LINK, Type, dict,case_name_num):
     return new_dict
 
 def Crawl_Decisions(driver, CASE):
+
     CASE_NUM = CASE[67:67 + 4] + "/" + CASE[64:64 + 2]
-    print(CASE_NUM)
     try:
         # driver = webdriver.Chrome(exe_path, options=options)
         driver.get(CASE)

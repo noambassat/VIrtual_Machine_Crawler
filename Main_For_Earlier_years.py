@@ -1,5 +1,5 @@
-import time
 import Crawl_Data
+import time
 from bs4 import BeautifulSoup
 from datetime import datetime
 import pandas as pd
@@ -25,10 +25,10 @@ global filePath,DT_path, exe_path, Years_and_Nums,Logs_list
 
 
 # Paths
-filePath = '/home/ubuntu/PycharmProjects/pythonProject5/NewMain/Json_Files/'
+filePath = '/home/ubuntu/PycharmProjects/pythonProject5/NewMain/Json_Files_2005/'
 DT_path = '/home/ubuntu/PycharmProjects/pythonProject5/NewMain/DataFrames/'
 exe_path = '/home/ubuntu/PycharmProjects/pythonProject5/chromedriver'
-log_df = 'Logs_DF.csv'
+log_df = 'Logs_DF_2005.csv'
 
 warnings.simplefilter(action='ignore', category=(FutureWarning, DeprecationWarning))
 START_RUN_TIME = datetime.now()
@@ -52,7 +52,7 @@ START_TIME = datetime.now()
 Log_DF = pd.DataFrame()
 # Full_Log_Dict = {}
 Logs_list = []
-Years_and_Nums = {2011: 9775, 2012: 9492, 2013: 8916, 2014: 9032} # { year_num : num_of_cases }
+Years_and_Nums = {2005: 9775} # { year_num : num_of_cases }
 
 driver = webdriver.Chrome(exe_path, options=options)
 def readANDsave_df(year):
@@ -73,8 +73,8 @@ def readANDsave_df(year):
 
 def run(driver, year, range_lst):
     ind, STOP = 0,0  # The Continuous number of each year
-    if(year==2012): ind = 3195 ##############################
     while (STOP < 5):  # While the crawler didn't reach the case's limit number yet. 5 is the max errors that can be thrown.
+        if(ind>20): break
         try:
             counter = range_lst[ind]
         except IndexError:
