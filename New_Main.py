@@ -114,6 +114,10 @@ def run(driver, year, range_lst):
                 print("UnexpectedAlertPresentException!!!")
                 curr_case["קישור נפתח"] = False
                 continue
+            except TypeError:
+                print("TypeError!!!")
+                curr_case["קישור נפתח"] = False
+                continue
             curr_case["קישור נפתח"] = True
 
 
