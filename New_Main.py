@@ -73,7 +73,6 @@ def readANDsave_df(year):
 
 def run(driver, year, range_lst):
     ind, STOP = 0,0  # The Continuous number of each year
-    if(year==2012): ind = 3195 ##############################
     while (STOP < 5):  # While the crawler didn't reach the case's limit number yet. 5 is the max errors that can be thrown.
         try:
             counter = range_lst[ind]
@@ -85,6 +84,7 @@ def run(driver, year, range_lst):
             pass
         except NameError:
             pass
+
         try:
             Case_Link = Crawl_Data.get_url(year, counter)
             curr_case = {"מספר הליך": "%d/%d" % (counter, year), "קישור לתיק": Case_Link, "קישור נפתח": False,
@@ -101,7 +101,10 @@ def run(driver, year, range_lst):
                 print(str(wde), "\n", Case_Link)
                 curr_case["קישור נפתח"] = False
                 continue
-
+            except UnboundLocalError as ULE:
+                print("couldn't crawl data")
+                curr_case["קישור נפתח"] = False
+                continue
             curr_case["קישור נפתח"] = True
 
             ##########################
@@ -208,7 +211,10 @@ def run(driver, year, range_lst):
                         curr_case["הצלחה בהורדת ההחלטות"] = False
                         print(error)
                         continue
-
+                    except UnboundLocalError as ULE:
+                        print("couldn't crawl data")
+                        curr_case["הצלחה בהורדת ההחלטות"] = False
+                        continue
                     break
 
                 if (len(dec_df) == 0):
@@ -246,8 +252,15 @@ def run(driver, year, range_lst):
                             driver.get(Case_Link)
                             time.sleep(1)
                         if(case_full_name!=0):break
-                    data = Crawl_Data.CrawlTopWindow(Case_Link, LINK, conclusion, dict,
+                    try:
+                        data = Crawl_Data.CrawlTopWindow(Case_Link, LINK, conclusion, dict,
                                                      case_full_name)  # Gets the upper window
+                        continue
+                    except UnboundLocalError as ULE:
+                        print("couldn't crawl data")
+                        curr_case["הצלחה בהורדת ההחלטות"] = False
+                        data = 0
+                        continue
                 # print("check type the len: ",type(data))
 
                 except OSError as error:
@@ -260,6 +273,12 @@ def run(driver, year, range_lst):
                         print(error)
                         curr_case["הצלחה בהורדת מטא-דאטה"] = False
                         data = 0
+                        continue
+                    except UnboundLocalError as ULE:
+                        print("couldn't crawl data")
+                        curr_case["הצלחה בהורדת ההחלטות"] = False
+                        data = 0
+                        continue
 
                 try:
                     if (len(data) < 2):
@@ -334,8 +353,9 @@ def get_lists(year):
     return missing_cases,cases_names
 
 def get_missing_cases(driver, year):
-
-    for I in range(3):
+    temp_len = 20000
+    flag = 0
+    for I in range(5):
         print("Crawling missing cases of year: ", year)
         missing_cases, cases_names = get_lists(year)
         print("there were found ", len(missing_cases), " missing cases!")
@@ -344,6 +364,9 @@ def get_missing_cases(driver, year):
         missing_cases = sorted(missing_cases)
         print(missing_cases)
         if(len(missing_cases)==5): break
+        if (len(missing_cases) == temp_len and flag == 0): break
+        elif(len(missing_cases)==temp_len): flag = 1
+        temp_len = len(missing_cases)
         run(driver, year, missing_cases)
         missing_cases, cases_names = get_lists(year)
         print("After running the missed cases again, there were left ", len(missing_cases))
@@ -352,10 +375,15 @@ def get_missing_cases(driver, year):
         print("The were left ",len(missing_cases), " cases")
     return missing_cases
 
-already_crawled = [2011]
-for year in Years_and_Nums.keys(): # CURR -> 2011 ONLY
-    if(year in already_crawled): continue
-        # missing_cases = get_missing_cases(driver, year)
+already_crawled = [2011,2012]
+for year in Years_and_Nums.keys():
+    if(year == 2012):
+        missing_cases = get_missing_cases(driver, year)
+        already_crawled.append(year)
+    if(year in already_crawled):
+        continue
+
+        # continue
 
     readANDsave_df(year)
     run(driver, year, range(1,Years_and_Nums[year]+1)) #################
