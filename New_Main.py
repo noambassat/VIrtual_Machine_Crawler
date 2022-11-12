@@ -187,6 +187,29 @@ def run(driver, year, range_lst):
             START_CURR_TIME = datetime.now()
 
             try:
+
+                curr_case["ניסיון להורדת מטא-דאטה"] = True
+                for t in range(2):
+                    try:
+                        print(soup.find("div", {"class": "ng-scope"}).text)
+                        time.sleep(1)
+                        name_on_page = soup.find("h2", {"class": "ng-binding"})
+                        name_on_page = name_on_page.text
+
+                        case_full_name = ""
+                        for i, word in enumerate(name_on_page.split(" ")):
+                            if (i == 1):
+                                case_full_name += word
+                                break
+                            case_full_name += word + " "
+
+                    except AttributeError:
+                        print("couldn't find case's name")
+                        case_full_name = name_on_page
+                        driver.get(Case_Link)
+                    if (not (case_full_name is None)):
+                        print("Found! case name = ", case_full_name)
+                        break
                 new_driver_flag = 0
                 for I in range(3):
                     if(I==3):
@@ -226,41 +249,18 @@ def run(driver, year, range_lst):
 
                 print("The len of decisions table: ", len(dec_df))
 
+
                 try:
+                    data = Crawl_Data.CrawlTopWindow(Case_Link, LINK, conclusion, dict,
+                                                 case_full_name)  # Gets the upper window
 
-                    curr_case["ניסיון להורדת מטא-דאטה"] = True
-                    for t in range(2):
-                        try:
-                            print(soup.find("div",{"class":"ng-scope"}).text)
-                            time.sleep(1)
-                            name_on_page = soup.find("h2", {"class": "ng-binding"})
-                            name_on_page = name_on_page.text
-
-                            case_full_name = ""
-                            for i, word in enumerate(name_on_page.split(" ")):
-                                if (i == 1):
-                                    case_full_name += word
-                                    break
-                                case_full_name += word + " "
-
-                        except AttributeError:
-                            print("couldn't find case's name")
-                            case_full_name = name_on_page
-                            driver.get(Case_Link)
-                        if (not (case_full_name is None)):
-                            print("Found! case name = ", case_full_name)
-                            break
-                    try:
-                        data = Crawl_Data.CrawlTopWindow(Case_Link, LINK, conclusion, dict,
-                                                     case_full_name)  # Gets the upper window
-
-                    except UnboundLocalError as ULE:
-                        print(ULE)
-                        print("couldn't crawl data")
-                        curr_case["הצלחה בהורדת ההחלטות"] = False
-                        data = 0
-                        continue
-                # print("check type the len: ",type(data))
+                except UnboundLocalError as ULE:
+                    print(ULE)
+                    print("couldn't crawl data")
+                    curr_case["הצלחה בהורדת ההחלטות"] = False
+                    data = 0
+                    continue
+            # print("check type the len: ",type(data))
 
                 except OSError as error:
                     print("OS Error, on CrawlTopWindow, error num:", I + 1)
