@@ -67,7 +67,7 @@ def readANDsave_df(year):
 def run(driver, year, range_lst):
 
     ind, STOP = -1,0  # The Continuous number of each year
-    if(year == 2013): ind = 701
+    if(year == 2013): ind = 708
     while (STOP < 5):  # While the crawler didn't reach the case's limit number yet. 5 is the max errors that can be thrown.
         try:
             ind += 1
