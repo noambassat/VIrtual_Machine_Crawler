@@ -65,8 +65,9 @@ def readANDsave_df(year):
 
 
 def run(driver, year, range_lst):
+
     ind, STOP = -1,0  # The Continuous number of each year
-    if(year == 2013): ind = 15
+    if(year == 2013): ind = 701
     while (STOP < 5):  # While the crawler didn't reach the case's limit number yet. 5 is the max errors that can be thrown.
         try:
             ind += 1
@@ -191,7 +192,7 @@ def run(driver, year, range_lst):
                 curr_case["ניסיון להורדת מטא-דאטה"] = True
                 for t in range(2):
                     try:
-                        print(soup.find("div", {"class": "ng-scope"}).text)
+                        # print(soup.find("div", {"class": "ng-scope"}).text)
                         time.sleep(1)
                         name_on_page = soup.find("h2", {"class": "ng-binding"})
                         name_on_page = name_on_page.text
@@ -206,13 +207,20 @@ def run(driver, year, range_lst):
                     except AttributeError:
                         print("couldn't find case's name")
                         case_full_name = name_on_page
-                        driver.get(Case_Link)
+                        try:
+                            driver.get(Case_Link)
+                        except WebDriverException:
+                            driver.quit()
+                            driver = webdriver.Chrome(exe_path, options=options)
+                            driver.get(Case_Link)
+
                     if (not (case_full_name is None)):
                         print("Found! case name = ", case_full_name)
                         break
                 new_driver_flag = 0
                 for I in range(3):
                     if(I==3):
+
                         driver.quit()
                         driver = webdriver.Chrome(exe_path, options=options)
                         driver.get(Case_Link)
