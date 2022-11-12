@@ -11,7 +11,7 @@ from requests.packages.urllib3.util.retry import Retry
 
 import http.client
 import urllib.parse
-API_KEY = "4AcAfWEcuu9LzMeCiM4brs5XaBhGrKFT"
+API_KEY = "2APAwmdKRCzXbasu1TrBhlvbMoMqk5nI"
 
 def cleanTXT(txt):
 
@@ -188,26 +188,44 @@ def two_cases(soup):
             count_zero = 0
         print((sec))
 
-def HTML_CRAWLER(link):
+def HTML_CRAWLER(year, link):
     two_cases_bool = False
     try:
+
         conn = http.client.HTTPSConnection("api.webscrapingapi.com")
+
         src = "/v1?url=" + (urllib.parse.quote(link, safe="")) + "&api_key="+API_KEY+"&device=desktop&proxy_type=datacenter&render_js=1&wait_until=domcontentloaded&timeout=30000"
 
         conn.request("GET", src)
         res = conn.getresponse()
         data = res.read()
         html_content = (data.decode("utf-8"))
+
     except OSError:
         print("OSERROR IN CRAWL HTML")
     if (len(html_content)<5): print("HTML CRAWEL GOT LEN LOWER THAN 5!!!", html_content)
 
 
     soup = BeautifulSoup(html_content, 'html.parser')
+    if(int(year)<2006):
+        Soup = str(soup).replace("windows-1255", "utf8")
+        soup = BeautifulSoup(Soup, "html.parser")
+        print(soup)
+
+    # if(int(year)<2006):
+    #     soup = str(soup).replace("windows-1255", "utf8")
+    #     soup = BeautifulSoup(soup, features="html.parser")
+
     for I in range(2):
         try:
+            try:
+                if(soup.text.find('status_code": 404')!=-1):
+                    print("found error 404 - page does not exist!!! ", link)
+                    return {"אין מסמכים להצגה":True}
+            except:
+                pass
+
             if (len(soup.findAll('p', {"class": "FileNumber"})) > 1):
-                print(link)
                 # two_cases(soup)
                 two_cases_bool = True
                 #return two_cases(soup)
@@ -224,7 +242,12 @@ def HTML_CRAWLER(link):
     #     pass
 
     one = get_dict(dirs)
-    one["כל קוד הטמל"] = str(soup)
+    str_soup = str(soup)
+    if(str(soup).find("windows-1255")):
+        str_soup = str_soup.replace("windows-1255","utf8")
+        print("replaced decoding to utf8!")
+        print(link)
+    one["כל קוד הטמל"] = str_soup
     one["מסמך מאוחד"] = two_cases_bool
 
     return {**get_dict(dirs_1), **one}

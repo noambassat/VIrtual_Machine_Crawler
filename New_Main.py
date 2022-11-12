@@ -39,14 +39,7 @@ options = Options()
 PROXY = "5.79.66.2:13081"
 options.add_argument('--proxy-server=%s' % PROXY)
 
-""""
-IMPORTANT LOGICAL LINKS:
-    src = "https://elyon2.court.gov.il/Scripts9/mgrqispi93.dll?Appname=eScourt&Prgname=GetFileDetails_for_new_site&Arguments=-N" \
-          + YEAR + add_case + "-0"  ---> FOR CRAWLING TOP WINDOW
 
-
-    Case_Link = "https://supremedecisions.court.gov.il/Verdicts/Results/1/null/"+ str(year) +"/" + str(case_num) +"/1/8/null/null/null"
-"""
 START_TIME = datetime.now()
 
 Log_DF = pd.DataFrame()
@@ -72,9 +65,11 @@ def readANDsave_df(year):
 
 
 def run(driver, year, range_lst):
-    ind, STOP = 0,0  # The Continuous number of each year
+    ind, STOP = -1,0  # The Continuous number of each year
+    if(year == 2013): ind = 15
     while (STOP < 5):  # While the crawler didn't reach the case's limit number yet. 5 is the max errors that can be thrown.
         try:
+            ind += 1
             counter = range_lst[ind]
         except IndexError:
             counter += 1
@@ -151,6 +146,7 @@ def run(driver, year, range_lst):
             curr_case["תיק נמצא"] = True
             curr_case["קישור נפתח"] = True
             # At least 2 secs must be waiting in order to load the webpage
+            time.sleep(2)
             cont = 0
             flag = 0
             while 0 <= cont < 5:
@@ -185,9 +181,7 @@ def run(driver, year, range_lst):
                     continue
 
                 cont = -1  # no errors - break out from while loop
-            if (flag != 0):
-                ind += 1
-                continue
+            if (flag != 0): continue
             print("Time until now (get webdriver) is: ", datetime.now() - START_TIME)
 
             START_CURR_TIME = datetime.now()
@@ -237,7 +231,10 @@ def run(driver, year, range_lst):
                     curr_case["ניסיון להורדת מטא-דאטה"] = True
                     for t in range(2):
                         try:
-                            name_on_page = soup.find("h2", {"class": "ng-binding"}).text
+                            print(soup.find("div",{"class":"ng-scope"}).text)
+                            time.sleep(1)
+                            name_on_page = soup.find("h2", {"class": "ng-binding"})
+                            name_on_page = name_on_page.text
 
                             case_full_name = ""
                             for i, word in enumerate(name_on_page.split(" ")):
@@ -246,17 +243,19 @@ def run(driver, year, range_lst):
                                     break
                                 case_full_name += word + " "
 
-                            print(case_full_name)
                         except AttributeError:
-                            case_full_name = ""
+                            print("couldn't find case's name")
+                            case_full_name = name_on_page
                             driver.get(Case_Link)
-                            time.sleep(1)
-                        if(case_full_name!=0):break
+                        if (not (case_full_name is None)):
+                            print("Found! case name = ", case_full_name)
+                            break
                     try:
                         data = Crawl_Data.CrawlTopWindow(Case_Link, LINK, conclusion, dict,
                                                      case_full_name)  # Gets the upper window
-                        continue
+
                     except UnboundLocalError as ULE:
+                        print(ULE)
                         print("couldn't crawl data")
                         curr_case["הצלחה בהורדת ההחלטות"] = False
                         data = 0
@@ -319,7 +318,6 @@ def run(driver, year, range_lst):
             print("Time until now current case (Done downloading current file) is: ",
                   datetime.now() - START_CURR_TIME)
 
-            ind += 1
             df = pd.DataFrame(curr_case, index=[0])
 
             Logs_list.append(curr_case)
@@ -377,19 +375,15 @@ def get_missing_cases(driver, year):
 
 already_crawled = [2011,2012]
 for year in Years_and_Nums.keys():
-    if(year == 2012):
-        missing_cases = get_missing_cases(driver, year)
-        already_crawled.append(year)
-    if(year in already_crawled):
-        continue
 
-        # continue
+    if(year in already_crawled): continue
 
     readANDsave_df(year)
     run(driver, year, range(1,Years_and_Nums[year]+1)) #################
 
     ################################################
-    missing_cases = get_missing_cases(driver, year)
+    for i in range(2):
+        missing_cases = get_missing_cases(driver, year)
     already_crawled.append(year)
 
 #################################################

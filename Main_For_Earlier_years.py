@@ -73,8 +73,9 @@ def readANDsave_df(year):
 
 def run(driver, year, range_lst):
     ind, STOP = 0,0  # The Continuous number of each year
+    if(year==2005): ind = 3
     while (STOP < 5):  # While the crawler didn't reach the case's limit number yet. 5 is the max errors that can be thrown.
-        if(ind>20): break
+        if(ind>40): break
         try:
             counter = range_lst[ind]
         except IndexError:
@@ -228,7 +229,7 @@ def run(driver, year, range_lst):
                     for t in range(2):
                         try:
                             name_on_page = soup.find("h2", {"class": "ng-binding"}).text
-
+                            print("the name on page: ", name_on_page)
                             case_full_name = ""
                             for i, word in enumerate(name_on_page.split(" ")):
                                 if (i == 1):
@@ -349,7 +350,7 @@ def get_missing_cases(driver, year):
     return missing_cases
 
 already_crawled = [2011]
-for year in Years_and_Nums.keys(): # CURR -> 2011 ONLY
+for year in Years_and_Nums.keys():
     if(year in already_crawled): continue
         # missing_cases = get_missing_cases(driver, year)
 

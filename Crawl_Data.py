@@ -5,6 +5,7 @@ from selenium.common.exceptions import TimeoutException
 from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.common.by import By
 import http.client
+import ssl
 import urllib.parse
 import parser
 import datetime
@@ -26,7 +27,7 @@ disable_warnings(InsecureRequestWarning)
 
 
 global API_KEY,filePath,DT_path, exe_path
-API_KEY = "4AcAfWEcuu9LzMeCiM4brs5XaBhGrKFT"
+API_KEY = "2APAwmdKRCzXbasu1TrBhlvbMoMqk5nI"
 # Paths
 filePath = '/home/ubuntu/PycharmProjects/pythonProject5/NewMain/Json_Files/'
 DT_path = '/home/ubuntu/PycharmProjects/pythonProject5/NewMain/DataFrames/'
@@ -78,7 +79,9 @@ def Get_Text(link):
                                            safe="")) + "&api_key="+API_KEY+"&device=desktop&proxy_type=datacenter&render_js=1&wait_until=domcontentloaded&timeout=30000"
 
     conn.request("GET", src)
+
     res = conn.getresponse()
+    print(res)
     data = res.read()
 
     html_content = (data.decode("utf-8"))
@@ -98,7 +101,7 @@ def Get_LINK(df):  # רק פסק-דין או החלטה אחרונה כרגע
     return LINK, Type
 
 
-def crawl_HTML( data, link, Type):
+def crawl_HTML(year, data, link, Type):
     # sess1 = requests.Session()
     # proxies = {"http": "http://5.79.66.2:13081", "https": "https://5.79.66.2:13081"}
 
@@ -118,7 +121,7 @@ def crawl_HTML( data, link, Type):
     except OSError:
         print("OSError from crawl_html func")
     SOUP = BeautifulSoup(html_content, 'html.parser')
-    data_dict = parser.HTML_CRAWLER(link)
+    data_dict = parser.HTML_CRAWLER(year, link)
     if (data_dict == 0): data_dict = {}
     data_dict['סוג מסמך'] = Type
     data_dict['מסמך מלא'] = cleanTXT(SOUP.text.replace('\n\n', ' ').replace(u'\xa0', u' '))
@@ -126,7 +129,6 @@ def crawl_HTML( data, link, Type):
     conclusion = ""
     for row in SOUP.findAll("p", {"class": "Ruller4"}): conclusion += cleanTXT(row.text)
     data_dict["סיכום מסמך"] = cleanTXT(conclusion)
-
     return data_dict
 
 
@@ -158,18 +160,22 @@ def CrawlTopWindow(CASE, LINK, Type, dict,case_name_num):
           + YEAR + add_case + "-0"
 
     try:
+
         conn = http.client.HTTPSConnection("api.webscrapingapi.com")
         src = "/v1?url=" + (urllib.parse.quote(src, safe="")) + "&api_key="+API_KEY+"&device=desktop&proxy_type=datacenter&render_js=1&wait_until=domcontentloaded&timeout=30000"
+
         conn.request("GET", src)
+
         res = conn.getresponse()
         data = res.read()
 
         html_content = (data.decode("utf-8"))
 
     except OSError as err:
-
+        print(err)
         print("OS ERROR IN CRAWL TOP WINDOW!")
         print(err)
+        return 0
 
     if(len(html_content)<1): print("the len is lower than !!!!!", html_content)
 
@@ -254,8 +260,14 @@ def CrawlTopWindow(CASE, LINK, Type, dict,case_name_num):
 
     except KeyError:
         print("KEY ERROR ...")
+    except AttributeError:
+        all_data['מספר תיק מלא'] = ""
+        all_data['מספר תיק'] = ""
+        all_data['ראשי תיבות תיק'] = ""
+        all_data['שנת תיק'] = ""
+        all_data['תא"ריך יצוא התיק'] = str(datetime.datetime.now().date())
     print("crawling top window ...")
-    doc = [crawl_HTML( all_data, LINK, Type)]  # רשימת מסמכי הHTML , כרגע רק 1
+    doc = [crawl_HTML(YEAR,all_data, LINK, Type)]  # רשימת מסמכי הHTML , כרגע רק 1
     counter = 0
     other_docs = []
     for row in dict.values():
