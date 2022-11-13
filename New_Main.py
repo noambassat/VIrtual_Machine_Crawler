@@ -16,7 +16,7 @@ from selenium.common.exceptions import UnexpectedAlertPresentException
 import Save_As_Json
 
 
-global filePath,DT_path, exe_path, Years_and_Nums,Logs_list
+
 # !/usr/bin/env python3 # -*- coding: utf-8 -*-
 
 
@@ -49,7 +49,7 @@ Years_and_Nums = {2011: 9775, 2012: 9492, 2013: 8916, 2014: 9032} # { year_num :
 
 driver = webdriver.Chrome(exe_path, options=options)
 def readANDsave_df(year):
-    read_df = pd.read_csv(log_df)
+    read_df = pd.read_csv(log_df, low_memory= False)
 
     read_df.drop_duplicates(subset=['מספר הליך'], keep='last',inplace=True)
 
@@ -67,7 +67,7 @@ def readANDsave_df(year):
 def run(driver, year, range_lst):
 
     ind, STOP = -1,0  # The Continuous number of each year
-    if(year == 2013): ind = 708
+    if(year == 2013): ind = 3240
     while (STOP < 5):  # While the crawler didn't reach the case's limit number yet. 5 is the max errors that can be thrown.
         try:
             ind += 1
@@ -152,7 +152,8 @@ def run(driver, year, range_lst):
             flag = 0
             while 0 <= cont < 5:
                 try:
-                    myElem = WebDriverWait(driver, 5).until(EC.presence_of_element_located((By.ID, 'row_0')))
+                    myElem = WebDriverWait(driver, 3).until(EC.presence_of_element_located((By.ID, 'row_0')))
+                    myElem_2 = WebDriverWait(driver, 3).until(EC.presence_of_element_located((By.CLASS_NAME, 'ng-binding')))
                 except TimeoutException:
 
                     try:

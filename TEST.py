@@ -1,13 +1,14 @@
-
+import json
+import html
 import http.client
 import urllib.parse
 import time
 from bs4 import BeautifulSoup
+import Save_As_Json
 YEAR = str(2012)
+filePath ='Temp_json/'
 add_case = "480"
-src ="https://elyon2.court.gov.il/Scripts9/mgrqispi93.dll?Appname=eScourt&Prgname=GetFileDetails_for_new_site&Arguments=-N" \
-          + YEAR + add_case + "-0"
-src = "https://supremedecisions.court.gov.il/Home/Download?path=HebrewVerdicts/12/800/004/e01&fileName=12004800_e01.txt&type=2"
+src = "https://supremedecisions.court.gov.il/Verdicts/Search/1"
 print(src)
 API_KEY = "2APAwmdKRCzXbasu1TrBhlvbMoMqk5nI"
 conn = http.client.HTTPSConnection("api.webscrapingapi.com")
@@ -29,19 +30,36 @@ html_content = (data.decode("utf-8"))
 soup = BeautifulSoup(html_content, 'html.parser')
 soup = str(soup).replace("windows-1255","utf8")
 soup = BeautifulSoup(soup, features="html.parser")
-print(soup)
+soups = soup.findAll("div")
+for i, so in enumerate(soups):
+    print(so)
+# S = soup.find("div",{"class":"ng-scope"})
+# print(S)
+# s = S.find("div",{"class":"searchBlock block-6"})
+# print(s)
+# Opening JSON file
+
+# Save_As_Json.writeToJsonFile(filePath,'Temp_Json', {soup})
 #
-# # tag to be replaced
-# old_tag = soup.charset
+# f = open('Temp_Json.json')
 #
+# # returns JSON object as
+# # a dictionary
+# data = json.load(f)
 #
+# # Closing file
+# f.close()
 #
-# # input string
-# old_tag.string = "utf8"
+# l1="מסמכים"
+# l2="פסק דין או החלטה אחרונה"
+# l3="כל קוד הטמל"
 #
-# '''replacing tag
-# #page_element.replace_with("string") removes a tag or string from the tree,
-# #and replaces it with the tag or string of your choice.'''
-# soup.i.replace_with(old_tag)
+# txt = data[l1][l2][0][l3]
+# txt1 = html.unescape(txt)
+# txt2=html.unescape(txt1)
 #
-# print(soup)
+# #print(txt2)
+#
+# f = open(filePath+'Temp_Json.json', "wt")
+# n = f.write(txt2)
+# f.close()
