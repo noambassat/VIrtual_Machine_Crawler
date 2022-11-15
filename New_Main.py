@@ -28,7 +28,7 @@ import Save_As_Json
 filePath = '/home/ubuntu/PycharmProjects/pythonProject5/NewMain/Json_Files/'
 DT_path = '/home/ubuntu/PycharmProjects/pythonProject5/NewMain/DataFrames/'
 exe_path = '/home/ubuntu/PycharmProjects/pythonProject5/chromedriver'
-log_df = 'Logs_DF.csv'
+log_df_path = '/home/ubuntu/PycharmProjects/pythonProject5/NewMain/Log_dfs/'
 
 warnings.simplefilter(action='ignore', category=(FutureWarning, DeprecationWarning))
 START_RUN_TIME = datetime.now()
@@ -45,10 +45,11 @@ START_TIME = datetime.now()
 Log_DF = pd.DataFrame()
 # Full_Log_Dict = {}
 Logs_list = []
-Years_and_Nums = {2011: 9775, 2012: 9492, 2013: 8916, 2014: 9032} # { year_num : num_of_cases }
+Years_and_Nums = {2011: 9775, 2012: 9492, 2013: 8916, 2014: 9032,2015:9110  } # { year_num : num_of_cases }
 
 driver = webdriver.Chrome(exe_path, options=options)
 def readANDsave_df(year):
+    log_df = log_df_path+'Logs_DF_'+ str(year)+".csv"
     read_df = pd.read_csv(log_df, low_memory= False)
 
     read_df.drop_duplicates(subset=['מספר הליך'], keep='last',inplace=True)
@@ -67,7 +68,7 @@ def readANDsave_df(year):
 def run(driver, year, range_lst):
 
     ind, STOP = -1,0  # The Continuous number of each year
-    if(year == 2013): ind = 3240
+    if(year == 2013): ind = 3880
     while (STOP < 5):  # While the crawler didn't reach the case's limit number yet. 5 is the max errors that can be thrown.
         try:
             ind += 1
@@ -75,6 +76,7 @@ def run(driver, year, range_lst):
         except IndexError:
             counter += 1
         try:
+            log_df = log_df_path + 'Logs_DF_' + str(year) + ".csv"
             df.to_csv(log_df, mode='a', index=False, header=False)
         except UnboundLocalError:
             pass
