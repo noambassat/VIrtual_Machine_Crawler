@@ -9,8 +9,7 @@ from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.common.by import By
 from selenium.common.exceptions import TimeoutException
 import warnings
-from selenium.common.exceptions import WebDriverException, InvalidSessionIdException, NoSuchElementException, \
-    UnexpectedAlertPresentException
+from selenium.common.exceptions import WebDriverException
 from selenium.webdriver.chrome.options import Options
 from selenium.common.exceptions import UnexpectedAlertPresentException
 import Save_As_Json
@@ -68,7 +67,7 @@ def readANDsave_df(year):
 def run(driver, year, range_lst):
 
     ind, STOP = -1,0  # The Continuous number of each year
-    if(year == 2013): ind = 3880
+    if(year == 2013): ind = 4197
     while (STOP < 5):  # While the crawler didn't reach the case's limit number yet. 5 is the max errors that can be thrown.
         try:
             ind += 1
@@ -97,6 +96,9 @@ def run(driver, year, range_lst):
                 driver.get(Case_Link)
             except WebDriverException as wde:
                 print(str(wde), "\n", Case_Link)
+                driver.quit()
+                driver = webdriver.Chrome(exe_path, options=options)
+                # driver.get(Case_Link)
                 curr_case["קישור נפתח"] = False
                 continue
             except UnboundLocalError as ULE:
@@ -165,6 +167,7 @@ def run(driver, year, range_lst):
                             flag = 1
                             break
                     except AttributeError:
+                        cont += 1
                         pass
                     if cont == 4:
                         print("Loading took too much time! ID in the code not working!")
@@ -192,7 +195,7 @@ def run(driver, year, range_lst):
 
             try:
 
-                curr_case["ניסיון להורדת מטא-דאטה"] = True
+                # curr_case["ניסיון להורדת מטא-דאטה"] = True
                 for t in range(2):
                     try:
                         # print(soup.find("div", {"class": "ng-scope"}).text)
@@ -220,7 +223,6 @@ def run(driver, year, range_lst):
                     if (not (case_full_name is None)):
                         print("Found! case name = ", case_full_name)
                         break
-                new_driver_flag = 0
                 for I in range(3):
                     if(I==3):
 
@@ -262,13 +264,14 @@ def run(driver, year, range_lst):
 
 
                 try:
+                    curr_case["ניסיון להורדת מטא-דאטה"] = True
                     data = Crawl_Data.CrawlTopWindow(Case_Link, LINK, conclusion, dict,
                                                  case_full_name)  # Gets the upper window
 
                 except UnboundLocalError as ULE:
                     print(ULE)
                     print("couldn't crawl data")
-                    curr_case["הצלחה בהורדת ההחלטות"] = False
+                    curr_case["הצלחה בהורדת מטא-דאטה"] = False
                     data = 0
                     continue
             # print("check type the len: ",type(data))
