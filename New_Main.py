@@ -44,7 +44,7 @@ START_TIME = datetime.now()
 Log_DF = pd.DataFrame()
 # Full_Log_Dict = {}
 Logs_list = []
-Years_and_Nums = {2011: 9775, 2012: 9492, 2013: 8916, 2014: 9032,2015:9110  } # { year_num : num_of_cases }
+Years_and_Nums = {2011: 9775, 2012: 9492, 2013: 8916, 2014: 9032,2015:9110, 2016:10237} # { year_num : num_of_cases }
 
 driver = webdriver.Chrome(exe_path, options=options)
 def readANDsave_df(year):
@@ -67,7 +67,7 @@ def readANDsave_df(year):
 def run(driver, year, range_lst):
 
     ind, STOP = -1,0  # The Continuous number of each year
-    if(year == 2013): ind = 4197
+    if(year == 2013): ind = 7291
     while (STOP < 5):  # While the crawler didn't reach the case's limit number yet. 5 is the max errors that can be thrown.
         try:
             ind += 1
@@ -115,6 +115,8 @@ def run(driver, year, range_lst):
                 soup = BeautifulSoup(driver.page_source, 'html.parser')
             except UnexpectedAlertPresentException:
                 print("UnexpectedAlertPresentException!!!")
+                driver.quit()
+                driver = webdriver.Chrome(exe_path, options=options)
                 curr_case["קישור נפתח"] = False
                 continue
             except TypeError:
