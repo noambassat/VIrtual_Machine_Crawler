@@ -24,10 +24,10 @@ import Save_As_Json
 
 
 # Paths
-filePath = '/home/ubuntu/PycharmProjects/pythonProject5/NewMain/Json_Files/'
-DT_path = '/home/ubuntu/PycharmProjects/pythonProject5/NewMain/DataFrames/'
+filePath = '/home/ubuntu/PycharmProjects/VIrtual_Machine_Crawler/Json_Files/'
+DT_path = '/home/ubuntu/PycharmProjects/VIrtual_Machine_Crawler/DataFrames/'
 exe_path = '/home/ubuntu/PycharmProjects/pythonProject5/chromedriver'
-log_df_path = '/home/ubuntu/PycharmProjects/pythonProject5/NewMain/Log_dfs/'
+log_df_path = '/home/ubuntu/PycharmProjects/VIrtual_Machine_Crawler/Log_dfs/'
 
 warnings.simplefilter(action='ignore', category=(FutureWarning, DeprecationWarning))
 START_RUN_TIME = datetime.now()

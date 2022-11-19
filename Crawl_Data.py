@@ -29,8 +29,8 @@ disable_warnings(InsecureRequestWarning)
 global API_KEY,filePath,DT_path, exe_path
 API_KEY = "2APAwmdKRCzXbasu1TrBhlvbMoMqk5nI"
 # Paths
-filePath = '/home/ubuntu/PycharmProjects/pythonProject5/NewMain/Json_Files/'
-DT_path = '/home/ubuntu/PycharmProjects/pythonProject5/NewMain/DataFrames/'
+filePath = '/home/ubuntu/PycharmProjects/VIrtual_Machine_Crawler/Json_Files/'
+DT_path = '/home/ubuntu/PycharmProjects/VIrtual_Machine_Crawler/DataFrames/'
 exe_path = '/home/ubuntu/PycharmProjects/pythonProject5/chromedriver'
 
 
