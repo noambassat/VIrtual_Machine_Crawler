@@ -67,7 +67,7 @@ def readANDsave_df(year):
 def run(driver, year, range_lst):
 
     ind, STOP = -1,0  # The Continuous number of each year
-    if(year == 2013): ind = 7291
+    # if(year == 2013): ind = 7291
     while (STOP < 5):  # While the crawler didn't reach the case's limit number yet. 5 is the max errors that can be thrown.
         try:
             ind += 1
@@ -391,6 +391,10 @@ def get_missing_cases(driver, year):
 
 already_crawled = [2011,2012]
 for year in Years_and_Nums.keys():
+    if (year == 2013):
+        for i in range(3):
+            missing_cases = get_missing_cases(driver, year)
+        already_crawled.append(year)
 
     if(year in already_crawled): continue
 
@@ -398,7 +402,7 @@ for year in Years_and_Nums.keys():
     run(driver, year, range(1,Years_and_Nums[year]+1)) #################
 
     ################################################
-    for i in range(2):
+    for i in range(3):
         missing_cases = get_missing_cases(driver, year)
     already_crawled.append(year)
 
