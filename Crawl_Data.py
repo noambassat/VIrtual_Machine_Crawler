@@ -342,7 +342,7 @@ def Crawl_Decisions(driver, CASE):
         df = df.append(row, ignore_index=True)
     df.drop_duplicates(inplace=True)
     try:
-        main_df = pd.read_csv(r'../Decisions_Table/Decisions_Table.csv', index_col=0, dtype='unicode', low_memory=False, error_bad_lines=False)
+        main_df = pd.read_csv('/home/ubuntu/PycharmProjects/VIrtual_Machine_Crawler/Decisions_Table/Decisions_Table.csv', index_col=0, dtype='unicode', low_memory=False, error_bad_lines=False)
         main_df = main_df.append(df)
         main_df = main_df.reindex()
     except pd.errors.EmptyDataError as err:
