@@ -16,5 +16,5 @@ def writeToJsonFile(filePath, fileName, data):
     filePathName = filePath + str(fileName) + '.json'
     with open(filePathName, 'w', encoding='utf8') as json_file:
         json.dump(data, json_file, ensure_ascii=False, cls=SetEncoder)
-
     print(fileName)
+    return fileName

@@ -8,7 +8,7 @@ disable_warnings(InsecureRequestWarning)
 import requests
 from requests.adapters import HTTPAdapter
 from requests.packages.urllib3.util.retry import Retry
-
+import html
 import http.client
 import urllib.parse
 API_KEY = "2APAwmdKRCzXbasu1TrBhlvbMoMqk5nI"
@@ -199,7 +199,8 @@ def HTML_CRAWLER(year, link):
         conn.request("GET", src)
         res = conn.getresponse()
         data = res.read()
-        html_content = (data.decode("utf-8"))
+        html_content_decode = (data.decode("utf-8"))
+        html_content = html.unescape(html_content_decode)
 
     except OSError:
         print("OSERROR IN CRAWL HTML")

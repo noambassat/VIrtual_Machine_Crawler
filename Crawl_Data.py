@@ -135,7 +135,7 @@ def crawl_HTML(year, data, link, Type):
 def add_counters(data):
     temp_data = data.copy()
     for key in data.keys():
-        if (key == "פרטים כלליים" or key == 'תיק חסוי'): continue  # doesn't count this keys
+        if (key == "פרמטים כלליים" or key == 'תיק חסוי'): continue  # doesn't count this keys
         curr_key = 'מספר ' + str(key) + ' בתיק'
         if (data[key] == 'אין מידע'):
             temp_data[curr_key] = 0
