@@ -25,10 +25,11 @@ global filePath,DT_path, exe_path, Years_and_Nums,Logs_list
 
 
 # Paths
-filePath = '/home/ubuntu/PycharmProjects/pythonProject5/NewMain/Json_Files_2005/'
-DT_path = '/home/ubuntu/PycharmProjects/pythonProject5/NewMain/DataFrames/'
+
+filePath = '/home/ubuntu/PycharmProjects/VIrtual_Machine_Crawler/Json_Files_2000/'
+DT_path = '/home/ubuntu/PycharmProjects/VIrtual_Machine_Crawler/DataFrames/'
 exe_path = '/home/ubuntu/PycharmProjects/pythonProject5/chromedriver'
-log_df = 'Logs_DF_2005.csv'
+log_df = '/home/ubuntu/PycharmProjects/VIrtual_Machine_Crawler/Log_dfs/Logs_DF_2000.csv'
 
 warnings.simplefilter(action='ignore', category=(FutureWarning, DeprecationWarning))
 START_RUN_TIME = datetime.now()
@@ -73,7 +74,6 @@ def readANDsave_df(year):
 
 def run(driver, year, range_lst):
     ind, STOP = 0,0  # The Continuous number of each year
-    if(year==2005): ind = 3
     while (STOP < 5):  # While the crawler didn't reach the case's limit number yet. 5 is the max errors that can be thrown.
         if(ind>40): break
         try:
