@@ -211,7 +211,6 @@ def HTML_CRAWLER(year, link):
     if(int(year)<2006):
         Soup = str(soup).replace("windows-1255", "utf8")
         soup = BeautifulSoup(Soup, "html.parser")
-        print(soup)
 
     # if(int(year)<2006):
     #     soup = str(soup).replace("windows-1255", "utf8")
