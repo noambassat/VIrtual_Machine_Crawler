@@ -53,7 +53,7 @@ START_TIME = datetime.now()
 Log_DF = pd.DataFrame()
 # Full_Log_Dict = {}
 Logs_list = []
-Years_and_Nums = {2005: 9775} # { year_num : num_of_cases }
+Years_and_Nums = {x:6 for x in range(2000,2011)} # { year_num : num_of_cases }
 
 driver = webdriver.Chrome(exe_path, options=options)
 def readANDsave_df(year):
@@ -313,6 +313,7 @@ def get_lists(year):
     missing_cases,cases_names  = set(),set()
     read_df = readANDsave_df(year)
     for ind in read_df.index:
+        if(ind==6): break
         try:
             case_name = read_df['מספר הליך'][ind]
             case_num = int(case_name[:case_name.find("/")])
