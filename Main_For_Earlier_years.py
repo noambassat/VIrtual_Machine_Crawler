@@ -75,7 +75,7 @@ def readANDsave_df(year):
 def run(driver, year, range_lst):
     ind, STOP = 0,0  # The Continuous number of each year
     while (STOP < 5):  # While the crawler didn't reach the case's limit number yet. 5 is the max errors that can be thrown.
-        if(ind>40): break
+        if(ind==6): break
         try:
             counter = range_lst[ind]
         except IndexError:
@@ -313,7 +313,7 @@ def get_lists(year):
     missing_cases,cases_names  = set(),set()
     read_df = readANDsave_df(year)
     for ind in read_df.index:
-        if(ind==6): break
+
         try:
             case_name = read_df['מספר הליך'][ind]
             case_num = int(case_name[:case_name.find("/")])
