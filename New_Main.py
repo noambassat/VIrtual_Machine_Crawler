@@ -45,7 +45,7 @@ Log_DF = pd.DataFrame()
 # Full_Log_Dict = {}
 Logs_list = []
 Years_and_Nums = {2011: 9775, 2012: 9492, 2013: 8916, 2014: 9032,2015:9110, 2016:10237,\
-                  2017:10246} # { year_num : num_of_cases }
+                  2017:10246, 2018:9265,2019:8735, 2020:9310, 2021:8997} # { year_num : num_of_cases }
 
 driver = webdriver.Chrome(exe_path, options=options)
 def readANDsave_df(year):
@@ -390,7 +390,7 @@ def get_missing_cases(driver, year):
         print("The were left ",len(missing_cases), " cases")
     return missing_cases
 
-already_crawled = [2011,2012]
+already_crawled = [2011,2012,2013]
 for year in Years_and_Nums.keys():
     if (year == 2013):
         for i in range(3):
