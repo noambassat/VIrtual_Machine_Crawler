@@ -73,13 +73,19 @@ def readANDsave_df(year):
 
 
 def run(driver, year, range_lst):
+    print(year)
     ind, STOP = 0,0  # The Continuous number of each year
     while (STOP < 5):  # While the crawler didn't reach the case's limit number yet. 5 is the max errors that can be thrown.
         if(ind==6): break
         try:
             counter = range_lst[ind]
         except IndexError:
-            counter += 1
+            try:
+                counter += 1
+            except UnboundLocalError:
+                print(year)
+                break
+
         try:
             df.to_csv(log_df, mode='a', index=False, header=False)
         except UnboundLocalError:

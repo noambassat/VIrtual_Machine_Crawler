@@ -44,7 +44,8 @@ START_TIME = datetime.now()
 Log_DF = pd.DataFrame()
 # Full_Log_Dict = {}
 Logs_list = []
-Years_and_Nums = {2011: 9775, 2012: 9492, 2013: 8916, 2014: 9032,2015:9110, 2016:10237} # { year_num : num_of_cases }
+Years_and_Nums = {2011: 9775, 2012: 9492, 2013: 8916, 2014: 9032,2015:9110, 2016:10237,\
+                  2017:10246} # { year_num : num_of_cases }
 
 driver = webdriver.Chrome(exe_path, options=options)
 def readANDsave_df(year):
