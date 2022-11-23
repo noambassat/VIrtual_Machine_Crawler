@@ -44,10 +44,12 @@ START_TIME = datetime.now()
 Log_DF = pd.DataFrame()
 # Full_Log_Dict = {}
 Logs_list = []
-Years_and_Nums = {2011: 9775, 2012: 9492, 2013: 8916, 2014: 9032,2015:9110, 2016:10237,\
-                  2017:10246, 2018:9265,2019:8735, 2020:9310, 2021:8997} # { year_num : num_of_cases }
-
+Years_and_Nums = {2011: 9775, 2012: 9492, 2013: 8916, 2014: 9032, 2015:9110, 2016:10237,\
+                  2017:10246, 2018:9265,2019:8735, 2020:9310, 2021:8997, 2022:8000} # { year_num : num_of_cases }
+Years_and_Nums = {2014: 9032, 2015:9110}
 driver = webdriver.Chrome(exe_path, options=options)
+
+
 def readANDsave_df(year):
     log_df = log_df_path+'Logs_DF_'+ str(year)+".csv"
     read_df = pd.read_csv(log_df, low_memory= False)
@@ -71,6 +73,7 @@ def run(driver, year, range_lst):
     # if(year == 2013): ind = 7291
     while (STOP < 5):  # While the crawler didn't reach the case's limit number yet. 5 is the max errors that can be thrown.
         try:
+            if(year==2014): ind = 4186
             ind += 1
             counter = range_lst[ind]
         except IndexError:
@@ -221,7 +224,8 @@ def run(driver, year, range_lst):
                         except WebDriverException:
                             driver.quit()
                             driver = webdriver.Chrome(exe_path, options=options)
-                            driver.get(Case_Link)
+                            continue
+                            # driver.get(Case_Link)
 
                     if (not (case_full_name is None)):
                         print("Found! case name = ", case_full_name)
@@ -231,7 +235,11 @@ def run(driver, year, range_lst):
 
                         driver.quit()
                         driver = webdriver.Chrome(exe_path, options=options)
-                        driver.get(Case_Link)
+                        try:
+                            driver.get(Case_Link)
+                        except WebDriverException:
+                            print("WEB DRIVER EXCEPTION NUM 13")
+                            continue
 
                     try:
                         curr_case["ניסיון להורדת ההחלטות"] = True
@@ -392,7 +400,7 @@ def get_missing_cases(driver, year):
 
 already_crawled = [2011,2012,2013]
 for year in Years_and_Nums.keys():
-    if (year == 2013):
+    if (year == 2014):
         for i in range(3):
             missing_cases = get_missing_cases(driver, year)
         already_crawled.append(year)
