@@ -53,7 +53,8 @@ START_TIME = datetime.now()
 Log_DF = pd.DataFrame()
 # Full_Log_Dict = {}
 Logs_list = []
-Years_and_Nums = {x:6 for x in range(2000,2011)} # { year_num : num_of_cases }
+Years_and_Nums = {x:7000 for x in range(2000,2003)} # { year_num : num_of_cases }
+
 
 driver = webdriver.Chrome(exe_path, options=options)
 def readANDsave_df(year):
@@ -71,12 +72,14 @@ def readANDsave_df(year):
 
     return read_df
 
-
+import random
 def run(driver, year, range_lst):
     print(year)
-    ind, STOP = 0,0  # The Continuous number of each year
+    stop, STOP = 0,0  # The Continuous number of each year
     while (STOP < 5):  # While the crawler didn't reach the case's limit number yet. 5 is the max errors that can be thrown.
-        if(ind==6): break
+        if(stop==5): break
+        stop+=1
+        ind = random.randint(1,range_lst[-1])
         try:
             counter = range_lst[ind]
         except IndexError:
@@ -365,7 +368,7 @@ for year in Years_and_Nums.keys():
     run(driver, year, range(1,Years_and_Nums[year]+1)) #################
 
     ################################################
-    missing_cases = get_missing_cases(driver, year)
+    # missing_cases = get_missing_cases(driver, year)
     already_crawled.append(year)
 
 #################################################

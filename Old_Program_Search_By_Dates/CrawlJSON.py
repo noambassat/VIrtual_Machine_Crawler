@@ -7,7 +7,7 @@ from selenium.webdriver.common.by import By
 import http.client
 import urllib.parse
 import datetime
-from Parser import HTML_CRAWLER
+from parser import HTML_CRAWLER
 from selenium import webdriver
 from bs4 import BeautifulSoup
 import pandas as pd

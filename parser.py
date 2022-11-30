@@ -230,12 +230,19 @@ def HTML_CRAWLER(year, link):
                 two_cases_bool = True
                 #return two_cases(soup)
             dirs = soup.findAll("div", {"align": "right"})
-
             dirs_1 = soup.findAll('p', {"class": "Ruller3"})
+
 
         except AttributeError:
             print("AttributeError in parser")
-        if(len(dirs)>1): break
+        if(len(dirs)>1):
+            break
+
+    if(len(dirs)<1):
+        dirs = soup.findAll("p", {"class": "3"})
+        print("old file, dirs = p class 3")
+        if(len(dirs)>1): print("worked!")
+        else: print("failed")
     # try:
     #     soup = soup.find('body').find("div", {"class": "WordSection1"}) ###?????###
     # except AttributeError:

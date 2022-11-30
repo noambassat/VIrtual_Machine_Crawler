@@ -58,10 +58,7 @@ def readANDsave_df(year):
 
 
     read_df['סכימת שגיאות'] = 6 -(read_df[['קישור נפתח', 'תיק נמצא', 'ניסיון להורדת ההחלטות', 'הצלחה בהורדת ההחלטות', 'ניסיון להורדת מטא-דאטה', 'הצלחה בהורדת מטא-דאטה']].sum(axis=1))
-    # print(int(read_df.iloc[-1, 0][:read_df.iloc[-1, 0].find("/")]))
-    # if(int(read_df.iloc[-1, 0][:read_df.iloc[-1, 0].find("/")])>Years_and_Nums[year] and int(read_df.iloc[-1,-1])>5):
-    #     print("deleting ",read_df.iloc[-1, 0])
-    #     read_df = read_df.drop(read_df.index[-1],inplace=True)
+
     read_df.to_csv(log_df, index=False)
 
     return read_df
@@ -73,7 +70,6 @@ def run(driver, year, range_lst):
     # if(year == 2013): ind = 7291
     while (STOP < 5):  # While the crawler didn't reach the case's limit number yet. 5 is the max errors that can be thrown.
         try:
-            if(year==2014): ind = 4186
             ind += 1
             counter = range_lst[ind]
         except IndexError:
