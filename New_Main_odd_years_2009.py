@@ -15,7 +15,7 @@ from selenium.common.exceptions import UnexpectedAlertPresentException
 import Save_As_Json
 
 
-########################### need to add urllib3.exceptions.MaxRetryError
+
 # !/usr/bin/env python3 # -*- coding: utf-8 -*-
 
 
@@ -46,7 +46,7 @@ Log_DF = pd.DataFrame()
 Logs_list = []
 Years_and_Nums = {2011: 9775, 2012: 9492, 2013: 8916, 2014: 9032, 2015:9110, 2016:10237,\
                   2017:10246, 2018:9265,2019:8735, 2020:9310, 2021:8997, 2022:8000} # { year_num : num_of_cases }
-Years_and_Nums = {2014: 9032, 2015:9110}
+Years_and_Nums = {2009:10554}
 driver = webdriver.Chrome(exe_path, options=options)
 
 
@@ -58,18 +58,23 @@ def readANDsave_df(year):
 
 
     read_df['סכימת שגיאות'] = 6 -(read_df[['קישור נפתח', 'תיק נמצא', 'ניסיון להורדת ההחלטות', 'הצלחה בהורדת ההחלטות', 'ניסיון להורדת מטא-דאטה', 'הצלחה בהורדת מטא-דאטה']].sum(axis=1))
-
+    # print(int(read_df.iloc[-1, 0][:read_df.iloc[-1, 0].find("/")]))
+    # if(int(read_df.iloc[-1, 0][:read_df.iloc[-1, 0].find("/")])>Years_and_Nums[year] and int(read_df.iloc[-1,-1])>5):
+    #     print("deleting ",read_df.iloc[-1, 0])
+    #     read_df = read_df.drop(read_df.index[-1],inplace=True)
     read_df.to_csv(log_df, index=False)
 
     return read_df
 
 
-def run(driver, year, range_lst):
+def run(driver, year, range_lst,FLAG =0):
 
     ind, STOP = -1,0  # The Continuous number of each year
+    if (year == 2015 and FLAG == 1): ind = 3112
     # if(year == 2013): ind = 7291
     while (STOP < 5):  # While the crawler didn't reach the case's limit number yet. 5 is the max errors that can be thrown.
         try:
+
             ind += 1
             counter = range_lst[ind]
         except IndexError:
@@ -394,21 +399,17 @@ def get_missing_cases(driver, year):
         print("The were left ",len(missing_cases), " cases")
     return missing_cases
 
-already_crawled = [2011,2012,2013]
+already_crawled = []
 for year in Years_and_Nums.keys():
-    if (year == 2014):
-        for i in range(3):
-            missing_cases = get_missing_cases(driver, year)
-        already_crawled.append(year)
 
     if(year in already_crawled): continue
-
     readANDsave_df(year)
     run(driver, year, range(1,Years_and_Nums[year]+1)) #################
 
-    ################################################
     for i in range(3):
         missing_cases = get_missing_cases(driver, year)
+
+    ### -------------------------------------- ###
     already_crawled.append(year)
 
 #################################################
