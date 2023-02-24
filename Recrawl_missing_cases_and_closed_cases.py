@@ -23,11 +23,9 @@ import Save_As_Json
 
 
 # Paths
-filePath = '/home/ubuntu/PycharmProjects/VIrtual_Machine_Crawler/Json_Files/'
+filePath = '/home/ubuntu/PycharmProjects/VIrtual_Machine_Crawler/crawl_again_Json_Files/'
 DT_path = '/home/ubuntu/PycharmProjects/VIrtual_Machine_Crawler/DataFrames/'
 exe_path = '/home/ubuntu/PycharmProjects/pythonProject5/chromedriver'
-log_df_path = '/home/ubuntu/PycharmProjects/VIrtual_Machine_Crawler/Log_dfs/'
-
 links_path = '/home/ubuntu/Normalizer/Normalizer/crawl_again.csv'
 
 
@@ -35,7 +33,7 @@ links_path = '/home/ubuntu/Normalizer/Normalizer/crawl_again.csv'
 ##############3
 
 
-links_path = "C:/Users/Noam/PycharmProjects/pythonProject5/Normalizer/crawl_again.csv"
+# links_path = "C:/Users/Noam/PycharmProjects/pythonProject5/Normalizer/crawl_again.csv"
 
 warnings.simplefilter(action='ignore', category=(FutureWarning, DeprecationWarning))
 START_RUN_TIME = datetime.now()
