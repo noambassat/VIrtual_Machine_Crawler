@@ -40,14 +40,15 @@ options = Options()
 PROXY = "5.79.66.2:13081"
 options.add_argument('--proxy-server=%s' % PROXY)
 
+driver = webdriver.Chrome(exe_path, options=options)
 
 
-
-def run(links):
-    driver = webdriver.Chrome(exe_path, options=options)
+def run(driver, links):
     STOP = 0
-    for Case_Link in list(set(links)):
+    for Case_Link in links:
 
+        while (
+                STOP < 5):  # While the crawler didn't reach the case's limit number yet. 5 is the max errors that can be thrown.
             for i in range(7):
                 if (Case_Link[67 + i] == "/"): break
 
@@ -311,6 +312,6 @@ def get_links(links_path):
 
 links = get_links(links_path)
 
-run(links)
+run(driver, links)
 
 
