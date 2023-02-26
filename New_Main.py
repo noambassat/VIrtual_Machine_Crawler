@@ -395,12 +395,12 @@ def get_missing_cases(driver, year):
         print("The were left ",len(missing_cases), " cases")
     return missing_cases
 
-already_crawled = [2011,2012,2013]
-for year in Years_and_Nums.keys():
-    if (year == 2014):
-        for i in range(3):
-            missing_cases = get_missing_cases(driver, year)
-        already_crawled.append(year)
+already_crawled = []
+for year in Years_and_Nums.keys(): # Loop over the years
+    # if (year == 2014):
+    #     for i in range(3):
+    #         missing_cases = get_missing_cases(driver, year)
+    #     already_crawled.append(year)
 
     if(year in already_crawled): continue
 
